@@ -54,6 +54,13 @@ In `DATENSCHUTZ-DOSB-1-PAGER.md` und `PILOTANGEBOT.md` steht jetzt **CyclesGuard
 
 ---
 
+## Parallel (Wartezeit) — erledigt im Repo
+
+- Soft-Pilot 48h-Start: `PILOT-RUNBOOK.md`
+- Push Live: `PUSH-LIVE.md`
+- AVV/TOM-Entwurf: `../privacy/AVV-TOM-DRAFT.md`
+- Invite-Flow gehärtet (neu + bestehende User)
+
 ## Dann nur noch
 
 → `OUTREACH.md` öffnen → LinkedIn-Nachricht an Athletik + Medizin senden → Termin vorschlagen.

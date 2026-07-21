@@ -3,12 +3,37 @@ import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createAdminClient, isTrainer } from '@/lib/supabase/admin';
 import { getTrainerTeamIds } from '@/lib/teams';
+import { getAppRole } from '@/lib/roles';
+import {
+  ensurePlayerAppRole,
+  ensurePlayerTeamMembership,
+  findAuthUserByEmail,
+} from '@/lib/invite-membership';
 
 const InviteSchema = z.object({
   email: z.string().email(),
   teamId: z.string().uuid(),
   fullName: z.string().min(1).max(100).optional(),
 });
+
+async function auditInvite(
+  admin: ReturnType<typeof createAdminClient>,
+  actorId: string,
+  targetUserId: string,
+  teamId: string,
+  email: string,
+  mode: 'invite' | 'roster_add'
+) {
+  const { error } = await admin.from('admin_audit_log').insert({
+    actor_id: actorId,
+    action: mode === 'invite' ? 'invite_player' : 'roster_add_existing',
+    target_user_id: targetUserId,
+    metadata: { team_id: teamId, email, mode },
+  });
+  if (error) {
+    console.warn('Audit log insert skipped/failed:', error.message);
+  }
+}
 
 export async function POST(request: Request) {
   const supabase = await createServerSupabaseClient();
@@ -36,46 +61,85 @@ export async function POST(request: Request) {
   }
 
   const admin = createAdminClient();
+  const existing = await findAuthUserByEmail(admin, email);
+
+  // Pilot path: already registered → add to roster (no second invite email)
+  if (existing) {
+    const role = getAppRole(existing);
+    if (role === 'trainer' || role === 'club_admin' || role === 'platform_admin') {
+      return NextResponse.json(
+        { error: 'Diese E-Mail gehört einem Trainer/Admin-Konto und kann nicht als Spielerin eingeladen werden.' },
+        { status: 422 }
+      );
+    }
+
+    await ensurePlayerAppRole(admin, existing);
+    const membership = await ensurePlayerTeamMembership(admin, existing.id, teamId);
+    if (!membership.ok) {
+      return NextResponse.json({ error: 'Failed to add roster membership' }, { status: 500 });
+    }
+
+    if (fullName) {
+      await admin.auth.admin.updateUserById(existing.id, {
+        user_metadata: {
+          ...existing.user_metadata,
+          full_name: fullName,
+          invited_team_id: teamId,
+        },
+      });
+    } else {
+      await admin.auth.admin.updateUserById(existing.id, {
+        user_metadata: {
+          ...existing.user_metadata,
+          invited_team_id: teamId,
+        },
+      });
+    }
+
+    await auditInvite(admin, user.id, existing.id, teamId, email, 'roster_add');
+
+    return NextResponse.json(
+      {
+        success: true,
+        userId: existing.id,
+        mode: 'roster_add',
+        message: 'Bestehende Nutzerin dem Team hinzugefügt.',
+      },
+      { status: 200 }
+    );
+  }
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
   const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
     data: {
       full_name: fullName ?? email.split('@')[0],
       invited_team_id: teamId,
     },
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/auth/callback`,
+    redirectTo: `${siteUrl}/auth/callback?next=/player/onboarding`,
   });
 
   if (inviteError || !invited.user) {
     console.error('Invite failed:', inviteError);
     const message = inviteError?.message ?? 'Invite failed';
-    if (/already|registered|exists/i.test(message)) {
-      return NextResponse.json({ error: 'User already registered' }, { status: 422 });
-    }
     return NextResponse.json({ error: message }, { status: 500 });
   }
 
-  const { error: memberError } = await admin.from('team_members').upsert(
-    {
-      team_id: teamId,
-      user_id: invited.user.id,
-      role: 'player',
-    },
-    { onConflict: 'team_id,user_id' }
-  );
-
-  if (memberError) {
-    console.error('Failed to add team member:', memberError);
+  await ensurePlayerAppRole(admin, invited.user);
+  const membership = await ensurePlayerTeamMembership(admin, invited.user.id, teamId);
+  if (!membership.ok) {
+    console.error('Failed to add team member:', membership.error);
     return NextResponse.json({ error: 'Failed to add roster membership' }, { status: 500 });
   }
 
-  const { error: auditError } = await admin.from('admin_audit_log').insert({
-    actor_id: user.id,
-    action: 'invite_player',
-    target_user_id: invited.user.id,
-    metadata: { team_id: teamId, email },
-  });
-  if (auditError) {
-    console.warn('Audit log insert skipped/failed:', auditError.message);
-  }
+  await auditInvite(admin, user.id, invited.user.id, teamId, email, 'invite');
 
-  return NextResponse.json({ success: true, userId: invited.user.id }, { status: 201 });
+  return NextResponse.json(
+    {
+      success: true,
+      userId: invited.user.id,
+      mode: 'invite',
+      message: 'Einladung gesendet und Roster aktualisiert.',
+    },
+    { status: 201 }
+  );
 }

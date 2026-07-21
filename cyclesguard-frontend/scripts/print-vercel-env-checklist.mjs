@@ -18,6 +18,14 @@ const required = [
   'VAPID_PRIVATE_KEY',
 ];
 
+const optional = [
+  'INGESTION_BASE_URL',
+  'INGESTION_MANAGEMENT_KEY',
+  'NEXT_PUBLIC_SENTRY_DSN',
+  'SENTRY_DSN',
+  'SENTRY_AUTH_TOKEN',
+];
+
 const envPath = join(process.cwd(), '.env.local');
 if (!existsSync(envPath)) {
   console.error('No .env.local — run npm run pitch:setup-env first');
@@ -33,27 +41,57 @@ for (const line of readFileSync(envPath, 'utf8').split('\n')) {
   map[t.slice(0, i).trim()] = t.slice(i + 1).trim();
 }
 
-console.log('Copy these into Vercel → Project → Settings → Environment Variables\n');
-console.log('Root Directory must be: cyclesguard-frontend\n');
-
-for (const key of required) {
-  const val = map[key];
-  if (!val || val.includes('your-') || val.includes('changeme')) {
-    console.log(`✗ ${key}  MISSING or placeholder`);
-    continue;
-  }
-  const show =
-    key.startsWith('NEXT_PUBLIC_') && !key.includes('KEY')
-      ? val
-      : key === 'NEXT_PUBLIC_DEMO_MODE'
-        ? val
-        : key === 'NEXT_PUBLIC_SUPABASE_URL'
-          ? val
-          : `(set — ${val.length} chars, value hidden)`;
-  console.log(`✓ ${key}=${show}`);
+function isPlaceholder(val) {
+  return !val || val.includes('your-') || val.includes('changeme') || val.includes('Fake');
 }
 
+function showValue(key, val) {
+  if (key.startsWith('NEXT_PUBLIC_') && !key.includes('KEY') && !key.includes('DSN')) {
+    return val;
+  }
+  if (key === 'NEXT_PUBLIC_DEMO_MODE' || key === 'NEXT_PUBLIC_SUPABASE_URL') {
+    return val;
+  }
+  return `(set — ${val.length} chars, value hidden)`;
+}
+
+console.log('Copy these into Vercel → Project → Settings → Environment Variables\n');
+console.log('Root Directory must be: cyclesguard-frontend\n');
+console.log('=== Required (Pitch + Soft-Pilot) ===\n');
+
+let missing = 0;
+for (const key of required) {
+  const val = map[key];
+  if (isPlaceholder(val)) {
+    console.log(`✗ ${key}  MISSING or placeholder`);
+    missing += 1;
+    continue;
+  }
+  console.log(`✓ ${key}=${showValue(key, val)}`);
+}
+
+console.log('\n=== Optional (GPS bridge / monitoring) ===\n');
+for (const key of optional) {
+  const val = map[key];
+  if (isPlaceholder(val)) {
+    console.log(`○ ${key}  not set`);
+    continue;
+  }
+  console.log(`✓ ${key}=${showValue(key, val)}`);
+}
+
+console.log('\n=== Mode hints ===');
+console.log('  Pitch demo:     NEXT_PUBLIC_DEMO_MODE=true');
+console.log('  Soft-Pilot:     NEXT_PUBLIC_DEMO_MODE=false');
+console.log('  Site URL prod:  NEXT_PUBLIC_SITE_URL=https://cyclesguard.vercel.app');
+
 console.log('\nAfter deploy:');
-console.log('  1. Set NEXT_PUBLIC_SITE_URL to https://<your-deployment>.vercel.app');
-console.log('  2. Supabase Auth Site URL + Redirect …/auth/callback');
-console.log('  3. npm run pitch:smoke -- https://<your-deployment>.vercel.app');
+console.log('  1. Supabase Auth Site URL + Redirect …/auth/callback');
+console.log('  2. npm run pitch:smoke -- https://cyclesguard.vercel.app');
+console.log('  3. Push: docs/pitch/PUSH-LIVE.md');
+console.log('  4. Pilot: docs/pitch/PILOT-RUNBOOK.md');
+
+if (missing > 0) {
+  console.log(`\n${missing} required variable(s) missing.`);
+  process.exit(1);
+}

@@ -92,17 +92,18 @@ export default function TrainerDashboardPage() {
           typeof body.error === 'string'
             ? body.error
             : 'Einladung fehlgeschlagen.';
-        if (msg.toLowerCase().includes('already') || response.status === 422) {
-          setInviteError('Diese E-Mail ist bereits registriert oder eingeladen.');
-        } else if (response.status === 403) {
+        if (response.status === 403) {
           setInviteError('Kein Zugriff auf dieses Team.');
         } else {
           setInviteError(msg === 'Invite failed' ? 'Einladung fehlgeschlagen — E-Mail prüfen.' : msg);
         }
         return;
       }
+      const label = inviteName.trim() || inviteEmail;
       setInviteMsg(
-        `${inviteName.trim() || inviteEmail} wurde eingeladen und dem Roster hinzugefügt.`
+        body.mode === 'roster_add'
+          ? `${label} war bereits registriert und wurde dem Roster hinzugefügt.`
+          : `${label} wurde eingeladen (E-Mail) und dem Roster hinzugefügt.`
       );
       setInviteEmail('');
       setInviteName('');

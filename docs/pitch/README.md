@@ -13,5 +13,9 @@
 | [PILOTANGEBOT.md](./PILOTANGEBOT.md) | Angebot (→ PDF drucken) |
 | [TRAINER-ONBOARDING.md](./TRAINER-ONBOARDING.md) | Für Soft-Pilot |
 | [PILOT-FEEDBACK.md](./PILOT-FEEDBACK.md) | Für Soft-Pilot |
+| **[PILOT-RUNBOOK.md](./PILOT-RUNBOOK.md)** | Soft-Pilot Start in 48h |
+| [PUSH-LIVE.md](./PUSH-LIVE.md) | VAPID + Cron Live-Test |
+| [AVV-TOM-DRAFT.md](../privacy/AVV-TOM-DRAFT.md) | AVV/TOM-Entwurf |
+| [RLS-PENETRATION-CHECKLIST.md](../privacy/RLS-PENETRATION-CHECKLIST.md) | Privacy-Checks |
 
 Roadmap: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.md)

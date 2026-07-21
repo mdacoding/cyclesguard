@@ -1,3 +1,4 @@
+import { withSentryConfig } from '@sentry/nextjs';
 import withSerwistInit from '@serwist/next';
 
 const withSerwist = withSerwistInit({
@@ -8,11 +9,11 @@ const withSerwist = withSerwistInit({
 
 const cspHeader = `
     default-src 'self';
-    script-src 'self' 'unsafe-eval' 'unsafe-inline';
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.sentry-cdn.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
     font-src 'self' https://fonts.gstatic.com;
     img-src 'self' blob: data:;
-    connect-src 'self' https://*.supabase.co;
+    connect-src 'self' https://*.supabase.co https://*.ingest.sentry.io https://*.ingest.de.sentry.io;
     worker-src 'self';
     frame-src 'none';
     object-src 'none';
@@ -26,7 +27,10 @@ const cspHeader = `
 const nextConfig = {
   // Docker/local image needs standalone; Vercel uses its own Next runtime
   ...(process.env.VERCEL ? {} : { output: 'standalone' }),
-  experimental: { typedRoutes: true },
+  experimental: {
+    typedRoutes: true,
+    instrumentationHook: true,
+  },
   async headers() {
     return [
       {
@@ -62,4 +66,14 @@ const nextConfig = {
   },
 };
 
-export default withSerwist(nextConfig);
+const serwistConfig = withSerwist(nextConfig);
+
+const sentryEnabled = Boolean(process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN);
+
+export default sentryEnabled
+  ? withSentryConfig(serwistConfig, {
+      silent: true,
+      disableLogger: true,
+      widenClientFileUpload: false,
+    })
+  : serwistConfig;

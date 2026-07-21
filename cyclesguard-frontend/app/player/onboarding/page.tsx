@@ -45,8 +45,9 @@ export default function OnboardingPage() {
             Willkommen bei CyclesGuard
           </h1>
           <p className="text-cream/60 leading-relaxed">
-            Bevor wir starten, benötigen wir deine ausdrückliche Zustimmung.
-            Danach kannst du in unter 30 Sekunden deinen ersten Eintrag machen.
+            Bevor wir starten, benötigen wir deine ausdrückliche Zustimmung
+            (auch nach einer Team-Einladung). Danach kannst du in unter 30&nbsp;Sekunden
+            deinen ersten Eintrag machen.
           </p>
         </div>
 

@@ -39,17 +39,18 @@ Run Supabase migrations `supabase/migrations/001` … `008` in order.
 
 ## Pitch demo (Eintracht)
 
-Supabase Cloud + Seed sind live (`docs/pitch/SUPABASE-SETUP.md`). Offen: Vercel.
+Live: https://cyclesguard.vercel.app · Docs: `docs/pitch/`
 
 ```bash
-npx supabase db push             # pending migrations (z. B. 009)
-npm run seed:eintracht           # Ampel-Demo neu setzen
-npm run pitch:smoke -- https://your-app.vercel.app
+npm run seed:eintracht
+npm run pitch:env-checklist
+npm run pitch:smoke -- https://cyclesguard.vercel.app
+npm test
+npm run test:e2e:public
 ```
 
-Docs: `docs/pitch/` · Plan: `docs/sprints/00-ROADMAP.md`.
+Soft-Pilot nach Club-Ja: `docs/pitch/PILOT-RUNBOOK.md`  
+Optional Sentry: `NEXT_PUBLIC_SENTRY_DSN` / `SENTRY_DSN` setzen.
 
 ## Deploy
-Vercel region `fra1`. Crons defined in `vercel.json`. Step-by-step: `docs/pitch/DEPLOY.md`.
-
-See `docs/sprints/00-ROADMAP.md` for the full roadmap.
+Vercel region `fra1`. Crons in `vercel.json`. Plan: `docs/sprints/00-ROADMAP.md`.

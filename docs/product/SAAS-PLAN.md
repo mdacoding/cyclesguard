@@ -1,11 +1,11 @@
 # CyclesGuard — SaaS Product Plan (CTO)
 
-**Stand:** 21.07.2026  
+**Stand:** 22.07.2026  
 **Repo:** https://github.com/mdacoding/cyclesguard  
 **Live:** https://cyclesguard.vercel.app  
 **North star:** Privacy-first readiness platform for women’s football clubs in DACH → later EU.
 
-Day-to-day pitch checklist: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.md).
+Day-to-day: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.md).
 
 ---
 
@@ -25,28 +25,25 @@ Day-to-day pitch checklist: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.m
 ## 2. Product stages
 
 ```
-Pitch-Ready ✅  →  Pre-Meeting  →  Soft-Pilot  →  Club Product  →  Multi-Tenant SaaS
-   (jetzt)         (Termin)        (nach Ja)       (Saison 1)         (Scale)
+Pitch-Ready ✅  →  Pre-Meeting  →  Soft-Pilot (48h-ready) ✅  →  Club Product  →  Multi-Tenant SaaS
 ```
 
 ### Stage A — Pitch-Ready ✅
 
 - [x] App + Ampel + Offline + Logout  
-- [x] Supabase + Seed  
-- [x] Pitch-Docs + Outreach-Vorlagen  
-- [x] GitHub + Vercel https://cyclesguard.vercel.app  
-- [x] Smoke-Test  
-- [ ] Founder: Auth Site URL prüfen + Termin anfragen (`docs/pitch/TERMIN-BEREIT.md`, `OUTREACH.md`)
+- [x] Supabase + Seed + Vercel  
+- [x] Pitch-Docs + Outreach  
+- [ ] Founder: Auth Site URL + Termin anfragen  
 
 **Exit:** Nachricht an Eintracht gesendet / Termin vereinbart.
 
-### Stage B — Soft-Pilot
+### Stage B — Soft-Pilot (technisch vorbereitet ✅)
 
-- Secrets rotiert, optional Custom Domain  
-- 5–10 echte Freiwillige  
-- Push optional live  
-- Wöchentlicher Feedback-Call  
-- AVV / TOM mit Vereins-DSB  
+- [x] Invite Neu + bestehende User → Roster  
+- [x] Auth-Callback Membership + Consent-Routing  
+- [x] Pilot-Runbook / Push-Live / AVV-Entwurf / RLS-Checkliste  
+- [x] CI lint + tests + public E2E; optional Sentry  
+- [ ] Nach Ja: Secrets rotieren, Demo-Mode off, echte Freiwillige, AVV unterschreiben  
 
 ### Stage C — Club Product (Paid)
 
@@ -82,8 +79,8 @@ Pitch-Ready ✅  →  Pre-Meeting  →  Soft-Pilot  →  Club Product  →  Mult
 
 | Prio | Action |
 |------|--------|
-| **Jetzt** | `docs/pitch/OUTREACH.md` — Termin anfragen |  
-| **Nach Ja** | Soft-Pilot P1 (AVV, echte Roster, Push) |  
+| **Jetzt** | Outreach (`OUTREACH.md`) |
+| **Nach Ja** | `PILOT-RUNBOOK.md` durchziehen |
 | **Nicht jetzt** | Billing, GPS-ML, Multi-Tenant |
 
 ---
@@ -95,4 +92,5 @@ Pitch-Ready ✅  →  Pre-Meeting  →  Soft-Pilot  →  Club Product  →  Mult
 | Pitch before market-ready | Clubs kaufen Story + Demo + Angebot |
 | Soft-Pilot free | Vertrauen vor Revenue |
 | Ampel-only trainer | Compliance non-negotiable |
-| Hobby Vercel crons daily | Plan-Limit; genug für Pitch |
+| Existing-user roster add | Pilot darf nicht an „already registered“ scheitern |
+| Hobby Vercel crons daily | Plan-Limit; genug für Pitch/Pilot |

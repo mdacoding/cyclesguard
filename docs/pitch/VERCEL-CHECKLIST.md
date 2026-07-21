@@ -39,8 +39,10 @@ Ohne `cyclesguard-frontend` findet Vercel kein Next.js-`package.json` → Build 
 | `NEXT_PUBLIC_DEMO_MODE` | `true` für Pitch |
 | `CRON_SECRET` | ja |
 | `CONSENT_IP_SALT` | ja |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | empfohlen |
-| `VAPID_PRIVATE_KEY` | empfohlen |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | ja für Push-Pilot |
+| `VAPID_PRIVATE_KEY` | ja für Push-Pilot |
+| `NEXT_PUBLIC_SENTRY_DSN` / `SENTRY_DSN` | optional Monitoring |
+| Soft-Pilot | `NEXT_PUBLIC_DEMO_MODE=false` + Secrets rotieren |
 
 Lokal anzeigen (Werte der Secrets werden maskiert):
 

@@ -1,56 +1,72 @@
 # CyclesGuard — Implementation Plan: Pitch → Pilot → SaaS
 
-**Stand:** 21.07.2026 · **Pitch-Produkt fertig · Termin anfragen**  
+**Stand:** 22.07.2026 · **Pitch fertig · Soft-Pilot Hardening (Strang A+B)**  
 **Live:** https://cyclesguard.vercel.app  
 **Repo:** https://github.com/mdacoding/cyclesguard  
 
 ```
-Pitch-Ready ✅  →  Termin anfragen  →  Soft-Pilot  →  Paid SaaS
-                     ↑ jetzt
+Pitch-Ready ✅  →  Termin anfragen  →  Soft-Pilot (48h-ready)  →  Paid SaaS
+                     ↑ Founder        ↑ Code/Docs jetzt
 ```
 
 ---
 
 ## CTO-Urteil
 
-Produkt und Pitch-Paket sind **präsentierfertig**.  
-Dein Rest: **Auth-URLs einmal prüfen** (2 Min.) → **Outreach** (`docs/pitch/OUTREACH.md`).
+Produkt ist **präsentierfertig**. Parallel zur Outreach-Wartezeit: **Soft-Pilot in 48h startbar** (Invite gehärtet, Runbook, Push-Setup, AVV-Entwurf, CI/E2E/Sentry-Hook).
 
 | Frage | Antwort |
 |-------|---------|
 | SaaS für den Pitch fertig? | **Ja** |
-| Soft-Pilot vorschlagen? | **Ja** |
-| Saison-Produktiv ohne AVV? | **Nein** — erst nach Club-Ja |
+| Soft-Pilot technisch vorbereitet? | **Ja** (Runbook + Invite + Push-Docs) |
+| Saison-Produktiv ohne AVV? | **Nein** — AVV-Entwurf liegt, Unterschrift mit DSB |
 
 ---
 
-## Erledigt (Produkt + Pitch-Paket)
+## Erledigt (Produkt + Pitch + Wartezeit A/B)
 
 | Item | Status |
 |------|--------|
-| App A+B, Ampel, Offline, Admin | ✅ |
-| Login / Logout | ✅ |
-| Supabase + Migrationen + Seed | ✅ |
-| Vercel https://cyclesguard.vercel.app | ✅ |
-| Docs: Skript, Datenschutz, Angebot, Brief, Outreach | ✅ |
-| GitHub | ✅ |
+| App A+B, Ampel, Offline, Admin, Logout | ✅ |
+| Supabase + Migrationen + Seed + Vercel | ✅ |
+| Pitch-Docs + Outreach | ✅ |
+| Invite: Neu + bestehende User → Roster | ✅ |
+| Auth-Callback finalisiert Membership + Consent-Routing | ✅ |
+| Pilot-Runbook, Push-Live, AVV/TOM-Entwurf, RLS-Checkliste | ✅ |
+| CI: lint + unit tests + build + public E2E | ✅ |
+| Sentry optional (DSN Env) | ✅ |
 
 ---
 
-## Vor dem Termin (Founder, &lt;30 Min.)
+## Founder jetzt (&lt;30 Min.)
 
-Siehe **`docs/pitch/TERMIN-BEREIT.md`**.
-
-1. Supabase Auth Site URL + Redirect (Copy-Paste-Werte in TERMIN-BEREIT)  
-2. Optional: PDFs aus Datenschutz + Pilotangebot  
-3. Demo 1× üben (`DEMO-SCRIPT.md`)  
-4. **`OUTREACH.md`** → LinkedIn an Athletik + Medizin  
+1. [`docs/pitch/TERMIN-BEREIT.md`](../pitch/TERMIN-BEREIT.md) — Auth-URLs  
+2. [`docs/pitch/OUTREACH.md`](../pitch/OUTREACH.md) — LinkedIn  
+3. Optional: Vercel Env gegen `npm run pitch:env-checklist` prüfen  
 
 ---
 
-## P1 nach Club-Interesse
+## Nach Club-„Ja“ (48h)
 
-AVV/DSB, echte Roster, Secrets rotieren, optional Domain/Push — siehe `docs/product/SAAS-PLAN.md`.
+Siehe **[`docs/pitch/PILOT-RUNBOOK.md`](../pitch/PILOT-RUNBOOK.md)**.
+
+1. Secrets rotieren, `NEXT_PUBLIC_DEMO_MODE=false`  
+2. Echte Roster per Trainer-Invite  
+3. Push Live (`PUSH-LIVE.md`)  
+4. AVV mit DSB finalisieren (`docs/privacy/AVV-TOM-DRAFT.md`)  
+5. RLS-Checkliste abhaken  
+
+---
+
+## Noch offen (nicht blockierend)
+
+| Item | Wann |
+|------|------|
+| Ingestion deploy + GPS live | Wenn Club Tracker nennt |
+| Custom Domain | Nach Pilot-Zusage |
+| Billing / Multi-Tenant | Nach 2. Club / Saisonvertrag |
+| Sentry DSN in Vercel setzen | Empfohlen vor Echtdaten |
+| E2E mit Credentials in CI Secrets | Optional |
 
 ---
 
@@ -58,7 +74,9 @@ AVV/DSB, echte Roster, Secrets rotieren, optional Domain/Push — siehe `docs/pr
 
 | Doc | Zweck |
 |-----|--------|
-| [TERMIN-BEREIT.md](../pitch/TERMIN-BEREIT.md) | Abhak-Liste |
-| [OUTREACH.md](../pitch/OUTREACH.md) | An wen, Text, andere Clubs |
-| [PRODUCT-BRIEF.md](../pitch/PRODUCT-BRIEF.md) | Was ist CyclesGuard + Preview danach |
-| [DEMO-SCRIPT.md](../pitch/DEMO-SCRIPT.md) | 5-Min-Demo |
+| [TERMIN-BEREIT.md](../pitch/TERMIN-BEREIT.md) | Pitch-Abhak-Liste |
+| [OUTREACH.md](../pitch/OUTREACH.md) | An wen schreiben |
+| [PILOT-RUNBOOK.md](../pitch/PILOT-RUNBOOK.md) | Soft-Pilot Start |
+| [PUSH-LIVE.md](../pitch/PUSH-LIVE.md) | Reminder live |
+| [PRODUCT-BRIEF.md](../pitch/PRODUCT-BRIEF.md) | 1-Seiten-Brief |
+| [SAAS-PLAN.md](../product/SAAS-PLAN.md) | Stages |
