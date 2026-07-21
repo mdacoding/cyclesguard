@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --navy: #0A0F1E;
+  --rose-gold: #E8C4B8;
+  --sage: #7B9E87;
+  --cream: #F5F0E8;
+  
+  --menstrual: #C67B7B;
+  --follicular: #7BA8C6;
+  --ovulation: #C6B87B;
+  --luteal: #9B7BC6;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--navy);
+  color: var(--cream);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-image: linear-gradient(135deg, #0A0F1E 0%, #1A1040 50%, #0D1F2D 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(10, 15, 30, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--rose-gold);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #cba89b;
+}
+
+/* Glassmorphism */
+.glass-card {
+  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1rem;
+}
+
+.text-gradient {
+  background: linear-gradient(to right, var(--rose-gold), var(--cream));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

@@ -1,0 +1,29 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: cyclesguard
+      POSTGRES_USER: cyclesguard
+      POSTGRES_PASSWORD: cyclesguard
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  ingestion:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/cyclesguard
+      DB_USER: cyclesguard
+      DB_PASS: cyclesguard
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:-changeme-local-dev-only}
+      MANAGEMENT_USER: cyclesguard-admin
+      MANAGEMENT_PASSWORD: ${MANAGEMENT_PASSWORD:-changeme-local-dev-only}
+      MANAGEMENT_API_KEY: ${MANAGEMENT_API_KEY:-ce8941fee194a4e89134a85f605ac60b92e6d1c8ee3f5ce927b44ecdff6dde62}
+      FRONTEND_ORIGIN: http://localhost:3000
+    depends_on:
+      - postgres
+volumes:
+  pgdata:

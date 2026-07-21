@@ -1,0 +1,36 @@
+# Secrets — never commit
+.env
+.env.local
+.env.*.local
+**/.env.local
+
+# Dependencies
+node_modules/
+
+# Next.js
+**/.next/
+**/out/
+
+# Java / Maven
+**/target/
+**/.classpath
+**/.project
+**/.settings/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Supabase local
+**/.supabase/
+**/supabase/.temp/
