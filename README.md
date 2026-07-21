@@ -3,7 +3,9 @@
 Privacy-first readiness SaaS for female soccer players — menstrual cycle logging with **DOSB-compliant trainer signals** (Ampel only, never raw cycle data).
 
 **GitHub:** https://github.com/mdacoding/cyclesguard  
-**Pitch focus:** Eintracht Frankfurt Frauen (demo + pilot offer)
+**Live-Demo:** https://cyclesguard.vercel.app  
+
+Pitch focus: Eintracht Frankfurt Frauen (demo + pilot offer) · Status: **Pitch-Ready (Produkt)** — Pre-Meeting-Checklist in `docs/sprints/00-ROADMAP.md`.
 
 ---
 
