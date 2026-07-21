@@ -31,17 +31,14 @@ Pitch-Ready ✅  →  Pre-Meeting  →  Soft-Pilot  →  Club Product  →  Mult
 
 ### Stage A — Pitch-Ready ✅
 
-- [x] App-Logik + Ampel + Offline  
+- [x] App + Ampel + Offline + Logout  
 - [x] Supabase + Seed  
-- [x] Pitch-Docs  
-- [x] GitHub  
-- [x] Vercel https://cyclesguard.vercel.app  
+- [x] Pitch-Docs + Outreach-Vorlagen  
+- [x] GitHub + Vercel https://cyclesguard.vercel.app  
 - [x] Smoke-Test  
-- [x] Login / Logout  
-- [ ] Auth Site URL final prüfen (Founder)  
-- [ ] Termin üben + anfragen  
+- [ ] Founder: Auth Site URL prüfen + Termin anfragen (`docs/pitch/TERMIN-BEREIT.md`, `OUTREACH.md`)
 
-**Exit:** Live-Demo im Gespräch mit Eintracht möglich.
+**Exit:** Nachricht an Eintracht gesendet / Termin vereinbart.
 
 ### Stage B — Soft-Pilot
 
@@ -85,8 +82,8 @@ Pitch-Ready ✅  →  Pre-Meeting  →  Soft-Pilot  →  Club Product  →  Mult
 
 | Prio | Action |
 |------|--------|
-| **Jetzt** | Pre-Meeting: Auth-URLs, Demo üben, Kontakt in Docs, Termin |
-| **Nach Ja** | Soft-Pilot P1 (AVV, echte Roster, Push) |
+| **Jetzt** | `docs/pitch/OUTREACH.md` — Termin anfragen |  
+| **Nach Ja** | Soft-Pilot P1 (AVV, echte Roster, Push) |  
 | **Nicht jetzt** | Billing, GPS-ML, Multi-Tenant |
 
 ---

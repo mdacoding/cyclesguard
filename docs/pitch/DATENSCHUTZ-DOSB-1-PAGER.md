@@ -1,7 +1,8 @@
 # CyclesGuard — Datenschutz & DOSB (1-Pager)
 
 **Stand:** Pitch-Version · Eintracht Frankfurt Pilot-Gespräch  
-**Kontakt:** [Ihr Name / E-Mail eintragen]
+**Kontakt:** CyclesGuard · Demo https://cyclesguard.vercel.app · github.com/mdacoding/cyclesguard  
+*(Persönliche Absender-E-Mail in der Outreach-Nachricht angeben — siehe OUTREACH.md)*
 
 ---
 

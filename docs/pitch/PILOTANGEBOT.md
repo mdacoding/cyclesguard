@@ -1,7 +1,8 @@
 # Pilotangebot — CyclesGuard × Eintracht Frankfurt Frauen
 
 **An:** Athletik / Sportmedizin / Performance — Eintracht Frankfurt Frauen  
-**Von:** [Ihr Name / Firma]  
+**Von:** CyclesGuard · https://cyclesguard.vercel.app  
+*(Absender-Name/E-Mail in der Outreach-Nachricht — siehe OUTREACH.md)*  
 **Laufzeit:** 8–12 Wochen · **kostenlos**
 
 ---
@@ -88,4 +89,4 @@ Beispiele nach 8 Wochen:
 
 ---
 
-*Anpassbar vor Versand — Platzhalter ersetzen.*
+*Vor Versand: persönliche Kontaktdaten in der E-Mail/LinkedIn-Nachricht eintragen (OUTREACH.md).*
