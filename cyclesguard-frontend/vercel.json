@@ -8,7 +8,7 @@
     },
     {
       "path": "/api/cron/session-summaries",
-      "schedule": "15 * * * *"
+      "schedule": "0 5 * * *"
     },
     {
       "path": "/api/cron/retention",
