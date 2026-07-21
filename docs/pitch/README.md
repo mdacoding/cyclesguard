@@ -4,7 +4,7 @@
 
 | Datei | Zweck |
 |-------|--------|
-| [DEPLOY.md](./DEPLOY.md) | Vercel aus GitHub (P0.1 Rest) |
+| [VERCEL-CHECKLIST.md](./VERCEL-CHECKLIST.md) | Import prüfen / Env / Root Directory |
 | [SUPABASE-SETUP.md](./SUPABASE-SETUP.md) | Cloud-DB Status |
 | [DEMO-ACCOUNTS.md](./DEMO-ACCOUNTS.md) | Login + Ampel |
 | [DEMO-SCRIPT.md](./DEMO-SCRIPT.md) | 5-Min-Ablauf |

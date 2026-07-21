@@ -24,7 +24,8 @@ const cspHeader = `
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  // Docker/local image needs standalone; Vercel uses its own Next runtime
+  ...(process.env.VERCEL ? {} : { output: 'standalone' }),
   experimental: { typedRoutes: true },
   async headers() {
     return [
