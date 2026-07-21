@@ -1,41 +1,45 @@
-# CyclesGuard — Implementation Plan: Eintracht Frankfurt Pitch & Pilot
+# CyclesGuard — Implementation Plan: Pitch → Pilot → SaaS
 
 **Stand:** 21.07.2026  
-**Ziel jetzt:** Eintracht Frankfurt Frauen **überzeugen**, kostenlos zu testen und das Produkt gemeinsam zu schärfen.  
-**Nicht-Ziel jetzt:** Marktfertigkeit, Billing, Multi-Club-Scale, Wearable-ML.
+**Repo:** https://github.com/mdacoding/cyclesguard (`main` synced)  
+**Ziel jetzt:** Eintracht Frankfurt Frauen **überzeugen** (Live-Demo + Pilotangebot).  
+**Produktziel:** Privacy-first Club-SaaS (siehe [`docs/product/SAAS-PLAN.md`](../product/SAAS-PLAN.md)).
 
 ```
-Fertig (A+B)  →  Pitch-Ready (P0)  →  Soft-Pilot  →  Markt (später, mit Club)
-     ✅              ← hier            nach Ja         bedingt Kooperation
+Code A+B ✅ → Cloud DB ✅ → GitHub ✅ → Vercel ⬜ → Pitch → Soft-Pilot → Paid SaaS
+                                              ↑
+                                         nächster CTO-Schritt
 ```
 
 ---
 
-## Aktueller Stand (Fakten)
+## CTO-Lagebild (Fakten)
 
 | Bereich | Status |
 |---------|--------|
-| Product A+B (UX, Ampel, Offline, Admin) | ✅ Code + Build grün |
-| Supabase Cloud `jgtqtuwtrulwehrtcydf` | ✅ Projekt live (Frankfurt) |
-| Migrationen `001`–`008` | ✅ `supabase db push` durch |
-| Demo-Seed Eintracht Frauen | ✅ `npm run seed:eintracht` OK |
-| Pitch-Materialien (Skript, Datenschutz, Angebot) | ✅ `docs/pitch/` |
-| UUID-Fix (`gen_random_uuid`) | ✅ Cloud-kompatibel |
-| Migration `009` (consent unique) | ✅ applied |
-| **Vercel-Deploy (öffentliche Demo-URL)** | ⬜ **nächster Blocker** |
-| Push live / Domains / AVV | ⬜ P1 nach Pitch-Interesse |
+| Product A+B (UX, Ampel, Offline, Admin) | ✅ Build + Tests grün |
+| Supabase Cloud `jgtqtuwtrulwehrtcydf` | ✅ Frankfurt |
+| Migrationen `001`–`009` | ✅ applied |
+| Demo-Seed Eintracht Frauen | ✅ |
+| Pitch-Materialien | ✅ `docs/pitch/` |
+| GitHub `mdacoding/cyclesguard` | ✅ `origin/main` |
+| CI Workflow | ✅ `.github/workflows/ci.yml` |
+| **Vercel Production URL** | ⬜ **einziger P0-Blocker** |
+| Soft-Pilot Ops (Domain, Push live, AVV) | ⬜ P1 nach Club-Interesse |
 
-**Demo-Accounts** (Passwort `CyclesGuard2026!`): siehe `docs/pitch/DEMO-ACCOUNTS.md`.
+**Demo-Accounts:** `docs/pitch/DEMO-ACCOUNTS.md` (Passwort `CyclesGuard2026!`).
 
 ---
 
 ## Zeitliche Antwort
 
-| Meilenstein | Dauer | Was der Club sieht |
-|-------------|-------|-------------------|
-| **Pitch-Ready** | **noch 1–3 Tage** (nur Vercel + Probe) | Live-URL, Ampel-Demo, Datenschutz, Pilotangebot |
-| **Soft-Pilot startklar** | **+1–2 Wochen** nach Pitch-Zusage | Prod-Härte, Onboarding, Feedback-Rhythmus |
-| **Marktfertig** | **später (2–4 Monate)** | Nur wenn Kooperation läuft |
+| Meilenstein | Dauer ab heute | Deliverable |
+|-------------|----------------|-------------|
+| **Pitch-Ready** | **0–2 Tage** | Vercel-URL + Smoke + Demo-Probe |
+| **Pitch-Termin** | nach URL | Eintracht Termin anfragen |
+| **Soft-Pilot startklar** | +1–2 Wochen nach Ja | Prod-Härte, Feedback-Rhythmus |
+| **Paid Club Product** | nach erfolgreichem Pilot | Vertrag, Support, optional GPS |
+| **Multi-Tenant SaaS** | 2–4 Monate nach Product-Market | Billing, Self-serve |
 
 ---
 
@@ -43,61 +47,69 @@ Fertig (A+B)  →  Pitch-Ready (P0)  →  Soft-Pilot  →  Markt (später, mit C
 
 | # | Arbeit | Status |
 |---|--------|--------|
-| P0.1 | Gehostete Demo (Vercel + Supabase Cloud) | 🟡 Supabase ✅ · **Vercel offen** |
-| P0.2 | Migrationen auf Demo-DB | ✅ `001`–`008` applied |
-| P0.3 | Seed „Eintracht Frauen“ | ✅ |
-| P0.4 | Pitch-Skript + 5-Min-Demo-Flow | ✅ `DEMO-SCRIPT.md` |
-| P0.5 | 1-Pager Datenschutz / DOSB | ✅ |
-| P0.6 | Pilotangebot schriftlich | ✅ |
+| P0.1 | Gehostete Demo (Vercel + Supabase) | 🟡 DB ✅ · **Vercel offen** |
+| P0.2 | Migrationen Demo-DB | ✅ `001`–`009` |
+| P0.3 | Seed Eintracht Frauen | ✅ |
+| P0.4 | Pitch-Skript | ✅ |
+| P0.5 | Datenschutz 1-Pager | ✅ |
+| P0.6 | Pilotangebot | ✅ |
+| P0.7 | Code auf GitHub | ✅ |
 
 ### Sofort nächste Schritte (P0 abschließen)
 
-1. Vercel: Root `cyclesguard-frontend`, Env aus `.env.local` + `NEXT_PUBLIC_DEMO_MODE=true`  
-2. Supabase Auth: Site URL + Redirect `https://<vercel>/auth/callback`  
-3. `npm run pitch:smoke -- https://<vercel-url>` + Demo einmal durchspielen  
-4. Termin bei Eintracht anfragen  
+1. **Vercel** → New Project → Import `mdacoding/cyclesguard`  
+   - Root Directory: **`cyclesguard-frontend`**  
+   - Region: Frankfurt (`fra1` in `vercel.json`)  
+2. Env aus lokalem `.env.local` übernehmen + `NEXT_PUBLIC_DEMO_MODE=true`  
+   - **Pflicht:** `SUPABASE_SERVICE_ROLE_KEY` (sonst leere Trainer-Ampel)  
+3. Supabase Auth: Site URL + Redirect `https://<vercel>/auth/callback`  
+4. `NEXT_PUBLIC_SITE_URL` auf Vercel-URL setzen, Redeploy  
+5. `npm run pitch:smoke -- https://<vercel-url>` + Demo einmal üben  
+6. **Security:** Secret Key rotieren, falls er in Chats/Logs stand  
+7. Termin bei Eintracht anfragen  
 
-Details: `docs/pitch/DEPLOY.md`, `docs/pitch/SUPABASE-SETUP.md`.
+Anleitung: [`docs/pitch/DEPLOY.md`](../pitch/DEPLOY.md).
 
 ---
 
-## P1 — Should vor Soft-Pilot (nach Interesse)
+## P1 — Soft-Pilot (nach Interesse)
 
 | # | Arbeit | Status |
 |---|--------|--------|
-| P1.1 | Prod-Env härten (Secrets, Domain, Monitoring) | ⬜ |
-| P1.2 | Trainer-Onboarding 1 Seite | ✅ `TRAINER-ONBOARDING.md` |
-| P1.3 | Push-Reminder live (VAPID + Cron auf Vercel) | ⬜ (Keys lokal vorhanden) |
-| P1.4 | Feedback-Kanal / wöchentlicher Call | ✅ `PILOT-FEEDBACK.md` |
+| P1.1 | Prod härten (Secrets rotiert, Domain, Monitoring) | ⬜ |
+| P1.2 | Trainer-Onboarding | ✅ Doc |
+| P1.3 | Push-Reminder live | ⬜ Keys lokal da |
+| P1.4 | Feedback-Rhythmus | ✅ Doc |
+| P1.5 | AVV / TOM mit Vereins-DSB | ⬜ |
 
 ---
 
-## P2 — Später mit Club
+## P2 — Club Product / SaaS Scale (bewusst später)
 
-GPS/Wearable, Durable Queue Ops, Billing, Multi-Club-SaaS, ML/ACL, Bulk-CSV, perfektes Offline-Sync.
+Billing, Multi-Club, GPS live ops, ML, Bulk-CSV, perfektes Offline-Sync — siehe [`SAAS-PLAN.md`](../product/SAAS-PLAN.md) Stages C–D.
 
 ---
 
-## Was Eintracht überzeugt (Pitch-Kern)
+## Pitch-Kern (unverändert)
 
-1. Privacy-by-Design / DOSB — nur Ampel, keine Rohdaten  
-2. Sofort nutzbar — Log &lt;30s, Trainer steuert Belastung  
-3. Kabine — PWA/Offline-Story  
+1. Privacy-by-Design / DOSB — nur Ampel  
+2. Log &lt;30s, Trainer steuert Belastung  
+3. Kabine — PWA/Offline  
 4. 8–12 Wochen kostenlos + Feedback  
-5. Klare Grenzen — GPS optional im Pilot  
+5. GPS optional, ehrlich kommuniziert  
 
 ---
 
 ## CTO Guardrails
 
-1. Trainer sieht nur `FIT / MODIFIED_TRAINING / REST / NO_DATA` (+ Load)  
-2. Keine Phasen-/Symptom-/Notiz-Leaks im Trainer-UI  
-3. Pilot = freiwillig, Opt-out/Löschung jederzeit  
-4. Keine Heilversprechen („Trainingssteuerung“, keine Diagnose)  
+1. Trainer: nur `FIT / MODIFIED_TRAINING / REST / NO_DATA` (+ Load)  
+2. Keine Phasen-/Symptom-/Notiz-Leaks  
+3. Pilot freiwillig, Export/Löschung jederzeit  
+4. Keine Heilversprechen  
 
 ---
 
 ## Nächster Ausführungsschritt
 
-**P0.1 fertigstellen:** Vercel-Deploy + Smoke-Test → dann Pitch-Termin.  
-Alles andere für den Termin ist vorbereitet.
+**Heute/morgen:** Vercel aus GitHub deployen → Smoke → Demo üben → Termin.  
+Produktstrategie und Stage-Gates: [`docs/product/SAAS-PLAN.md`](../product/SAAS-PLAN.md).
