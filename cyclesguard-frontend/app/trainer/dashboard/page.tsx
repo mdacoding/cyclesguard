@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Loader2, RefreshCw, ShieldCheck, Users, UserPlus } from 'lucide-react';
+import LogoutButton from '@/components/LogoutButton';
 import {
   getStatusColor,
   getStatusLabel,
@@ -137,14 +138,17 @@ export default function TrainerDashboardPage() {
               Aggregierte Einsatzbereitschaft für die heutige Trainingseinheit.
             </p>
           </div>
-          <button
-            onClick={() => loadTeamStatus(selectedTeamId || undefined)}
-            disabled={isLoading}
-            className="self-start flex items-center gap-2 min-h-12 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-sm disabled:opacity-50"
-          >
-            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-            Aktualisieren
-          </button>
+          <div className="flex flex-wrap gap-2 self-start">
+            <button
+              onClick={() => loadTeamStatus(selectedTeamId || undefined)}
+              disabled={isLoading}
+              className="flex items-center gap-2 min-h-12 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-sm disabled:opacity-50"
+            >
+              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+              Aktualisieren
+            </button>
+            <LogoutButton />
+          </div>
         </header>
 
         {teams.length === 0 && !isLoading && (

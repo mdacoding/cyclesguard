@@ -10,9 +10,11 @@ import {
   ShieldCheck,
   Bell,
   BellOff,
+  LogOut,
 } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import LogoutButton from '@/components/LogoutButton';
 import {
   isPushSupported,
   subscribeToPushNotifications,
@@ -96,17 +98,32 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen py-10 px-4 animate-fadeIn">
       <div className="max-w-3xl mx-auto space-y-8">
-        <header className="flex items-center gap-4 mb-10">
-          <Link
-            href="/player/dashboard"
-            className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-cream" />
-          </Link>
-          <h1 className="font-display text-3xl font-semibold text-gradient">
-            Einstellungen
-          </h1>
+        <header className="flex items-center justify-between gap-4 mb-10">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/player/dashboard"
+              className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-cream" />
+            </Link>
+            <h1 className="font-display text-3xl font-semibold text-gradient">
+              Einstellungen
+            </h1>
+          </div>
+          <LogoutButton />
         </header>
+
+        <section className="glass-card p-6 md:p-8 animate-slideUp">
+          <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/10">
+            <LogOut className="w-5 h-5 text-rose-gold" />
+            <h2 className="text-xl font-semibold">Sitzung</h2>
+          </div>
+          <p className="text-sm text-cream/60 mb-4">
+            Melde dich ab, um dich mit einem anderen Account anzumelden (z.&nbsp;B. Trainer /
+            Spielerin in der Demo).
+          </p>
+          <LogoutButton className="bg-rose-gold/10 border-rose-gold/30 text-rose-gold hover:bg-rose-gold/20" />
+        </section>
 
         <section className="glass-card p-6 md:p-8 animate-slideUp">
           <div className="flex items-center gap-3 mb-6 pb-6 border-b border-white/10">

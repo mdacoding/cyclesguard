@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Loader2, ShieldCheck, Users, Link2, UserMinus } from 'lucide-react';
+import LogoutButton from '@/components/LogoutButton';
 
 interface TeamRow {
   id: string;
@@ -147,15 +148,18 @@ export default function AdminTeamsPage() {
   return (
     <div className="min-h-screen py-10 px-4 animate-fadeIn">
       <div className="max-w-5xl mx-auto space-y-8">
-        <header>
-          <div className="flex items-center gap-2 text-sage text-sm mb-2">
-            <ShieldCheck className="w-4 h-4" />
-            <span>Club Admin · Keine Gesundheitsdaten einsehbar</span>
+        <header className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-sage text-sm mb-2">
+              <ShieldCheck className="w-4 h-4" />
+              <span>Club Admin · Keine Gesundheitsdaten einsehbar</span>
+            </div>
+            <h1 className="font-display text-4xl font-semibold text-gradient mb-2">Teams</h1>
+            <p className="text-cream/70">
+              Roster & Logging-Quote — ohne Phasen, Symptome oder medizinische Rohdaten.
+            </p>
           </div>
-          <h1 className="font-display text-4xl font-semibold text-gradient mb-2">Teams</h1>
-          <p className="text-cream/70">
-            Roster & Logging-Quote — ohne Phasen, Symptome oder medizinische Rohdaten.
-          </p>
+          <LogoutButton className="self-start" />
         </header>
 
         <section className="glass-card p-5 space-y-3">

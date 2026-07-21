@@ -7,6 +7,7 @@ import { isSameBerlinDay } from '@/lib/date';
 import { redirect } from 'next/navigation';
 import { CalendarDays, Settings, Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import LogoutButton from '@/components/LogoutButton';
 
 export default async function DashboardPage() {
   const supabase = await createServerSupabaseClient();
@@ -62,6 +63,7 @@ export default async function DashboardPage() {
             >
               <Settings className="w-5 h-5 text-cream/80" />
             </Link>
+            <LogoutButton compact />
           </div>
         </header>
 
