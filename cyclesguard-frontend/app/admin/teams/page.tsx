@@ -127,6 +127,17 @@ export default function AdminTeamsPage() {
   const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([]);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
 
+  const [opsStatus, setOpsStatus] = useState<{
+    push: { ready: boolean; vapidPublicConfigured: boolean; vapidPrivateConfigured: boolean };
+    cronSecretConfigured: boolean;
+    sentryConfigured: boolean;
+    demoMode: boolean;
+    siteUrl: string | null;
+    ingestionConfigured: boolean;
+    checklist: { softPilotReady: boolean; observabilityReady: boolean };
+  } | null>(null);
+  const [opsLoading, setOpsLoading] = useState(false);
+
   const load = async () => {
     setLoading(true);
     setError(null);
@@ -199,6 +210,17 @@ export default function AdminTeamsPage() {
     }
   };
 
+  const loadOpsStatus = async () => {
+    setOpsLoading(true);
+    try {
+      const res = await fetch('/api/admin/ops-status');
+      if (!res.ok) return;
+      setOpsStatus(await res.json());
+    } finally {
+      setOpsLoading(false);
+    }
+  };
+
   useEffect(() => {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -213,7 +235,10 @@ export default function AdminTeamsPage() {
   }, [selectedTeamId, teams]);
 
   useEffect(() => {
-    if (tab === 'compliance') void loadFeedback();
+    if (tab === 'compliance') {
+      void loadFeedback();
+      void loadOpsStatus();
+    }
   }, [tab]);
 
   const createTeam = async () => {
@@ -866,6 +891,61 @@ export default function AdminTeamsPage() {
 
         {tab === 'compliance' && (
           <div className="space-y-6">
+            <section className="glass-card p-5 space-y-3">
+              <h2 className="font-semibold inline-flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-sage" />
+                Ops-Status (L2/L3 Trust)
+              </h2>
+              <p className="text-xs text-cream/50">
+                Nur Booleans — keine Secret-Werte. Checkliste: docs/pitch/GO-LIVE.md
+              </p>
+              {opsLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin text-rose-gold" />
+              ) : opsStatus ? (
+                <ul className="space-y-2 text-sm">
+                  <li className="flex justify-between gap-3">
+                    <span>Push ready (VAPID + Cron)</span>
+                    <span className={opsStatus.push.ready ? 'text-sage' : 'text-rose-gold'}>
+                      {opsStatus.push.ready ? 'OK' : 'offen'}
+                    </span>
+                  </li>
+                  <li className="flex justify-between gap-3">
+                    <span>Sentry konfiguriert</span>
+                    <span className={opsStatus.sentryConfigured ? 'text-sage' : 'text-rose-gold'}>
+                      {opsStatus.sentryConfigured ? 'OK' : 'offen'}
+                    </span>
+                  </li>
+                  <li className="flex justify-between gap-3">
+                    <span>Demo-Mode</span>
+                    <span className={!opsStatus.demoMode ? 'text-sage' : 'text-rose-gold'}>
+                      {opsStatus.demoMode ? 'AN (Pitch)' : 'AUS (Pilot)'}
+                    </span>
+                  </li>
+                  <li className="flex justify-between gap-3">
+                    <span>Soft-Pilot Env ready</span>
+                    <span
+                      className={
+                        opsStatus.checklist.softPilotReady ? 'text-sage' : 'text-rose-gold'
+                      }
+                    >
+                      {opsStatus.checklist.softPilotReady ? 'OK' : 'offen'}
+                    </span>
+                  </li>
+                  <li className="flex justify-between gap-3">
+                    <span>GPS Ingestion</span>
+                    <span className="text-cream/60">
+                      {opsStatus.ingestionConfigured ? 'konfiguriert' : 'optional / aus'}
+                    </span>
+                  </li>
+                  {opsStatus.siteUrl && (
+                    <li className="text-xs text-cream/40 pt-1">Site: {opsStatus.siteUrl}</li>
+                  )}
+                </ul>
+              ) : (
+                <p className="text-sm text-cream/50">Ops-Status nicht ladbar.</p>
+              )}
+            </section>
+
             <section className="glass-card p-5 space-y-3">
               <h2 className="font-semibold inline-flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-sage" />

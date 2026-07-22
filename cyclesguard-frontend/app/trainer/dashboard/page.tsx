@@ -9,6 +9,7 @@ import {
   UserPlus,
   Printer,
   HelpCircle,
+  Share2,
 } from 'lucide-react';
 import LogoutButton from '@/components/LogoutButton';
 import PilotFeedbackCapture from '@/components/PilotFeedbackCapture';
@@ -50,6 +51,7 @@ export default function TrainerDashboardPage() {
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterMode>('all');
   const [showOnboardHint, setShowOnboardHint] = useState(false);
+  const [shareMsg, setShareMsg] = useState<string | null>(null);
 
   const loadTeams = async () => {
     const response = await fetch('/api/trainer/teams');
@@ -160,6 +162,37 @@ export default function TrainerDashboardPage() {
     }
   }, [team, filter]);
 
+  const shareRoster = async () => {
+    const teamName = teams.find((t) => t.id === selectedTeamId)?.name ?? 'Team';
+    const lines = filtered.map(
+      (m) =>
+        `${m.name}: ${getStatusLabel(m.status)} · ${getLoadLabel(m.loadFlag)}${
+          m.loggedToday ? '' : ' · heute fehlend'
+        }`
+    );
+    const text = [
+      `CyclesGuard · ${teamName}`,
+      `${new Date().toLocaleString('de-DE')}`,
+      `Geloggt heute: ${loggedTodayCount}/${team.length}`,
+      '',
+      ...lines,
+      '',
+      'Nur Ampel-Signale — keine Gesundheitsrohdaten.',
+    ].join('\n');
+
+    setShareMsg(null);
+    try {
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        await navigator.share({ title: `CyclesGuard · ${teamName}`, text });
+        return;
+      }
+      await navigator.clipboard.writeText(text);
+      setShareMsg('Roster in Zwischenablage kopiert.');
+    } catch {
+      setShareMsg('Teilen abgebrochen oder nicht verfügbar.');
+    }
+  };
+
   return (
     <div className="min-h-screen py-10 px-4 animate-fadeIn">
       <div className="max-w-5xl mx-auto space-y-8 print:max-w-none">
@@ -193,6 +226,15 @@ export default function TrainerDashboardPage() {
               Drucken
             </button>
             <button
+              type="button"
+              onClick={() => void shareRoster()}
+              disabled={team.length === 0}
+              className="flex items-center gap-2 min-h-12 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-sm disabled:opacity-40"
+            >
+              <Share2 className="w-4 h-4" />
+              Teilen
+            </button>
+            <button
               onClick={() => loadTeamStatus(selectedTeamId || undefined)}
               disabled={isLoading}
               className="flex items-center gap-2 min-h-12 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-sm disabled:opacity-50"
@@ -210,6 +252,10 @@ export default function TrainerDashboardPage() {
             {new Date().toLocaleString('de-DE')} · Nur Ampel-Signale, keine Gesundheitsrohdaten
           </p>
         </div>
+
+        {shareMsg && (
+          <p className="text-sm text-cream/60 print:hidden">{shareMsg}</p>
+        )}
 
         {showOnboardHint && (
           <section className="glass-card p-4 border border-rose-gold/25 bg-rose-gold/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 print:hidden">

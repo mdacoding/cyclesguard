@@ -68,7 +68,7 @@ test.describe('player flow', () => {
     await page.getByLabel(/E-Mail/i).fill(playerEmail!);
     await page.getByLabel(/Passwort/i).fill(playerPassword!);
     await page.getByRole('button', { name: /Anmelden/i }).click();
-    await expect(page).toHaveURL(/\/player\/(dashboard|onboarding)/);
+    await expect(page).toHaveURL(/\/player\/(dashboard|onboarding|welcome)/);
   });
 });
 

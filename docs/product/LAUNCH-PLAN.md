@@ -28,17 +28,17 @@ Zeitlich ehrlich: Soft-Pilot 8–12 Wochen + GTM laufen **parallel** zum Feature
 
 | Bereich | Features | Status |
 |---------|----------|--------|
-| Spielerin | Log, Consent, Historie/Insights, Push, Offline/PWA, Export/Löschen | ✅ stark |
-| Trainer | Ampel + Empfehlung, Invite, Team-Switch, Refresh | ✅ Basis |
+| Spielerin | Log, Consent, Welcome-Tips, Historie/Insights, Push, Offline/PWA, Export/Löschen | ✅ |
+| Trainer | Ampel + Empfehlung, Invite, Team-Switch, Refresh | ✅ |
 | Trainer Kabine | Heute-geloggt, Status-Counts, Print/Share, Filter | ✅ |
 | Admin | Teams, CSV, Saison, Contract-Felder, Audit, Archive | ✅ |
 | Admin Proof | Pilot-KPI (Adherence %) | ✅ |
-| Admin UX | Tabs Roster / Saison / Compliance | ✅ |
+| Admin UX | Tabs Roster / Saison / Compliance + Ops-Status | ✅ |
 | Paid Path | Fee / Ref / Signed-by + Club Billing/Legal manuell | ✅ |
 | Feedback | In-App Score + Admin-View | ✅ |
-| Trust | RLS, AVV-Pfad, Retention, Support, GO-LIVE | ✅ Docs / ⬜ Sign-off |
+| Trust | RLS, AVV, Retention, Support, GO-LIVE, Ops-Status API | ✅ Code · ⬜ Founder Sign-off |
 | Sales | Landing, Pitch-Pack, Seed-Demo | ✅ |
-| Onboarding | Spielerin Consent + Tips ✅ · Trainer in-app ✅ · Admin Seed ✅ |
+| Onboarding | Consent → Welcome · Trainer in-app · Admin Seed | ✅ |
 
 ### Should-have (Launch-Qualität ↑)
 
@@ -47,8 +47,8 @@ Zeitlich ehrlich: Soft-Pilot 8–12 Wochen + GTM laufen **parallel** zum Feature
 | Trainer First-Run in-app | Weniger Founder-Call | ✅ |
 | Admin UX Tabs | Weniger Power-User-Chaos | ✅ |
 | Feedback-Capture im Pilot | Produkt lernt | ✅ |
-| Push live verifiziert + Custom Domain | Production-Feel | ⬜ Founder/Tech (`PUSH-LIVE` + `GO-LIVE`) |
-| Optional 1 GPS-Provider | Nur wenn Club fordert | ⬜ on demand |
+| Push/Sentry Env sichtbar in Admin | Production-Feel | ✅ Ops-Status · ⬜ DSN/Keys in Vercel |
+| Optional 1 GPS-Provider | Nur wenn Club fordert | ⬜ on demand (`INGESTION-DEPLOY`) |
 
 ### Post-Launch (bewusst später)
 
@@ -60,10 +60,12 @@ Stripe Self-Serve, Multi-Club-Marketplace, White-Label, EN i18n, SSO, GPS fläch
 
 | Phase | Fokus | Outcome |
 |-------|--------|---------|
-| **L1** | Trainer Kabine-UX, Pilot-KPIs, Trainer-Onboarding | ✅ Demo wirkt produktionsreif |
-| **L2** | Admin Tabs, Feedback-Loop, Trust-Checklisten, Player First-Run Tips | ✅ Code · ⬜ Push/Sentry Sign-off |
-| **L3** | Manual Paid UX + Club Billing, Demo-off Docs, optional 1 GPS | ✅ Paid UX · ⬜ Founder Closing |
+| **L1** | Trainer Kabine-UX, Pilot-KPIs, Trainer-Onboarding | ✅ **fertig** |
+| **L2** | Admin Tabs, Feedback, Player Welcome, Ops-Status, Trust-Docs | ✅ **fertig** (Founder: DSN/Push Keys) |
+| **L3** | Manual Paid UX, Club Billing, Demo-off Docs | ✅ **fertig** (Founder: Closing) |
 | **L4 (nach Proof)** | Stripe, Multi-Tenant, Scale | Echtes Plattform-SaaS |
+
+**Engineering L1–L3 = done.** Offene Punkte sind Founder/Ops (Sentry DSN, VAPID live, AVV, Outreach).
 
 GTM (Outreach, AVV, Termin) läuft **durchgängig parallel** — das ist der Sales-kritische Pfad.
 
@@ -86,4 +88,5 @@ GTM (Outreach, AVV, Termin) läuft **durchgängig parallel** — das ist der Sal
 | [`FINISH-PLAN.md`](./FINISH-PLAN.md) | Realistische M1/M2/M3-Zeitachsen |
 | [`FINISH-PLAN-4W.md`](./FINISH-PLAN-4W.md) | M1 Tech-Checklist |
 | [`GO-LIVE.md`](../pitch/GO-LIVE.md) | Trust / Push / Pre-Paid Sign-off |
+| [`DEMO-MODE-OFF.md`](../pitch/DEMO-MODE-OFF.md) | Secrets vor echten Usern |
 | [`SUPPORT.md`](../pitch/SUPPORT.md) | Support |

@@ -6,7 +6,7 @@
 **Live:** https://cyclesguard.vercel.app  
 
 ```
-Pitch ✅ → Soft-Pilot parallel ←→ Launch-Feature-Build (L1→L3) → Paid Club → Multi-Tenant (L4)
+Pitch ✅ → Soft-Pilot parallel ←→ L1–L3 Engineering ✅ → Paid Club → Multi-Tenant (L4)
 ```
 
 ---
@@ -18,23 +18,22 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 
 | Spur | Tempo |
 |------|--------|
-| **Product Engineering** | L1→L3 aus `LAUNCH-PLAN.md` (L1–L3 Code weitgehend ✅) |
+| **Product Engineering** | **L1–L3 ✅** — weiter nur Pilot-Polish / Club-Demand |
 | **Founder GTM** | Outreach, AVV, Termin — kritischer Sales-Pfad |
 | **Nach erstem Paid Proof** | L4 Stripe / Multi-Tenant |
 
 ---
 
-## Aktueller Build-Fokus
+## L1–L3 Status
 
-| Item | Status |
-|------|--------|
+| Phase | Status |
+|-------|--------|
 | L1 Kabine / KPIs / Trainer-Onboarding | ✅ |
-| L2 Admin Tabs + Feedback + GO-LIVE Docs | ✅ Code |
-| L3 Manual Paid Season UX + Club Billing | ✅ Code |
-| Player First-Run Tips (post-consent) | ✅ |
-| Trust Sign-off (Sentry, RLS JWT, Push live) | ⬜ Founder/Tech — [`GO-LIVE.md`](../pitch/GO-LIVE.md) |
+| L2 Tabs / Feedback / Welcome / Ops-Status | ✅ |
+| L3 Paid UX / Club Billing / Demo-off Docs | ✅ |
+| Founder Sign-off (Sentry, Push Keys, AVV) | ⬜ [`GO-LIVE.md`](../pitch/GO-LIVE.md) |
 
-**Als Nächstes:** Founder GTM + Trust-Sign-off (`GO-LIVE`, `DEMO-MODE-OFF`). Engineering nur noch Pilot-Polish / Club-Anforderungen (GPS on demand).
+**Als Nächstes:** Founder GTM + GO-LIVE abhaken. Kein weiteres Feature-Bloat ohne Club-Nachfrage.
 
 ---
 
@@ -42,8 +41,8 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 
 1. [`OUTREACH.md`](../pitch/OUTREACH.md)  
 2. [`TERMIN-BEREIT.md`](../pitch/TERMIN-BEREIT.md)  
-3. [`GO-LIVE.md`](../pitch/GO-LIVE.md) — Sentry, Push, RLS, AVV  
-4. AVV/DSB (`docs/privacy/AVV-TOM-DRAFT.md`)
+3. [`GO-LIVE.md`](../pitch/GO-LIVE.md) — Sentry, Push, RLS JWT, AVV  
+4. [`DEMO-MODE-OFF.md`](../pitch/DEMO-MODE-OFF.md)
 
 ---
 
