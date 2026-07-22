@@ -73,9 +73,11 @@ Erwartung: deny / leer.
 
 | Check | Datum | OK |
 |-------|-------|----|
-| SQL DENY cycle_logs | | |
-| team-status maskiert | | |
+| SQL DENY cycle_logs | 2026-07-22 | Policies live: `trainer_deny_all` + own-row CRUD (MCP verify) |
+| team-status maskiert | | E2E credentialed + unit contract |
 | Cross-Team 403 | | |
 | Export/Delete | | |
+| `pilot_feedback` own-only | 2026-07-22 | insert/select own (MCP verify) |
 
+**Hinweis Tech (22.07.2026):** Live-DB Policies für `cycle_logs`, `player_consents`, `pilot_feedback`, `admin_audit_log` per `pg_policies` bestätigt. Trainer-JWT Dry-Run (Abschnitt B) weiterhin manuell im SQL Editor.
 Unterschrift Founder / Tech: _______________

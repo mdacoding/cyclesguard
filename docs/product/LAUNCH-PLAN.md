@@ -34,11 +34,11 @@ Zeitlich ehrlich: Soft-Pilot 8–12 Wochen + GTM laufen **parallel** zum Feature
 | Admin | Teams, CSV, Saison, Contract-Felder, Audit, Archive | ✅ |
 | Admin Proof | Pilot-KPI (Adherence %) | ✅ |
 | Admin UX | Tabs Roster / Saison / Compliance | ✅ |
-| Paid Path | Fee / Ref / Signed-by manuell (ohne Stripe) | ✅ |
+| Paid Path | Fee / Ref / Signed-by + Club Billing/Legal manuell | ✅ |
 | Feedback | In-App Score + Admin-View | ✅ |
 | Trust | RLS, AVV-Pfad, Retention, Support, GO-LIVE | ✅ Docs / ⬜ Sign-off |
 | Sales | Landing, Pitch-Pack, Seed-Demo | ✅ |
-| Onboarding | Spielerin Consent ✅ · Trainer in-app ✅ · Admin Seed ✅ |
+| Onboarding | Spielerin Consent + Tips ✅ · Trainer in-app ✅ · Admin Seed ✅ |
 
 ### Should-have (Launch-Qualität ↑)
 
@@ -61,8 +61,8 @@ Stripe Self-Serve, Multi-Club-Marketplace, White-Label, EN i18n, SSO, GPS fläch
 | Phase | Fokus | Outcome |
 |-------|--------|---------|
 | **L1** | Trainer Kabine-UX, Pilot-KPIs, Trainer-Onboarding | ✅ Demo wirkt produktionsreif |
-| **L2** | Admin Tabs, Feedback-Loop, Trust-Checklisten | ✅ Code · ⬜ Push/Sentry Sign-off |
-| **L3** | Manual Paid UX, Secrets/Demo-off, optional 1 GPS | ✅ Paid UX · ⬜ Founder Closing |
+| **L2** | Admin Tabs, Feedback-Loop, Trust-Checklisten, Player First-Run Tips | ✅ Code · ⬜ Push/Sentry Sign-off |
+| **L3** | Manual Paid UX + Club Billing, Demo-off Docs, optional 1 GPS | ✅ Paid UX · ⬜ Founder Closing |
 | **L4 (nach Proof)** | Stripe, Multi-Tenant, Scale | Echtes Plattform-SaaS |
 
 GTM (Outreach, AVV, Termin) läuft **durchgängig parallel** — das ist der Sales-kritische Pfad.

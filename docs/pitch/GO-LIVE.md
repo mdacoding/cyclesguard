@@ -13,7 +13,7 @@ Nicht Code — **Checkliste**. Jede Zeile braucht Owner + Datum.
 | # | Check | Owner | Done |
 |---|-------|-------|------|
 | A1 | Sentry DSN in Vercel Production (`SENTRY-LIVE.md`) | Founder | ☐ |
-| A2 | RLS-Pen-Test / `RLS-PENETRATION-CHECKLIST.md` manuell signiert | Tech | ☐ |
+| A2 | RLS-Pen-Test / `RLS-PENETRATION-CHECKLIST.md` manuell signiert | Tech | ◐ Policies MCP-verifiziert; JWT Dry-Run offen |
 | A3 | `rls-trainer-expected.sql` gegen Live-DB gelaufen (Trainer sieht keine Rohdaten) | Tech | ☐ |
 | A4 | AVV-Entwurf an DSB / Club (`AVV-TOM-DRAFT.md`) | Founder | ☐ |
 | A5 | Support-Pfad kommuniziert (`SUPPORT.md`) | Founder | ☐ |
@@ -51,7 +51,7 @@ Vollständige Steps: [`PUSH-LIVE.md`](./PUSH-LIVE.md)
 |---|-------|-------|------|
 | D1 | Saison angelegt + commercial Status `quoted` → `signed` / `active_paid` | Founder | ☐ |
 | D2 | Fee / Contract-Ref / Signed-by in Admin Saison-Tab gesetzt | Founder | ☐ |
-| D3 | Club: Secrets + Demo-Mode off Checklist aus Runbook | Founder | ☐ |
+| D3 | Club: Secrets + Demo-Mode off Checklist ([`DEMO-MODE-OFF.md`](./DEMO-MODE-OFF.md)) | Founder | ☐ |
 | D4 | GPS nur wenn Club fordert (`INGESTION-DEPLOY.md`) | Tech | ☐ |
 
 ---

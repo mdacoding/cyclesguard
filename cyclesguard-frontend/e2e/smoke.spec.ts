@@ -82,5 +82,11 @@ test.describe('admin flow', () => {
     await page.getByRole('button', { name: /Anmelden/i }).click();
     await expect(page).toHaveURL(/\/admin\/teams/);
     await expect(page.getByText(/Keine Gesundheitsdaten/i)).toBeVisible();
+    await expect(page.getByRole('navigation', { name: /Admin Bereiche/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^Roster$/i })).toBeVisible();
+    await page.getByRole('button', { name: /^Saison$/i }).click();
+    await expect(page.getByText(/Vertragspfad/i)).toBeVisible();
+    await page.getByRole('button', { name: /^Compliance$/i }).click();
+    await expect(page.getByText(/Pilot-Feedback/i)).toBeVisible();
   });
 });

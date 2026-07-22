@@ -41,6 +41,8 @@ interface MemberRow {
 interface ClubRow {
   id: string;
   name: string;
+  legalName?: string | null;
+  billingEmail?: string | null;
 }
 
 interface SeasonRow {
@@ -116,6 +118,10 @@ export default function AdminTeamsPage() {
   const [editNotes, setEditNotes] = useState('');
   const [contractBusy, setContractBusy] = useState(false);
 
+  const [clubLegalName, setClubLegalName] = useState('');
+  const [clubBillingEmail, setClubBillingEmail] = useState('');
+  const [clubBusy, setClubBusy] = useState(false);
+
   const [feedbackAvg, setFeedbackAvg] = useState<number | null>(null);
   const [feedbackCount, setFeedbackCount] = useState(0);
   const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([]);
@@ -140,8 +146,17 @@ export default function AdminTeamsPage() {
       if (clubsRes.ok) {
         const clubData = (await clubsRes.json()) as ClubRow[];
         setClubs(clubData);
+        const pickId =
+          seasonClubId && clubData.some((c) => c.id === seasonClubId)
+            ? seasonClubId
+            : clubData[0]?.id ?? '';
         if (clubData.length > 0 && !seasonClubId) setSeasonClubId(clubData[0].id);
         if (clubData.length > 0 && !platformClubId) setPlatformClubId(clubData[0].id);
+        const active = clubData.find((c) => c.id === pickId) ?? clubData[0];
+        if (active) {
+          setClubLegalName(active.legalName ?? '');
+          setClubBillingEmail(active.billingEmail ?? '');
+        }
       }
       if (seasonsRes.ok) setSeasons((await seasonsRes.json()) as SeasonRow[]);
       setShowPlatform(clubsRes.ok);
@@ -467,6 +482,31 @@ export default function AdminTeamsPage() {
     }
   };
 
+  const saveClubBilling = async () => {
+    if (!seasonClubId) return;
+    setClubBusy(true);
+    setMsg(null);
+    try {
+      const res = await fetch('/api/admin/clubs', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: seasonClubId,
+          legalName: clubLegalName.trim() || null,
+          billingEmail: clubBillingEmail.trim() || null,
+        }),
+      });
+      if (!res.ok) {
+        setMsg('Club-Billing speichern fehlgeschlagen.');
+        return;
+      }
+      setMsg('Verein Billing/Legal aktualisiert.');
+      await load();
+    } finally {
+      setClubBusy(false);
+    }
+  };
+
   const assignClubAdmin = async () => {
     if (!platformEmail || !platformClubId) return;
     setMsg(null);
@@ -591,7 +631,13 @@ export default function AdminTeamsPage() {
                 <div className="grid md:grid-cols-5 gap-3">
                   <select
                     value={seasonClubId}
-                    onChange={(e) => setSeasonClubId(e.target.value)}
+                    onChange={(e) => {
+                      const id = e.target.value;
+                      setSeasonClubId(id);
+                      const c = clubs.find((x) => x.id === id);
+                      setClubLegalName(c?.legalName ?? '');
+                      setClubBillingEmail(c?.billingEmail ?? '');
+                    }}
                     className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
                   >
                     {clubs.map((c) => (
@@ -628,6 +674,39 @@ export default function AdminTeamsPage() {
                 </div>
               )}
             </section>
+
+            {clubs.length > 0 && (
+              <section className="glass-card p-5 space-y-3">
+                <h2 className="font-semibold">Verein · Billing / Legal</h2>
+                <p className="text-xs text-cream/50">
+                  Für manuellen Paid-Vertrag — keine Spieler-PII, nur Vereinskontakt.
+                </p>
+                <div className="grid md:grid-cols-3 gap-3">
+                  <input
+                    value={clubLegalName}
+                    onChange={(e) => setClubLegalName(e.target.value)}
+                    placeholder="Legal Name"
+                    className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+                  />
+                  <input
+                    type="email"
+                    value={clubBillingEmail}
+                    onChange={(e) => setClubBillingEmail(e.target.value)}
+                    placeholder="billing@verein.de"
+                    className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void saveClubBilling()}
+                    disabled={clubBusy || !seasonClubId}
+                    className="rounded-xl bg-white/10 hover:bg-white/15 px-4 py-3 min-h-12 disabled:opacity-40 inline-flex items-center justify-center gap-2"
+                  >
+                    {clubBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                    Speichern
+                  </button>
+                </div>
+              </section>
+            )}
 
             <section className="glass-card p-5 space-y-4">
               <div>

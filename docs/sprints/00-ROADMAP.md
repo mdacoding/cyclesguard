@@ -30,10 +30,11 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 |------|--------|
 | L1 Kabine / KPIs / Trainer-Onboarding | ✅ |
 | L2 Admin Tabs + Feedback + GO-LIVE Docs | ✅ Code |
-| L3 Manual Paid Season UX | ✅ Code |
-| Trust Sign-off (Sentry, RLS, Push live) | ⬜ Founder/Tech — [`GO-LIVE.md`](../pitch/GO-LIVE.md) |
+| L3 Manual Paid Season UX + Club Billing | ✅ Code |
+| Player First-Run Tips (post-consent) | ✅ |
+| Trust Sign-off (Sentry, RLS JWT, Push live) | ⬜ Founder/Tech — [`GO-LIVE.md`](../pitch/GO-LIVE.md) |
 
-**Als Nächstes (nicht Code-first):** Founder GTM + Trust-Sign-off. Engineering nur noch Pilot-Polish / Club-Anforderungen (GPS on demand).
+**Als Nächstes:** Founder GTM + Trust-Sign-off (`GO-LIVE`, `DEMO-MODE-OFF`). Engineering nur noch Pilot-Polish / Club-Anforderungen (GPS on demand).
 
 ---
 
