@@ -21,13 +21,21 @@ describe('trainer-facing copy never leaks medical terms', () => {
 
 describe('team-status response contract (shape)', () => {
   it('documents allowed keys for trainer clients', () => {
-    const allowed = new Set(['playerId', 'name', 'status', 'loadFlag', 'recommendation']);
+    const allowed = new Set([
+      'playerId',
+      'name',
+      'status',
+      'loadFlag',
+      'recommendation',
+      'loggedToday',
+    ]);
     const sample = {
       playerId: 'x',
       name: 'Anna',
       status: 'FIT',
       loadFlag: 'UNKNOWN',
       recommendation: 'Volle Belastung möglich',
+      loggedToday: true,
     };
     for (const key of Object.keys(sample)) {
       assert.ok(allowed.has(key), `unexpected key ${key}`);

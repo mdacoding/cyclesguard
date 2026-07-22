@@ -386,6 +386,14 @@ export default function AdminTeamsPage() {
   const statusLabel = (s: SeasonRow['status']) =>
     s === 'active' ? 'Aktiv' : s === 'completed' ? 'Abgeschlossen' : 'Geplant';
 
+  const totalPlayers = teams.reduce((sum, t) => sum + t.playerCount, 0);
+  const loggedPlayers = teams.reduce((sum, t) => sum + t.loggedLast7Days, 0);
+  const adherencePct =
+    totalPlayers === 0 ? 0 : Math.round((loggedPlayers / totalPlayers) * 100);
+  const teamsBelowTarget = teams.filter(
+    (t) => t.playerCount > 0 && t.loggedLast7Days / t.playerCount < 0.7
+  ).length;
+
   return (
     <div className="min-h-screen py-10 px-4 animate-fadeIn">
       <div className="max-w-5xl mx-auto space-y-8">
@@ -411,6 +419,35 @@ export default function AdminTeamsPage() {
             <LogoutButton />
           </div>
         </header>
+
+        {!loading && teams.length > 0 && (
+          <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="glass-card p-4">
+              <p className="text-xs text-cream/50 mb-1">Spielerinnen</p>
+              <p className="text-2xl font-semibold">{totalPlayers}</p>
+            </div>
+            <div className="glass-card p-4">
+              <p className="text-xs text-cream/50 mb-1">Logging 7d</p>
+              <p className="text-2xl font-semibold">
+                {loggedPlayers}/{totalPlayers}
+              </p>
+            </div>
+            <div className="glass-card p-4">
+              <p className="text-xs text-cream/50 mb-1">Adherence 7d</p>
+              <p
+                className={`text-2xl font-semibold ${
+                  adherencePct >= 70 ? 'text-sage' : 'text-rose-gold'
+                }`}
+              >
+                {adherencePct}%
+              </p>
+            </div>
+            <div className="glass-card p-4">
+              <p className="text-xs text-cream/50 mb-1">Teams &lt;70%</p>
+              <p className="text-2xl font-semibold">{teamsBelowTarget}</p>
+            </div>
+          </section>
+        )}
 
         <section className="glass-card p-5 space-y-3">
           <h2 className="font-semibold inline-flex items-center gap-2">

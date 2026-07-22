@@ -69,14 +69,14 @@ Nur nach Beweis aus M2:
 
 ---
 
-## Was wir parallel maximieren (ohne Fake-Timeline)
+**Engineering parallel maximieren**
 
 | Spur | Tempo |
 |------|--------|
-| **Engineering** | Weiter M1 härten + Pilot-Feedback einbauen — **kein** Stage-D vor M2 |
-| **Founder GTM** | Outreach jetzt — das ist der kritische Pfad zu M2 |
+| **Launch Features** | [`LAUNCH-PLAN.md`](./LAUNCH-PLAN.md) L1→L3 — Kabine, KPIs, Onboarding, Trust |
+| **Founder GTM** | Outreach jetzt — kritischer Pfad zu bezahltem Club |
 | **Legal** | AVV-Entwurf → DSB früh anbinden |
-| **Nicht jetzt** | Stripe, Self-Serve, GPS-ML |
+| **Nach Paid Proof** | Stripe / Multi-Tenant (L4) |
 
 ---
 
@@ -88,4 +88,6 @@ Nur nach Beweis aus M2:
 | Wann erster bezahlter Club? | **Monate**, abhängig von Club + Pilot |
 | Wann Multi-Tenant SaaS? | **Nach** bezahltem Proof, typisch ½–1 Jahr |
 
-Alte Datei `FINISH-PLAN-4W.md` bleibt als **M1-Detail** erhalten; dieser Plan ist die **führende Timeline**.
+Alte Datei `FINISH-PLAN-4W.md` = M1-Checklist.  
+**Nordstern Features:** [`LAUNCH-PLAN.md`](./LAUNCH-PLAN.md).  
+Dieser Plan bleibt die **ehrliche Zeitachse** (Monate bis Paid/Multi-Tenant).

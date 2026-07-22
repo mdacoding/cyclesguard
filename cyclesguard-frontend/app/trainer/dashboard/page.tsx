@@ -1,7 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Loader2, RefreshCw, ShieldCheck, Users, UserPlus } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  Loader2,
+  RefreshCw,
+  ShieldCheck,
+  Users,
+  UserPlus,
+  Printer,
+  HelpCircle,
+} from 'lucide-react';
 import LogoutButton from '@/components/LogoutButton';
 import {
   getStatusColor,
@@ -17,6 +25,7 @@ interface TeamMember {
   status: ReadinessStatus;
   loadFlag: LoadFlag;
   recommendation: string;
+  loggedToday: boolean;
 }
 
 interface TeamOption {
@@ -24,6 +33,8 @@ interface TeamOption {
   name: string;
   clubName: string | null;
 }
+
+type FilterMode = 'all' | 'needs_attention' | 'missing_today' | 'logged_today';
 
 export default function TrainerDashboardPage() {
   const [team, setTeam] = useState<TeamMember[]>([]);
@@ -36,6 +47,8 @@ export default function TrainerDashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [inviteMsg, setInviteMsg] = useState<string | null>(null);
   const [inviteError, setInviteError] = useState<string | null>(null);
+  const [filter, setFilter] = useState<FilterMode>('all');
+  const [showOnboardHint, setShowOnboardHint] = useState(false);
 
   const loadTeams = async () => {
     const response = await fetch('/api/trainer/teams');
@@ -64,6 +77,11 @@ export default function TrainerDashboardPage() {
 
   useEffect(() => {
     void loadTeams();
+    try {
+      setShowOnboardHint(localStorage.getItem('cg_trainer_onboarded') !== '1');
+    } catch {
+      setShowOnboardHint(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -123,10 +141,28 @@ export default function TrainerDashboardPage() {
     {} as Record<ReadinessStatus, number>
   );
 
+  const loggedTodayCount = team.filter((m) => m.loggedToday).length;
+  const missingTodayCount = team.length - loggedTodayCount;
+
+  const filtered = useMemo(() => {
+    switch (filter) {
+      case 'needs_attention':
+        return team.filter(
+          (m) => m.status === 'REST' || m.status === 'MODIFIED_TRAINING' || m.status === 'NO_DATA'
+        );
+      case 'missing_today':
+        return team.filter((m) => !m.loggedToday);
+      case 'logged_today':
+        return team.filter((m) => m.loggedToday);
+      default:
+        return team;
+    }
+  }, [team, filter]);
+
   return (
     <div className="min-h-screen py-10 px-4 animate-fadeIn">
-      <div className="max-w-5xl mx-auto space-y-8">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="max-w-5xl mx-auto space-y-8 print:max-w-none">
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
           <div>
             <div className="flex items-center gap-2 text-sage text-sm mb-2">
               <ShieldCheck className="w-4 h-4" />
@@ -136,10 +172,25 @@ export default function TrainerDashboardPage() {
               Team Readiness
             </h1>
             <p className="text-cream/70">
-              Aggregierte Einsatzbereitschaft für die heutige Trainingseinheit.
+              Kabine: Ampel für die heutige Einheit — aktualisieren, filtern, drucken.
             </p>
           </div>
           <div className="flex flex-wrap gap-2 self-start">
+            <a
+              href="/trainer/onboarding"
+              className="flex items-center gap-2 min-h-12 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-sm"
+            >
+              <HelpCircle className="w-4 h-4" />
+              Hilfe
+            </a>
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="flex items-center gap-2 min-h-12 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-sm"
+            >
+              <Printer className="w-4 h-4" />
+              Drucken
+            </button>
             <button
               onClick={() => loadTeamStatus(selectedTeamId || undefined)}
               disabled={isLoading}
@@ -152,14 +203,47 @@ export default function TrainerDashboardPage() {
           </div>
         </header>
 
+        <div className="hidden print:block mb-6">
+          <h1 className="font-display text-2xl font-semibold">CyclesGuard · Team Readiness</h1>
+          <p className="text-sm opacity-70">
+            {new Date().toLocaleString('de-DE')} · Nur Ampel-Signale, keine Gesundheitsrohdaten
+          </p>
+        </div>
+
+        {showOnboardHint && (
+          <section className="glass-card p-4 border border-rose-gold/25 bg-rose-gold/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 print:hidden">
+            <p className="text-sm text-cream/80">
+              Neu hier? Kurzes Onboarding erklärt Ampel, Invite und Privacy.
+            </p>
+            <div className="flex gap-2">
+              <a
+                href="/trainer/onboarding"
+                className="min-h-11 px-4 inline-flex items-center rounded-lg bg-rose-gold text-navy text-sm font-medium"
+              >
+                Starten
+              </a>
+              <button
+                type="button"
+                className="min-h-11 px-3 rounded-lg bg-white/10 text-sm"
+                onClick={() => {
+                  localStorage.setItem('cg_trainer_onboarded', '1');
+                  setShowOnboardHint(false);
+                }}
+              >
+                Später
+              </button>
+            </div>
+          </section>
+        )}
+
         {teams.length === 0 && !isLoading && (
-          <div className="glass-card p-6 border border-ovulation/30 bg-ovulation/10 text-sm text-cream/80">
+          <div className="glass-card p-6 border border-ovulation/30 bg-ovulation/10 text-sm text-cream/80 print:hidden">
             Kein Team zugeordnet. Bitte Club-Admin um Zuweisung bitten.
           </div>
         )}
 
         {teams.length > 0 && (
-          <div className="glass-card p-4 flex flex-col md:flex-row gap-3 md:items-center">
+          <div className="glass-card p-4 flex flex-col md:flex-row gap-3 md:items-center print:hidden">
             <label className="text-sm text-cream/60" htmlFor="team-select">
               Team
             </label>
@@ -179,7 +263,7 @@ export default function TrainerDashboardPage() {
           </div>
         )}
 
-        <section className="glass-card p-5 space-y-4">
+        <section className="glass-card p-5 space-y-4 print:hidden">
           <div className="flex items-center gap-2 text-sm font-medium">
             <UserPlus className="w-4 h-4 text-rose-gold" />
             Spielerin einladen
@@ -209,24 +293,65 @@ export default function TrainerDashboardPage() {
           </div>
           {inviteMsg && <p className="text-sm text-sage">{inviteMsg}</p>}
           {inviteError && <p className="text-sm text-menstrual">{inviteError}</p>}
-          <p className="text-xs text-cream/40">
-            Eingeladene Spielerinnen erscheinen nach Annahme im Roster mit Status „Keine Daten“,
-            bis sie den ersten Eintrag machen.
-          </p>
         </section>
 
         {!isLoading && team.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {(['FIT', 'MODIFIED_TRAINING', 'REST', 'NO_DATA'] as ReadinessStatus[]).map((status) => {
-              const colors = getStatusColor(status);
-              return (
-                <div key={status} className={`glass-card p-4 ${colors.bg} border ${colors.border}`}>
-                  <p className="text-xs text-cream/50 mb-1">{getStatusLabel(status)}</p>
-                  <p className="text-2xl font-semibold">{statusCounts[status] ?? 0}</p>
-                </div>
-              );
-            })}
-          </div>
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="glass-card p-4 border border-white/10">
+                <p className="text-xs text-cream/50 mb-1">Heute geloggt</p>
+                <p className="text-2xl font-semibold">
+                  {loggedTodayCount}/{team.length}
+                </p>
+              </div>
+              <div className="glass-card p-4 border border-white/10">
+                <p className="text-xs text-cream/50 mb-1">Noch offen heute</p>
+                <p className="text-2xl font-semibold">{missingTodayCount}</p>
+              </div>
+              <div className="glass-card p-4 border border-white/10 col-span-2 md:col-span-1">
+                <p className="text-xs text-cream/50 mb-1">Regeneration / Angepasst</p>
+                <p className="text-2xl font-semibold">
+                  {(statusCounts.REST ?? 0) + (statusCounts.MODIFIED_TRAINING ?? 0)}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {(['FIT', 'MODIFIED_TRAINING', 'REST', 'NO_DATA'] as ReadinessStatus[]).map((status) => {
+                const colors = getStatusColor(status);
+                return (
+                  <div key={status} className={`glass-card p-4 ${colors.bg} border ${colors.border}`}>
+                    <p className="text-xs text-cream/50 mb-1">{getStatusLabel(status)}</p>
+                    <p className="text-2xl font-semibold">{statusCounts[status] ?? 0}</p>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="flex flex-wrap gap-2 print:hidden">
+              {(
+                [
+                  ['all', 'Alle'],
+                  ['needs_attention', 'Handlungsbedarf'],
+                  ['missing_today', 'Heute fehlend'],
+                  ['logged_today', 'Heute da'],
+                ] as const
+              ).map(([key, label]) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setFilter(key)}
+                  className={`min-h-11 px-4 rounded-full text-sm border transition-colors ${
+                    filter === key
+                      ? 'bg-rose-gold text-navy border-rose-gold'
+                      : 'bg-white/5 border-white/10 text-cream/70 hover:bg-white/10'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </>
         )}
 
         {error && (
@@ -240,14 +365,18 @@ export default function TrainerDashboardPage() {
             <Loader2 className="w-8 h-8 animate-spin text-rose-gold" />
           </div>
         ) : team.length === 0 ? (
-          <div className="glass-card p-12 text-center">
+          <div className="glass-card p-12 text-center print:hidden">
             <Users className="w-10 h-10 text-cream/30 mx-auto mb-4" />
             <p className="text-cream/60 mb-2">Keine Spielerinnen im Team.</p>
             <p className="text-sm text-cream/40">Lade Spielerinnen oben per E-Mail ein.</p>
           </div>
+        ) : filtered.length === 0 ? (
+          <div className="glass-card p-8 text-center text-cream/60 text-sm">
+            Keine Einträge für diesen Filter.
+          </div>
         ) : (
           <div className="space-y-3">
-            {team.map((member) => {
+            {filtered.map((member) => {
               const colors = getStatusColor(member.status);
               return (
                 <article
@@ -263,6 +392,7 @@ export default function TrainerDashboardPage() {
                       <h2 className="font-semibold text-lg truncate">{member.name}</h2>
                       <p className="text-sm text-cream/60">
                         {getStatusLabel(member.status)} · {getLoadLabel(member.loadFlag)}
+                        {member.loggedToday ? ' · heute geloggt' : ' · heute fehlend'}
                       </p>
                     </div>
                   </div>

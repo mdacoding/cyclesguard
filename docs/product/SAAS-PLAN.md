@@ -5,10 +5,10 @@
 **Live:** https://cyclesguard.vercel.app  
 **North star:** Privacy-first readiness platform for women’s football clubs in DACH → later EU.
 
-**Führende Timeline (realistisch):** [`FINISH-PLAN.md`](./FINISH-PLAN.md)  
-**M1 Engineering-Detail:** [`FINISH-PLAN-4W.md`](./FINISH-PLAN-4W.md) · Day-to-day: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.md).
+**Nordstern Launch (max. Erfolg):** [`LAUNCH-PLAN.md`](./LAUNCH-PLAN.md)  
+**Zeitachsen:** [`FINISH-PLAN.md`](./FINISH-PLAN.md) · Day-to-day: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.md).
 
-> **Hinweis:** 4–6 Wochen gelten nur für **M1 tech-ready**. Soft-Pilot (8–12 Wochen) + erster bezahlter Club + Multi-Tenant brauchen **Monate**, nicht Wochen.
+> Produktstrategie: **bestmögliches Launch-Feature-Set** (Trainer-Kabine, Pilot-KPIs, Onboarding, Trust). Soft-Pilot/GTM parallel. Stripe/Self-Serve nach Proof — außer Closing verlangt es früher.
 
 ---
 
@@ -82,10 +82,10 @@ Pitch-Ready ✅ → Soft-Pilot Tech ✅ → M1 tech-ready → Soft-Pilot (8–12
 
 | Prio | Action |
 |------|--------|
-| **Kritischer Pfad** | Outreach / Termin (`OUTREACH.md`) — bestimmt M2 |
-| **Engineering** | M1 Rest (Sentry/RLS Dry-Run), dann nur Pilot-Feedback |
+| **Launch Engineering** | [`LAUNCH-PLAN.md`](./LAUNCH-PLAN.md) L1→L3 — Kabine, KPIs, Onboarding, Trust |
+| **Kritischer Sales-Pfad** | Outreach / Termin (`OUTREACH.md`) |
 | **Legal** | AVV/DSB früh |
-| **Nicht jetzt** | Stripe, Self-Serve Multi-Tenant (M3) |
+| **Nach Proof (L4)** | Stripe, Self-Serve Multi-Tenant |
 
 ---
 
@@ -96,7 +96,7 @@ Pitch-Ready ✅ → Soft-Pilot Tech ✅ → M1 tech-ready → Soft-Pilot (8–12
 | Pitch before market-ready | Clubs kaufen Story + Demo + Angebot |
 | Soft-Pilot free | Vertrauen vor Revenue |
 | Ampel-only trainer | Compliance non-negotiable |
-| Scope Freeze in Woche 4 | Nur für **M1**-Polish, nicht Gesamt-SaaS |
-| Soft-Pilot 8–12 Wochen | Vertrauen; deshalb M2 = Monate |
-| Manual season contract before Stripe | Paid-ready ohne Payment-Komplexität |
+| Launch vor Minimal-Exit | Maximaler Demo-/Pilot-Erfolg schlägt Feature-Freeze |
+| Soft-Pilot 8–12 Wochen | Vertrauen; Sales-Kalender unabhängig von Eng-Sprints |
+| Manual season contract before Stripe | Closing ohne Payment-Komplexität |
 | Hobby Vercel crons daily | Plan-Limit; genug für Pitch/Pilot |

@@ -10,6 +10,7 @@ import {
   LoadFlag,
 } from '@/lib/trainer-status';
 import { CyclePhase } from '@/lib/types';
+import { isSameBerlinDay } from '@/lib/date';
 
 export interface TeamStatusEntry {
   playerId: string;
@@ -17,6 +18,8 @@ export interface TeamStatusEntry {
   status: ReadinessStatus;
   loadFlag: LoadFlag;
   recommendation: string;
+  /** Coach-safe: logged on Berlin calendar day — no phase/symptoms. */
+  loggedToday: boolean;
 }
 
 export async function GET(request: Request) {
@@ -135,6 +138,7 @@ export async function GET(request: Request) {
       status: insight.status,
       loadFlag: insight.loadFlag,
       recommendation: insight.recommendation,
+      loggedToday: log ? isSameBerlinDay(log.logged_at) : false,
     });
   }
 
