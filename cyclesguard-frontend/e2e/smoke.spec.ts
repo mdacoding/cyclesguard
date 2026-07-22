@@ -13,6 +13,8 @@ const trainerEmail = process.env.E2E_TRAINER_EMAIL;
 const trainerPassword = process.env.E2E_TRAINER_PASSWORD;
 const playerEmail = process.env.E2E_PLAYER_EMAIL;
 const playerPassword = process.env.E2E_PLAYER_PASSWORD;
+const adminEmail = process.env.E2E_ADMIN_EMAIL;
+const adminPassword = process.env.E2E_ADMIN_PASSWORD;
 
 test.describe('public smoke', () => {
   test('login page loads', async ({ page }) => {
@@ -66,5 +68,18 @@ test.describe('player flow', () => {
     await page.getByLabel(/Passwort/i).fill(playerPassword!);
     await page.getByRole('button', { name: /Anmelden/i }).click();
     await expect(page).toHaveURL(/\/player\/(dashboard|onboarding)/);
+  });
+});
+
+test.describe('admin flow', () => {
+  test.skip(!adminEmail || !adminPassword, 'E2E_ADMIN_* not set');
+
+  test('club admin reaches teams without health raw fields in UI chrome', async ({ page }) => {
+    await page.goto('/login');
+    await page.getByLabel(/E-Mail/i).fill(adminEmail!);
+    await page.getByLabel(/Passwort/i).fill(adminPassword!);
+    await page.getByRole('button', { name: /Anmelden/i }).click();
+    await expect(page).toHaveURL(/\/admin\/teams/);
+    await expect(page.getByText(/Keine Gesundheitsdaten/i)).toBeVisible();
   });
 });

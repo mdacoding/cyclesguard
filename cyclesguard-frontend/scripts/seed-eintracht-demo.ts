@@ -6,7 +6,7 @@
  * Usage: npm run seed:eintracht
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -14,8 +14,10 @@ const DEMO_PASSWORD = 'CyclesGuard2026!';
 const TEAM_NAME = 'Eintracht Frankfurt Frauen';
 const CLUB_NAME = 'Eintracht Frankfurt';
 const TEAM_SLUG = 'eintracht-frankfurt-frauen';
+const SEASON_NAME = 'Saison 26/27 (Demo)';
 
 type CyclePhase = 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
+type AppRole = 'player' | 'trainer' | 'club_admin' | 'platform_admin';
 
 interface DemoPlayer {
   email: string;
@@ -25,11 +27,24 @@ interface DemoPlayer {
   symptoms?: string[];
   /** Hours ago for logged_at; omit = no log (NO_DATA) */
   logHoursAgo?: number;
+  /** Optional GPS session summary for trainer load + player card */
+  session?: {
+    hoursAgo: number;
+    durationMinutes: number;
+    distanceKm: number;
+    avgHeartRate: number;
+    loadScore: number;
+  };
 }
 
 const DEMO_TRAINER = {
   email: 'trainer@eintracht-demo.de',
   fullName: 'Lisa Athletik (Demo)',
+};
+
+const DEMO_CLUB_ADMIN = {
+  email: 'admin@eintracht-demo.de',
+  fullName: 'Club Admin (Demo)',
 };
 
 const DEMO_PLAYERS: DemoPlayer[] = [
@@ -39,6 +54,13 @@ const DEMO_PLAYERS: DemoPlayer[] = [
     phase: 'follicular',
     energyLevel: 5,
     logHoursAgo: 2,
+    session: {
+      hoursAgo: 5,
+      durationMinutes: 78,
+      distanceKm: 8.4,
+      avgHeartRate: 148,
+      loadScore: 320,
+    },
   },
   {
     email: 'sara.klein@eintracht-demo.de',
@@ -46,6 +68,13 @@ const DEMO_PLAYERS: DemoPlayer[] = [
     phase: 'ovulation',
     energyLevel: 4,
     logHoursAgo: 4,
+    session: {
+      hoursAgo: 6,
+      durationMinutes: 90,
+      distanceKm: 9.1,
+      avgHeartRate: 162,
+      loadScore: 480,
+    },
   },
   {
     email: 'lisa.weber@eintracht-demo.de',
@@ -72,14 +101,13 @@ const DEMO_PLAYERS: DemoPlayer[] = [
   {
     email: 'lea.hoffmann@eintracht-demo.de',
     fullName: 'Lea Hoffmann',
-    // no log → NO_DATA in trainer ampel
   },
   {
     email: 'julia.richter@eintracht-demo.de',
     fullName: 'Julia Richter',
     phase: 'follicular',
     energyLevel: 4,
-    logHoursAgo: 72, // stale → NO_DATA (>48h)
+    logHoursAgo: 72,
   },
 ];
 
@@ -125,7 +153,7 @@ async function upsertUser(
     email: string;
     password: string;
     fullName: string;
-    role: 'player' | 'trainer';
+    role: AppRole;
     hasConsented?: boolean;
   }
 ): Promise<string> {
@@ -182,6 +210,14 @@ async function main(): Promise<void> {
   });
   console.log(`  Trainer: ${DEMO_TRAINER.email}`);
 
+  const clubAdminId = await upsertUser(admin, {
+    email: DEMO_CLUB_ADMIN.email,
+    password: DEMO_PASSWORD,
+    fullName: DEMO_CLUB_ADMIN.fullName,
+    role: 'club_admin',
+  });
+  console.log(`  Club Admin: ${DEMO_CLUB_ADMIN.email}`);
+
   const playerIds: { id: string; spec: DemoPlayer }[] = [];
   for (const spec of DEMO_PLAYERS) {
     const id = await upsertUser(admin, {
@@ -214,6 +250,45 @@ async function main(): Promise<void> {
     clubId = club.id;
   }
 
+  const { error: clubMemberError } = await admin.from('club_members').upsert(
+    {
+      club_id: clubId,
+      user_id: clubAdminId,
+      role: 'club_admin',
+    },
+    { onConflict: 'club_id,user_id' }
+  );
+  if (clubMemberError) throw clubMemberError;
+
+  const { data: existingSeason } = await admin
+    .from('seasons')
+    .select('id')
+    .eq('club_id', clubId)
+    .eq('name', SEASON_NAME)
+    .maybeSingle();
+
+  if (existingSeason?.id) {
+    await admin
+      .from('seasons')
+      .update({ status: 'active', starts_on: '2026-07-01', ends_on: '2027-06-30' })
+      .eq('id', existingSeason.id);
+  } else {
+    await admin
+      .from('seasons')
+      .update({ status: 'completed' })
+      .eq('club_id', clubId)
+      .eq('status', 'active');
+    const { error: seasonError } = await admin.from('seasons').insert({
+      club_id: clubId,
+      name: SEASON_NAME,
+      starts_on: '2026-07-01',
+      ends_on: '2027-06-30',
+      status: 'active',
+    });
+    if (seasonError) throw seasonError;
+  }
+  console.log(`  Season: ${SEASON_NAME}`);
+
   let teamId: string;
   const { data: existingTeam } = await admin
     .from('teams')
@@ -223,11 +298,14 @@ async function main(): Promise<void> {
 
   if (existingTeam?.id) {
     teamId = existingTeam.id;
-    await admin.from('teams').update({ club_id: clubId, club_name: CLUB_NAME }).eq('id', teamId);
+    await admin
+      .from('teams')
+      .update({ club_id: clubId, club_name: CLUB_NAME, status: 'active' })
+      .eq('id', teamId);
   } else {
     const { data: team, error: teamError } = await admin
       .from('teams')
-      .insert({ name: TEAM_NAME, club_name: CLUB_NAME, club_id: clubId })
+      .insert({ name: TEAM_NAME, club_name: CLUB_NAME, club_id: clubId, status: 'active' })
       .select('id')
       .single();
     if (teamError) throw teamError;
@@ -259,7 +337,6 @@ async function main(): Promise<void> {
       { onConflict: 'user_id' }
     );
     if (error) {
-      // Fallback before migration 009 (no unique on user_id yet)
       const { data: existing } = await admin
         .from('player_consents')
         .select('id')
@@ -279,27 +356,45 @@ async function main(): Promise<void> {
 
   for (const { id, spec } of playerIds) {
     await admin.from('cycle_logs').delete().eq('user_id', id);
+    await admin.from('session_summaries').delete().eq('user_id', id);
 
-    if (spec.logHoursAgo === undefined || !spec.phase) continue;
+    if (spec.logHoursAgo !== undefined && spec.phase) {
+      const loggedAt = new Date(Date.now() - spec.logHoursAgo * 60 * 60 * 1000).toISOString();
+      const { error } = await admin.from('cycle_logs').insert({
+        user_id: id,
+        phase: spec.phase,
+        energy_level: spec.energyLevel ?? null,
+        symptoms: spec.symptoms ?? [],
+        notes: null,
+        logged_at: loggedAt,
+      });
+      if (error) throw error;
+    }
 
-    const loggedAt = new Date(Date.now() - spec.logHoursAgo * 60 * 60 * 1000).toISOString();
-    const { error } = await admin.from('cycle_logs').insert({
-      user_id: id,
-      phase: spec.phase,
-      energy_level: spec.energyLevel ?? null,
-      symptoms: spec.symptoms ?? [],
-      notes: null,
-      logged_at: loggedAt,
-    });
-    if (error) throw error;
+    if (spec.session) {
+      const startedAt = new Date(Date.now() - spec.session.hoursAgo * 60 * 60 * 1000).toISOString();
+      const { error } = await admin.from('session_summaries').insert({
+        user_id: id,
+        session_id: randomUUID(),
+        started_at: startedAt,
+        duration_minutes: spec.session.durationMinutes,
+        distance_km: spec.session.distanceKm,
+        avg_heart_rate: spec.session.avgHeartRate,
+        max_speed_kmh: null,
+        load_score: spec.session.loadScore,
+      });
+      if (error) throw error;
+    }
   }
 
   console.log('\n✓ Demo seed complete.\n');
   console.log('Team:', TEAM_NAME);
   console.log('Slug (reference):', TEAM_SLUG);
   console.log('Password (all accounts):', DEMO_PASSWORD);
-  console.log('\nTrainer login:', DEMO_TRAINER.email);
+  console.log('\nClub Admin login:', DEMO_CLUB_ADMIN.email, '→ /admin/teams');
+  console.log('Trainer login:', DEMO_TRAINER.email);
   console.log('Sample player:', DEMO_PLAYERS[2].email, '(REST — live demo log)');
+  console.log('Load demo:', DEMO_PLAYERS[1].email, '(HIGH load session)');
   console.log('\nExpected trainer ampel:');
   console.log('  FIT: Anna, Mia');
   console.log('  MODIFIED: Sara, Nina');

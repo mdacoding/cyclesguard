@@ -65,9 +65,10 @@ Siehe **[`docs/pitch/PILOT-RUNBOOK.md`](../pitch/PILOT-RUNBOOK.md)**.
 | Ingestion deploy + GPS live | Wenn Club Tracker nennt — siehe [`INGESTION-DEPLOY.md`](../pitch/INGESTION-DEPLOY.md) |
 | Custom Domain | Nach Pilot-Zusage |
 | Billing / Multi-Tenant | Nach 2. Club / Saisonvertrag |
-| Sentry DSN in Vercel setzen | Empfohlen vor Echtdaten |
-| E2E mit Credentials in CI Secrets | Optional |
+| Sentry DSN in Vercel setzen | Empfohlen vor Echtdaten — siehe [`SENTRY-LIVE.md`](../pitch/SENTRY-LIVE.md) |
+| E2E mit Credentials in CI Secrets | Job `e2e-credentialed` bereit — Secrets setzen |
 | Migration `010` in Supabase anwenden | ✅ Live via MCP (`seasons_and_push_last_seen`) |
+| Migration `011` team status | Anwenden + Seed |
 
 ---
 
@@ -80,6 +81,18 @@ Siehe **[`docs/pitch/PILOT-RUNBOOK.md`](../pitch/PILOT-RUNBOOK.md)**.
 | C Retention `last_seen_at` + Cron-Auth Tests | ✅ Code |
 | D Landing Marketing | ✅ Code |
 | E GPS Lookback 26h + Deploy-Doc + Session-Card | ✅ Code |
+
+## Club Product Ops (1→7)
+
+| # | Item | Status |
+|---|------|--------|
+| 1 | Seed club_admin + Saison | ✅ Code |
+| 2 | Bulk CSV Invite | ✅ Code |
+| 3 | Team rename / archive | ✅ Code |
+| 4 | Platform Club-Admin zuweisen | ✅ Code |
+| 5 | Credentialed E2E CI job | ✅ Code |
+| 6 | Sentry Live Doc | ✅ Docs |
+| 7 | Demo session_summaries Seed | ✅ Code |
 
 ---
 

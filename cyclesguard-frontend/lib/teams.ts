@@ -4,13 +4,20 @@ export async function getTrainerTeamIds(userId: string): Promise<string[]> {
   const admin = createAdminClient();
   const { data, error } = await admin
     .from('team_members')
-    .select('team_id')
+    .select('team_id, teams!inner(status)')
     .eq('user_id', userId)
-    .eq('role', 'trainer');
+    .eq('role', 'trainer')
+    .eq('teams.status', 'active');
 
   if (error) {
     console.error('Failed to resolve trainer teams:', error);
-    return [];
+    // Fallback without status filter (pre-migration 011)
+    const { data: fallback } = await admin
+      .from('team_members')
+      .select('team_id')
+      .eq('user_id', userId)
+      .eq('role', 'trainer');
+    return (fallback ?? []).map((row) => row.team_id as string);
   }
   return (data ?? []).map((row) => row.team_id as string);
 }

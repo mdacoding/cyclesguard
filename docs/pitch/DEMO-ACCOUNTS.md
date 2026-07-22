@@ -14,12 +14,22 @@
 
 ---
 
+## Club Admin
+
+| E-Mail | Rolle | Dashboard |
+|--------|-------|-----------|
+| `admin@eintracht-demo.de` | Club Admin (Demo) | `/admin/teams` |
+
+Zeigt Teams, Saison, Roster-Invite (E-Mail + CSV), Audit — **keine** Zyklus-Rohdaten.
+
+---
+
 ## Spielerinnen (Team: Eintracht Frankfurt Frauen)
 
 | Name | E-Mail | Erwartete Ampel (Trainer) | Demo-Hinweis |
 |------|--------|---------------------------|--------------|
-| Anna Müller | `anna.mueller@eintracht-demo.de` | **FIT** (Grün) | Volle Belastung |
-| Sara Klein | `sara.klein@eintracht-demo.de` | **MODIFIED** (Gelb) | Ovulation |
+| Anna Müller | `anna.mueller@eintracht-demo.de` | **FIT** (Grün) | Volle Belastung · Session-Card |
+| Sara Klein | `sara.klein@eintracht-demo.de` | **MODIFIED** (Gelb) | Ovulation · **HIGH** Load-Demo |
 | Lisa Weber | `lisa.weber@eintracht-demo.de` | **REST** (Rot) | Menstruation, Energie 1 |
 | Nina Fischer | `nina.fischer@eintracht-demo.de` | **MODIFIED** (Gelb) | Menstruation, Energie 4 |
 | Mia Becker | `mia.becker@eintracht-demo.de` | **FIT** (Grün) | Luteal |

@@ -11,6 +11,9 @@ import {
   CalendarRange,
   Download,
   CheckCircle2,
+  Archive,
+  Upload,
+  Pencil,
 } from 'lucide-react';
 import LogoutButton from '@/components/LogoutButton';
 
@@ -18,6 +21,7 @@ interface TeamRow {
   id: string;
   name: string;
   clubName: string | null;
+  status?: 'active' | 'archived';
   playerCount: number;
   loggedLast7Days: number;
 }
@@ -72,6 +76,11 @@ export default function AdminTeamsPage() {
   const [seasonName, setSeasonName] = useState('');
   const [seasonStart, setSeasonStart] = useState('');
   const [seasonEnd, setSeasonEnd] = useState('');
+  const [renameValue, setRenameValue] = useState('');
+  const [csvBusy, setCsvBusy] = useState(false);
+  const [platformEmail, setPlatformEmail] = useState('');
+  const [platformClubId, setPlatformClubId] = useState('');
+  const [showPlatform, setShowPlatform] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -85,13 +94,19 @@ export default function AdminTeamsPage() {
       if (!teamsRes.ok) throw new Error('load failed');
       const data = (await teamsRes.json()) as TeamRow[];
       setTeams(data);
-      if (data.length > 0 && !selectedTeamId) setSelectedTeamId(data[0].id);
+      if (data.length > 0 && !selectedTeamId) {
+        setSelectedTeamId(data[0].id);
+        setRenameValue(data[0].name);
+      }
       if (clubsRes.ok) {
         const clubData = (await clubsRes.json()) as ClubRow[];
         setClubs(clubData);
         if (clubData.length > 0 && !seasonClubId) setSeasonClubId(clubData[0].id);
+        if (clubData.length > 0 && !platformClubId) setPlatformClubId(clubData[0].id);
       }
       if (seasonsRes.ok) setSeasons((await seasonsRes.json()) as SeasonRow[]);
+      // Platform section visible when clubs API returns (club_admin or platform)
+      setShowPlatform(clubsRes.ok);
     } catch {
       setError('Teams konnten nicht geladen werden.');
     } finally {
@@ -119,8 +134,12 @@ export default function AdminTeamsPage() {
   }, []);
 
   useEffect(() => {
-    if (selectedTeamId) void loadMembers(selectedTeamId);
-  }, [selectedTeamId]);
+    if (selectedTeamId) {
+      void loadMembers(selectedTeamId);
+      const t = teams.find((x) => x.id === selectedTeamId);
+      if (t) setRenameValue(t.name);
+    }
+  }, [selectedTeamId, teams]);
 
   const createTeam = async () => {
     setMsg(null);
@@ -261,6 +280,86 @@ export default function AdminTeamsPage() {
     }
   };
 
+  const renameTeam = async () => {
+    if (!selectedTeamId || !renameValue.trim()) return;
+    setMsg(null);
+    const res = await fetch('/api/admin/teams', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: selectedTeamId, name: renameValue.trim() }),
+    });
+    if (!res.ok) {
+      setMsg('Umbenennen fehlgeschlagen.');
+      return;
+    }
+    setMsg('Team umbenannt.');
+    await load();
+  };
+
+  const archiveTeam = async () => {
+    if (!selectedTeamId) return;
+    if (!window.confirm('Team archivieren? Es verschwindet aus der aktiven Liste.')) return;
+    const res = await fetch('/api/admin/teams', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: selectedTeamId, status: 'archived' }),
+    });
+    if (!res.ok) {
+      setMsg('Archivieren fehlgeschlagen.');
+      return;
+    }
+    setSelectedTeamId('');
+    setMsg('Team archiviert.');
+    await load();
+  };
+
+  const uploadCsv = async (file: File | null) => {
+    if (!file || !selectedTeamId) return;
+    setCsvBusy(true);
+    setMsg(null);
+    try {
+      const form = new FormData();
+      form.set('teamId', selectedTeamId);
+      form.set('file', file);
+      const res = await fetch('/api/admin/invite/bulk', { method: 'POST', body: form });
+      const data = (await res.json()) as {
+        ok?: number;
+        failed?: number;
+        error?: string;
+        parseErrors?: string[];
+      };
+      if (!res.ok) {
+        setMsg(data.error ?? 'CSV-Import fehlgeschlagen.');
+        return;
+      }
+      setMsg(
+        `CSV: ${data.ok ?? 0} ok, ${data.failed ?? 0} fehlgeschlagen` +
+          (data.parseErrors?.length ? ` · Parse: ${data.parseErrors[0]}` : '')
+      );
+      await loadMembers(selectedTeamId);
+      await load();
+    } finally {
+      setCsvBusy(false);
+    }
+  };
+
+  const assignClubAdmin = async () => {
+    if (!platformEmail || !platformClubId) return;
+    setMsg(null);
+    const res = await fetch('/api/platform/club-admins', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: platformEmail.trim(), clubId: platformClubId }),
+    });
+    const data = (await res.json()) as { message?: string; error?: string };
+    if (!res.ok) {
+      setMsg(data.error ?? 'Club-Admin-Zuweisung fehlgeschlagen.');
+      return;
+    }
+    setPlatformEmail('');
+    setMsg(data.message ?? 'Club-Admin zugewiesen.');
+  };
+
   const statusLabel = (s: SeasonRow['status']) =>
     s === 'active' ? 'Aktiv' : s === 'completed' ? 'Abgeschlossen' : 'Geplant';
 
@@ -371,6 +470,42 @@ export default function AdminTeamsPage() {
           )}
         </section>
 
+        {showPlatform && clubs.length > 0 && (
+          <section className="glass-card p-5 space-y-3">
+            <h2 className="font-semibold">Club-Admin zuweisen</h2>
+            <p className="text-xs text-cream/50">
+              E-Mail einladen oder bestehende Nutzerin als Club-Admin für einen Verein setzen.
+            </p>
+            <div className="grid md:grid-cols-3 gap-3">
+              <select
+                value={platformClubId}
+                onChange={(e) => setPlatformClubId(e.target.value)}
+                className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+              >
+                {clubs.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="email"
+                value={platformEmail}
+                onChange={(e) => setPlatformEmail(e.target.value)}
+                placeholder="admin@verein.de"
+                className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+              />
+              <button
+                onClick={assignClubAdmin}
+                disabled={!platformEmail.trim()}
+                className="rounded-xl bg-white/10 hover:bg-white/15 px-4 py-3 min-h-12 disabled:opacity-40"
+              >
+                Zuweisen
+              </button>
+            </div>
+          </section>
+        )}
+
         <section className="glass-card p-5 space-y-3">
           <h2 className="font-semibold">Neues Team</h2>
           <div className="grid md:grid-cols-3 gap-3">
@@ -444,7 +579,35 @@ export default function AdminTeamsPage() {
 
         {selectedTeamId && (
           <section className="glass-card p-5 space-y-5">
-            <h2 className="font-semibold text-lg">Roster</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <h2 className="font-semibold text-lg">Roster & Team</h2>
+              <button
+                type="button"
+                onClick={archiveTeam}
+                className="inline-flex items-center gap-2 min-h-11 px-3 rounded-lg bg-white/10 text-sm text-cream/70 hover:bg-white/15"
+              >
+                <Archive className="w-4 h-4" />
+                Archivieren
+              </button>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-3">
+              <input
+                value={renameValue}
+                onChange={(e) => setRenameValue(e.target.value)}
+                className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12 md:col-span-2"
+                placeholder="Teamname"
+              />
+              <button
+                type="button"
+                onClick={renameTeam}
+                disabled={!renameValue.trim()}
+                className="rounded-xl bg-white/10 hover:bg-white/15 px-4 py-3 min-h-12 disabled:opacity-40 inline-flex items-center justify-center gap-2"
+              >
+                <Pencil className="w-4 h-4" />
+                Umbenennen
+              </button>
+            </div>
             {membersLoading ? (
               <Loader2 className="w-5 h-5 animate-spin text-rose-gold" />
             ) : members.length === 0 ? (
@@ -512,6 +675,23 @@ export default function AdminTeamsPage() {
                   Einladen
                 </button>
               </div>
+            </div>
+
+            <div className="border-t border-white/10 pt-4 space-y-3">
+              <h3 className="text-sm font-medium inline-flex items-center gap-2">
+                <Upload className="w-4 h-4 text-rose-gold" />
+                Bulk CSV (email,fullName,role)
+              </h3>
+              <input
+                type="file"
+                accept=".csv,text/csv"
+                disabled={csvBusy || !selectedTeamId}
+                onChange={(e) => void uploadCsv(e.target.files?.[0] ?? null)}
+                className="block w-full text-sm text-cream/70 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-rose-gold file:text-navy file:font-medium"
+              />
+              <p className="text-xs text-cream/40">
+                Header optional. Beispiel: <code>anna@verein.de,Anna Müller,player</code>
+              </p>
             </div>
 
             <div className="border-t border-white/10 pt-4 space-y-3">

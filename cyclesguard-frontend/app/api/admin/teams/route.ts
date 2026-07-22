@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createAdminClient, isClubAdmin } from '@/lib/supabase/admin';
+import { assertClubScope } from '@/lib/admin-scope';
 
 const CreateTeamSchema = z.object({
   name: z.string().min(1).max(120),
@@ -9,7 +10,14 @@ const CreateTeamSchema = z.object({
   clubId: z.string().uuid().optional(),
 });
 
-export async function GET() {
+const PatchTeamSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1).max(120).optional(),
+  clubName: z.string().max(120).nullable().optional(),
+  status: z.enum(['active', 'archived']).optional(),
+});
+
+export async function GET(request: Request) {
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -18,6 +26,7 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   if (!isClubAdmin(user)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
+  const includeArchived = new URL(request.url).searchParams.get('includeArchived') === '1';
   const admin = createAdminClient();
 
   const { data: clubMemberships } = await admin
@@ -27,10 +36,13 @@ export async function GET() {
     .eq('role', 'club_admin');
 
   const clubIds = (clubMemberships ?? []).map((c) => c.club_id);
-  let teamsQuery = admin.from('teams').select('id, name, club_name, club_id');
+  let teamsQuery = admin.from('teams').select('id, name, club_name, club_id, status');
   if (user.app_metadata?.role !== 'platform_admin') {
     if (clubIds.length === 0) return NextResponse.json([]);
     teamsQuery = teamsQuery.in('club_id', clubIds);
+  }
+  if (!includeArchived) {
+    teamsQuery = teamsQuery.eq('status', 'active');
   }
 
   const { data: teams, error } = await teamsQuery;
@@ -62,6 +74,7 @@ export async function GET() {
       id: team.id,
       name: team.name,
       clubName: team.club_name,
+      status: team.status ?? 'active',
       playerCount: playerIds.length,
       loggedLast7Days,
     });
@@ -103,6 +116,7 @@ export async function POST(request: Request) {
       name: parsed.data.name,
       club_name: parsed.data.clubName ?? null,
       club_id: clubId,
+      status: 'active',
     })
     .select('id')
     .single();
@@ -118,4 +132,48 @@ export async function POST(request: Request) {
   });
 
   return NextResponse.json({ id: team.id }, { status: 201 });
+}
+
+export async function PATCH(request: Request) {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!isClubAdmin(user)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+  const parsed = PatchTeamSchema.safeParse(await request.json());
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
+  }
+
+  const admin = createAdminClient();
+  const scoped = await assertClubScope(
+    admin,
+    user.id,
+    parsed.data.id,
+    user.app_metadata?.role as string | undefined
+  );
+  if (!scoped) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+  const patch: Record<string, string | null> = {};
+  if (parsed.data.name) patch.name = parsed.data.name;
+  if (parsed.data.clubName !== undefined) patch.club_name = parsed.data.clubName;
+  if (parsed.data.status) patch.status = parsed.data.status;
+
+  if (Object.keys(patch).length === 0) {
+    return NextResponse.json({ error: 'Nothing to update' }, { status: 400 });
+  }
+
+  const { error } = await admin.from('teams').update(patch).eq('id', parsed.data.id);
+  if (error) return NextResponse.json({ error: 'Failed to update team' }, { status: 500 });
+
+  await admin.from('admin_audit_log').insert({
+    actor_id: user.id,
+    action: parsed.data.status === 'archived' ? 'archive_team' : 'update_team',
+    metadata: { team_id: parsed.data.id, ...patch },
+  });
+
+  return NextResponse.json({ ok: true });
 }
