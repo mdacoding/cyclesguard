@@ -3,7 +3,12 @@ import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createAdminClient, isClubAdmin } from '@/lib/supabase/admin';
 import { assertClubScope } from '@/lib/admin-scope';
-import { adminInviteOrRosterAdd, parseInviteCsv } from '@/lib/admin-invite';
+import {
+  adminInviteOrRosterAdd,
+  BULK_INVITE_MAX_ROWS,
+  parseInviteCsv,
+} from '@/lib/admin-invite';
+import { checkRateLimit, sleep } from '@/lib/rate-limit';
 
 const BulkJsonSchema = z.object({
   teamId: z.string().uuid(),
@@ -16,7 +21,7 @@ const BulkJsonSchema = z.object({
       })
     )
     .min(1)
-    .max(100),
+    .max(BULK_INVITE_MAX_ROWS),
 });
 
 export async function POST(request: Request) {
@@ -27,6 +32,14 @@ export async function POST(request: Request) {
 
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   if (!isClubAdmin(user)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+  const limit = checkRateLimit(`bulk-invite:${user.id}`, 3, 10 * 60 * 1000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: 'Zu viele Bulk-Imports. Bitte später erneut versuchen.' },
+      { status: 429, headers: { 'Retry-After': String(limit.retryAfterSec) } }
+    );
+  }
 
   const contentType = request.headers.get('content-type') ?? '';
   let teamId: string;
@@ -85,7 +98,8 @@ export async function POST(request: Request) {
 
   const results = [];
   let okCount = 0;
-  for (const row of rows) {
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
     const result = await adminInviteOrRosterAdd(admin, {
       email: row.email,
       teamId,
@@ -95,9 +109,11 @@ export async function POST(request: Request) {
     });
     if (result.ok) okCount += 1;
     results.push(result);
+    // Soft throttle against Supabase Auth rate limits
+    if (i < rows.length - 1) await sleep(120);
   }
 
-  await admin.from('admin_audit_log').insert({
+  const { error: auditError } = await admin.from('admin_audit_log').insert({
     actor_id: user.id,
     action: 'admin_bulk_invite',
     metadata: {
@@ -107,11 +123,18 @@ export async function POST(request: Request) {
       parse_errors: parseErrors.length,
     },
   });
+  if (auditError) console.warn('Bulk invite audit failed:', auditError.message);
 
-  return NextResponse.json({
-    ok: okCount,
-    failed: results.length - okCount,
-    parseErrors,
-    results,
-  });
+  const failed = results.length - okCount;
+  const status = failed === 0 ? 200 : okCount === 0 ? 500 : 207;
+
+  return NextResponse.json(
+    {
+      ok: okCount,
+      failed,
+      parseErrors,
+      results,
+    },
+    { status }
+  );
 }

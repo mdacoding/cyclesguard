@@ -18,7 +18,7 @@ export async function GET() {
   const admin = createAdminClient();
   const { data: memberships, error } = await admin
     .from('team_members')
-    .select('team_id, teams(id, name, club_name)')
+    .select('team_id, teams(id, name, club_name, status)')
     .eq('user_id', user.id)
     .eq('role', 'trainer');
 
@@ -30,6 +30,10 @@ export async function GET() {
     .map((m) => m.teams)
     .filter(Boolean)
     .flat()
+    .filter(
+      (t: { id: string; name: string; club_name: string | null; status?: string | null }) =>
+        (t.status ?? 'active') === 'active'
+    )
     .map((t: { id: string; name: string; club_name: string | null }) => ({
       id: t.id,
       name: t.name,

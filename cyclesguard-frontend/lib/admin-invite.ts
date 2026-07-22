@@ -26,10 +26,22 @@ export interface AdminInviteResult {
   error?: string;
 }
 
-async function ensureTrainerAppRole(admin: SupabaseClient, userId: string) {
-  await admin.auth.admin.updateUserById(userId, {
-    app_metadata: { role: 'trainer' },
+/** Merge role into app_metadata — never wipe other keys. */
+async function ensureTrainerAppRole(
+  admin: SupabaseClient,
+  user: User
+): Promise<{ ok: boolean; error?: string }> {
+  const role = getAppRole(user);
+  if (role === 'club_admin' || role === 'platform_admin') {
+    return { ok: false, error: 'Admin-Konten können nicht zu Trainer herabgestuft werden.' };
+  }
+  if (role === 'trainer' && user.app_metadata?.role === 'trainer') {
+    return { ok: true };
+  }
+  await admin.auth.admin.updateUserById(user.id, {
+    app_metadata: { ...user.app_metadata, role: 'trainer' },
   });
+  return { ok: true };
 }
 
 async function ensureTeamMembership(
@@ -43,6 +55,19 @@ async function ensureTeamMembership(
     { onConflict: 'team_id,user_id' }
   );
   return !error;
+}
+
+async function writeAudit(
+  admin: SupabaseClient,
+  row: {
+    actor_id: string;
+    action: string;
+    target_user_id: string;
+    metadata: Record<string, unknown>;
+  }
+) {
+  const { error } = await admin.from('admin_audit_log').insert(row);
+  if (error) console.warn('Audit log insert skipped/failed:', error.message);
 }
 
 /** Shared invite/roster-add used by single + bulk admin invite APIs. */
@@ -77,7 +102,10 @@ export async function adminInviteOrRosterAdd(
         return { ok: false, email, status: 500, error: 'Failed to add roster membership' };
       }
     } else {
-      await ensureTrainerAppRole(admin, existing.id);
+      const trainerRole = await ensureTrainerAppRole(admin, existing);
+      if (!trainerRole.ok) {
+        return { ok: false, email, status: 422, error: trainerRole.error };
+      }
       const ok = await ensureTeamMembership(admin, existing.id, teamId, 'trainer');
       if (!ok) {
         return { ok: false, email, status: 500, error: 'Failed to add trainer membership' };
@@ -92,7 +120,7 @@ export async function adminInviteOrRosterAdd(
       },
     });
 
-    await admin.from('admin_audit_log').insert({
+    await writeAudit(admin, {
       actor_id: actorId,
       action: 'admin_roster_add',
       target_user_id: existing.id,
@@ -134,14 +162,17 @@ export async function adminInviteOrRosterAdd(
       return { ok: false, email, status: 500, error: 'Failed to add roster membership' };
     }
   } else {
-    await ensureTrainerAppRole(admin, invited.user.id);
+    const trainerRole = await ensureTrainerAppRole(admin, invited.user as User);
+    if (!trainerRole.ok) {
+      return { ok: false, email, status: 422, error: trainerRole.error };
+    }
     const ok = await ensureTeamMembership(admin, invited.user.id, teamId, 'trainer');
     if (!ok) {
       return { ok: false, email, status: 500, error: 'Failed to add trainer membership' };
     }
   }
 
-  await admin.from('admin_audit_log').insert({
+  await writeAudit(admin, {
     actor_id: actorId,
     action: 'admin_invite',
     target_user_id: invited.user.id,
@@ -157,6 +188,8 @@ export async function adminInviteOrRosterAdd(
     message: 'Einladung gesendet und Roster aktualisiert.',
   };
 }
+
+export const BULK_INVITE_MAX_ROWS = 50;
 
 /** Parse CSV: email,fullName?,role? — header optional. */
 export function parseInviteCsv(text: string): {
@@ -187,6 +220,11 @@ export function parseInviteCsv(text: string): {
       continue;
     }
     rows.push({ email, fullName, role: roleRaw });
+  }
+
+  if (rows.length > BULK_INVITE_MAX_ROWS) {
+    errors.push(`Maximal ${BULK_INVITE_MAX_ROWS} Zeilen pro Import`);
+    return { rows: rows.slice(0, BULK_INVITE_MAX_ROWS), errors };
   }
 
   return { rows, errors };

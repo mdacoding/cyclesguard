@@ -8,7 +8,8 @@
 ## A. Automatisierbar (CI)
 
 - [x] Unit-Tests: Empfehlungstexte ohne Menstru-/Zyklus-Wörter (`lib/trainer-status.test.ts`)
-- [ ] Playwright Smoke (optional mit Demo-Credentials): Trainer-Response enthält keine `phase`/`symptoms`
+- [x] Playwright Smoke (mit Demo-Credentials): Trainer-Response ohne `phase`/`symptoms` (`e2e/smoke.spec.ts` + CI `e2e-credentialed`)
+- [x] Fixture-Hinweise: `docs/privacy/rls-trainer-expected.sql`
 
 ---
 

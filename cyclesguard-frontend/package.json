@@ -9,7 +9,7 @@
     "lint": "next lint",
     "generate-icons": "node scripts/generate-icons.mjs",
     "test": "tsx --test lib/**/*.test.ts",
-    "test:trainer-status": "tsx --test lib/trainer-status.test.ts lib/privacy-mask.test.ts lib/invite-membership.test.ts lib/player-insights.test.ts lib/cron-auth.test.ts lib/admin-invite.test.ts",
+    "test:trainer-status": "tsx --test lib/trainer-status.test.ts lib/privacy-mask.test.ts lib/invite-membership.test.ts lib/player-insights.test.ts lib/cron-auth.test.ts lib/admin-invite.test.ts lib/rate-limit.test.ts",
     "test:e2e": "playwright test",
     "test:e2e:public": "playwright test --grep \"public smoke\"",
     "seed:eintracht": "tsx scripts/seed-eintracht-demo.ts",

@@ -1,25 +1,38 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 
+/**
+ * Active trainer team IDs only.
+ * Two-step query avoids silent fallback that re-includes archived teams.
+ */
 export async function getTrainerTeamIds(userId: string): Promise<string[]> {
   const admin = createAdminClient();
-  const { data, error } = await admin
+  const { data: memberships, error } = await admin
     .from('team_members')
-    .select('team_id, teams!inner(status)')
+    .select('team_id')
     .eq('user_id', userId)
-    .eq('role', 'trainer')
-    .eq('teams.status', 'active');
+    .eq('role', 'trainer');
 
   if (error) {
-    console.error('Failed to resolve trainer teams:', error);
-    // Fallback without status filter (pre-migration 011)
-    const { data: fallback } = await admin
-      .from('team_members')
-      .select('team_id')
-      .eq('user_id', userId)
-      .eq('role', 'trainer');
-    return (fallback ?? []).map((row) => row.team_id as string);
+    console.error('Failed to resolve trainer memberships:', error);
+    return [];
   }
-  return (data ?? []).map((row) => row.team_id as string);
+
+  const ids = (memberships ?? []).map((row) => row.team_id as string);
+  if (ids.length === 0) return [];
+
+  const { data: teams, error: teamsError } = await admin
+    .from('teams')
+    .select('id, status')
+    .in('id', ids);
+
+  if (teamsError) {
+    console.error('Failed to resolve team status:', teamsError);
+    return [];
+  }
+
+  return (teams ?? [])
+    .filter((t) => (t.status ?? 'active') === 'active')
+    .map((t) => t.id as string);
 }
 
 export async function getTeamPlayerIds(teamIds: string[]): Promise<string[]> {

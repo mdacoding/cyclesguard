@@ -46,6 +46,9 @@ interface SeasonRow {
   startsOn: string;
   endsOn: string;
   status: 'planned' | 'active' | 'completed';
+  commercialStatus?: string;
+  feeCents?: number | null;
+  contractRef?: string | null;
 }
 
 export default function AdminTeamsPage() {
@@ -81,13 +84,14 @@ export default function AdminTeamsPage() {
   const [platformEmail, setPlatformEmail] = useState('');
   const [platformClubId, setPlatformClubId] = useState('');
   const [showPlatform, setShowPlatform] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
 
   const load = async () => {
     setLoading(true);
     setError(null);
     try {
       const [teamsRes, clubsRes, seasonsRes] = await Promise.all([
-        fetch('/api/admin/teams'),
+        fetch(`/api/admin/teams${showArchived ? '?includeArchived=1' : ''}`),
         fetch('/api/admin/clubs'),
         fetch('/api/admin/seasons'),
       ]);
@@ -131,7 +135,7 @@ export default function AdminTeamsPage() {
   useEffect(() => {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [showArchived]);
 
   useEffect(() => {
     if (selectedTeamId) {
@@ -298,19 +302,38 @@ export default function AdminTeamsPage() {
 
   const archiveTeam = async () => {
     if (!selectedTeamId) return;
-    if (!window.confirm('Team archivieren? Es verschwindet aus der aktiven Liste.')) return;
+    const team = teams.find((t) => t.id === selectedTeamId);
+    const nextStatus = team?.status === 'archived' ? 'active' : 'archived';
+    if (
+      nextStatus === 'archived' &&
+      !window.confirm('Team archivieren? Es verschwindet aus der aktiven Liste.')
+    ) {
+      return;
+    }
     const res = await fetch('/api/admin/teams', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: selectedTeamId, status: 'archived' }),
+      body: JSON.stringify({ id: selectedTeamId, status: nextStatus }),
     });
     if (!res.ok) {
-      setMsg('Archivieren fehlgeschlagen.');
+      setMsg(nextStatus === 'archived' ? 'Archivieren fehlgeschlagen.' : 'Reaktivieren fehlgeschlagen.');
       return;
     }
-    setSelectedTeamId('');
-    setMsg('Team archiviert.');
+    if (nextStatus === 'archived') setSelectedTeamId('');
+    setMsg(nextStatus === 'archived' ? 'Team archiviert.' : 'Team reaktiviert.');
     await load();
+  };
+
+  const setSeasonCommercial = async (id: string, commercialStatus: string) => {
+    const res = await fetch('/api/admin/seasons', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, commercialStatus }),
+    });
+    if (res.ok) {
+      setMsg('Vertragsstatus aktualisiert.');
+      await load();
+    }
   };
 
   const uploadCsv = async (file: File | null) => {
@@ -450,18 +473,34 @@ export default function AdminTeamsPage() {
                         <p className="font-medium">{s.name}</p>
                         <p className="text-xs text-cream/50">
                           {s.startsOn} → {s.endsOn} · {statusLabel(s.status)}
+                          {s.commercialStatus ? ` · Vertrag: ${s.commercialStatus}` : ''}
                         </p>
                       </div>
-                      {s.status !== 'active' && (
-                        <button
-                          type="button"
-                          onClick={() => activateSeason(s.id)}
-                          className="inline-flex items-center gap-2 min-h-11 px-3 rounded-lg bg-sage/20 text-sage text-sm"
+                      <div className="flex flex-wrap gap-2">
+                        {s.status !== 'active' && (
+                          <button
+                            type="button"
+                            onClick={() => activateSeason(s.id)}
+                            className="inline-flex items-center gap-2 min-h-11 px-3 rounded-lg bg-sage/20 text-sage text-sm"
+                          >
+                            <CheckCircle2 className="w-4 h-4" />
+                            Aktivieren
+                          </button>
+                        )}
+                        <select
+                          value={s.commercialStatus ?? 'pilot_free'}
+                          onChange={(e) => void setSeasonCommercial(s.id, e.target.value)}
+                          className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm min-h-11"
+                          aria-label="Vertragsstatus"
                         >
-                          <CheckCircle2 className="w-4 h-4" />
-                          Aktivieren
-                        </button>
-                      )}
+                          <option value="pilot_free">Pilot gratis</option>
+                          <option value="quoted">Angebot</option>
+                          <option value="signed">Unterschrieben</option>
+                          <option value="active_paid">Aktiv bezahlt</option>
+                          <option value="ended">Beendet</option>
+                          <option value="churned">Churned</option>
+                        </select>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -538,6 +577,16 @@ export default function AdminTeamsPage() {
           </div>
         )}
 
+        <label className="inline-flex items-center gap-2 text-sm text-cream/60 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={showArchived}
+            onChange={(e) => setShowArchived(e.target.checked)}
+            className="accent-[#E8C4B8]"
+          />
+          Archivierte Teams anzeigen
+        </label>
+
         {loading ? (
           <div className="flex justify-center py-16">
             <Loader2 className="w-8 h-8 animate-spin text-rose-gold" />
@@ -561,7 +610,12 @@ export default function AdminTeamsPage() {
                 }`}
               >
                 <div>
-                  <h2 className="font-semibold text-lg">{team.name}</h2>
+                  <h2 className="font-semibold text-lg">
+                    {team.name}
+                    {team.status === 'archived' ? (
+                      <span className="ml-2 text-xs font-normal text-cream/40">archiviert</span>
+                    ) : null}
+                  </h2>
                   <p className="text-sm text-cream/50">{team.clubName ?? 'Ohne Vereinszuordnung'}</p>
                 </div>
                 <div className="text-sm text-cream/70">
@@ -587,7 +641,9 @@ export default function AdminTeamsPage() {
                 className="inline-flex items-center gap-2 min-h-11 px-3 rounded-lg bg-white/10 text-sm text-cream/70 hover:bg-white/15"
               >
                 <Archive className="w-4 h-4" />
-                Archivieren
+                {teams.find((t) => t.id === selectedTeamId)?.status === 'archived'
+                  ? 'Reaktivieren'
+                  : 'Archivieren'}
               </button>
             </div>
 

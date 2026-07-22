@@ -5,7 +5,7 @@
 **Live:** https://cyclesguard.vercel.app  
 **North star:** Privacy-first readiness platform for women’s football clubs in DACH → later EU.
 
-Day-to-day: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.md).
+**Finish plan (≤4 Wochen):** [`FINISH-PLAN-4W.md`](./FINISH-PLAN-4W.md) · Day-to-day: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.md).
 
 ---
 
@@ -25,7 +25,7 @@ Day-to-day: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.md).
 ## 2. Product stages
 
 ```
-Pitch-Ready ✅  →  Pre-Meeting  →  Soft-Pilot (48h-ready) ✅  →  Club Product  →  Multi-Tenant SaaS
+Pitch-Ready ✅ → Soft-Pilot Tech ✅ → Club Product Paid-Ready (4W Exit) → Multi-Tenant SaaS
 ```
 
 ### Stage A — Pitch-Ready ✅
@@ -35,27 +35,24 @@ Pitch-Ready ✅  →  Pre-Meeting  →  Soft-Pilot (48h-ready) ✅  →  Club Pr
 - [x] Pitch-Docs + Outreach  
 - [ ] Founder: Auth Site URL + Termin anfragen  
 
-**Exit:** Nachricht an Eintracht gesendet / Termin vereinbart.
-
 ### Stage B — Soft-Pilot (technisch vorbereitet ✅)
 
-- [x] Invite Neu + bestehende User → Roster  
-- [x] Auth-Callback Membership + Consent-Routing  
-- [x] Pilot-Runbook / Push-Live / AVV-Entwurf / RLS-Checkliste  
-- [x] CI lint + tests + public E2E; optional Sentry  
-- [ ] Nach Ja: Secrets rotieren, Demo-Mode off, echte Freiwillige, AVV unterschreiben  
+- [x] Invite / Callback / Runbook / AVV-Entwurf / CI  
+- [ ] Nach Ja: Secrets rotieren, Demo-Mode off, AVV unterschreiben  
 
-### Stage C — Club Product (Paid)
+### Stage C — Club Product → **Exit „fertig“**
 
-- [x] Club-Admin E-Mail-Invite + Saison-Setup + Audit-CSV  
-- [x] Player Insights / Reminder-Prefs / Landing  
-- [x] GPS Bridge Lookback + Deploy-Doc + Session-Card  
-- [ ] Saisonvertrag, Support, AVV unterschrieben  
+- [x] Admin Invite / CSV / Saison / Audit / Insights / Landing / GPS-Bridge-Docs  
+- [x] Season commercial fields (manuell, ohne Stripe)  
+- [x] Support-Pfad dokumentiert  
+- [ ] AVV unterschrieben + Sentry DSN + Soft-Pilot Proof  
 - [ ] Optional GPS live mit Club-Tracker  
 
-### Stage D — Multi-Tenant SaaS
+**Exit-Kriterien:** siehe `FINISH-PLAN-4W.md` / `00-ROADMAP.md`.
 
-- Billing, Self-serve, Multi-Club, Observability  
+### Stage D — Multi-Tenant SaaS (nach Exit)
+
+- Stripe / Self-serve / Multi-Club Marketplace / advanced Observability  
 
 ---
 
@@ -72,8 +69,8 @@ Pitch-Ready ✅  →  Pre-Meeting  →  Soft-Pilot (48h-ready) ✅  →  Club Pr
 
 | Angebot | Preis | Wann |
 |---------|-------|------|
-| Soft-Pilot | 0 € / 8–12 Wochen | Jetzt anbieten |
-| Club Season | Richtwert 2–5k € / Saison | Nach Pilot |
+| Soft-Pilot | 0 € / 8–12 Wochen | Jetzt |
+| Club Season | 2–5k € / Saison | Nach Pilot (manual contract) |
 | Multi-Team | Custom | Nach 2+ Clubs |
 
 ---
@@ -82,9 +79,9 @@ Pitch-Ready ✅  →  Pre-Meeting  →  Soft-Pilot (48h-ready) ✅  →  Club Pr
 
 | Prio | Action |
 |------|--------|
-| **Jetzt** | Outreach (`OUTREACH.md`) |
-| **Nach Ja** | `PILOT-RUNBOOK.md` durchziehen |
-| **Nicht jetzt** | Billing, GPS-ML, Multi-Tenant |
+| **Engineering** | 4W-Plan W1 Harden (diese Iteration) → W2 Compliance Support |
+| **Founder** | Outreach + Sentry DSN + AVV-Pfad |
+| **Nicht jetzt** | Stripe, GPS-ML, Self-Serve Multi-Tenant |
 
 ---
 
@@ -95,5 +92,6 @@ Pitch-Ready ✅  →  Pre-Meeting  →  Soft-Pilot (48h-ready) ✅  →  Club Pr
 | Pitch before market-ready | Clubs kaufen Story + Demo + Angebot |
 | Soft-Pilot free | Vertrauen vor Revenue |
 | Ampel-only trainer | Compliance non-negotiable |
-| Existing-user roster add | Pilot darf nicht an „already registered“ scheitern |
+| Manual season contract before Stripe | Paid-ready ohne Payment-Komplexität |
+| Scope Freeze in Woche 4 | Fertigstellung schützt vor Feature-Creep |
 | Hobby Vercel crons daily | Plan-Limit; genug für Pitch/Pilot |

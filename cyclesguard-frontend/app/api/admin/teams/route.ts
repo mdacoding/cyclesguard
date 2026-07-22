@@ -51,24 +51,40 @@ export async function GET(request: Request) {
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-  const result = [];
-  for (const team of teams ?? []) {
-    const { data: players } = await admin
+  const teamIds = (teams ?? []).map((t) => t.id);
+  const playersByTeam = new Map<string, string[]>();
+
+  if (teamIds.length > 0) {
+    const { data: allPlayers } = await admin
       .from('team_members')
-      .select('user_id')
-      .eq('team_id', team.id)
+      .select('team_id, user_id')
+      .in('team_id', teamIds)
       .eq('role', 'player');
 
-    const playerIds = (players ?? []).map((p) => p.user_id);
-    let loggedLast7Days = 0;
-    if (playerIds.length > 0) {
-      const { data: logs } = await admin
-        .from('cycle_logs')
-        .select('user_id')
-        .in('user_id', playerIds)
-        .gte('logged_at', sevenDaysAgo.toISOString());
-      loggedLast7Days = new Set((logs ?? []).map((l) => l.user_id)).size;
+    for (const row of allPlayers ?? []) {
+      const list = playersByTeam.get(row.team_id) ?? [];
+      list.push(row.user_id);
+      playersByTeam.set(row.team_id, list);
     }
+  }
+
+  const allPlayerIds = Array.from(
+    new Set(Array.from(playersByTeam.values()).flat())
+  );
+  const loggedUsers = new Set<string>();
+  if (allPlayerIds.length > 0) {
+    const { data: logs } = await admin
+      .from('cycle_logs')
+      .select('user_id')
+      .in('user_id', allPlayerIds)
+      .gte('logged_at', sevenDaysAgo.toISOString());
+    for (const l of logs ?? []) loggedUsers.add(l.user_id);
+  }
+
+  const result = [];
+  for (const team of teams ?? []) {
+    const playerIds = playersByTeam.get(team.id) ?? [];
+    const loggedLast7Days = playerIds.filter((id) => loggedUsers.has(id)).length;
 
     result.push({
       id: team.id,
