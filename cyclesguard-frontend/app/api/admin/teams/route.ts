@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createAdminClient, isClubAdmin } from '@/lib/supabase/admin';
 import { assertClubScope } from '@/lib/admin-scope';
+import { startOfBerlinDayUtc } from '@/lib/date';
 
 const CreateTeamSchema = z.object({
   name: z.string().min(1).max(120),
@@ -72,19 +73,27 @@ export async function GET(request: Request) {
     new Set(Array.from(playersByTeam.values()).flat())
   );
   const loggedUsers = new Set<string>();
+  const loggedTodayUsers = new Set<string>();
   if (allPlayerIds.length > 0) {
+    const todayStart = startOfBerlinDayUtc().toISOString();
     const { data: logs } = await admin
       .from('cycle_logs')
-      .select('user_id')
+      .select('user_id, logged_at')
       .in('user_id', allPlayerIds)
       .gte('logged_at', sevenDaysAgo.toISOString());
-    for (const l of logs ?? []) loggedUsers.add(l.user_id);
+    for (const l of logs ?? []) {
+      loggedUsers.add(l.user_id);
+      if (l.logged_at && l.logged_at >= todayStart) {
+        loggedTodayUsers.add(l.user_id);
+      }
+    }
   }
 
   const result = [];
   for (const team of teams ?? []) {
     const playerIds = playersByTeam.get(team.id) ?? [];
     const loggedLast7Days = playerIds.filter((id) => loggedUsers.has(id)).length;
+    const loggedToday = playerIds.filter((id) => loggedTodayUsers.has(id)).length;
 
     result.push({
       id: team.id,
@@ -93,6 +102,7 @@ export async function GET(request: Request) {
       status: team.status ?? 'active',
       playerCount: playerIds.length,
       loggedLast7Days,
+      loggedToday,
     });
   }
 

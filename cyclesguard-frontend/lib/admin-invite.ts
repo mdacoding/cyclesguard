@@ -137,7 +137,7 @@ export async function adminInviteOrRosterAdd(
     };
   }
 
-  const redirectNext = role === 'trainer' ? '/trainer/dashboard' : '/player/onboarding';
+  const redirectNext = role === 'trainer' ? '/trainer/onboarding' : '/player/onboarding';
   const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
     data: {
       full_name: fullName ?? email.split('@')[0],

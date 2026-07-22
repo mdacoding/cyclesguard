@@ -28,6 +28,7 @@ interface TeamRow {
   status?: 'active' | 'archived';
   playerCount: number;
   loggedLast7Days: number;
+  loggedToday?: number;
 }
 
 interface MemberRow {
@@ -56,6 +57,7 @@ interface SeasonRow {
   feeCents?: number | null;
   currency?: string;
   contractRef?: string | null;
+  signedAt?: string | null;
   signedByEmail?: string | null;
   internalNotes?: string | null;
 }
@@ -554,6 +556,7 @@ export default function AdminTeamsPage() {
 
   const totalPlayers = teams.reduce((sum, t) => sum + t.playerCount, 0);
   const loggedPlayers = teams.reduce((sum, t) => sum + t.loggedLast7Days, 0);
+  const loggedTodayPlayers = teams.reduce((sum, t) => sum + (t.loggedToday ?? 0), 0);
   const adherencePct =
     totalPlayers === 0 ? 0 : Math.round((loggedPlayers / totalPlayers) * 100);
   const teamsBelowTarget = teams.filter(
@@ -587,10 +590,16 @@ export default function AdminTeamsPage() {
         </header>
 
         {!loading && teams.length > 0 && (
-          <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <section className="grid grid-cols-2 md:grid-cols-5 gap-3">
             <div className="glass-card p-4">
               <p className="text-xs text-cream/50 mb-1">Spielerinnen</p>
               <p className="text-2xl font-semibold">{totalPlayers}</p>
+            </div>
+            <div className="glass-card p-4">
+              <p className="text-xs text-cream/50 mb-1">Heute geloggt</p>
+              <p className="text-2xl font-semibold">
+                {loggedTodayPlayers}/{totalPlayers}
+              </p>
             </div>
             <div className="glass-card p-4">
               <p className="text-xs text-cream/50 mb-1">Logging 7d</p>
@@ -761,6 +770,9 @@ export default function AdminTeamsPage() {
                               : 'Kein Fee'}
                             {s.contractRef ? ` · Ref ${s.contractRef}` : ''}
                             {s.signedByEmail ? ` · ${s.signedByEmail}` : ''}
+                            {s.signedAt
+                              ? ` · signiert ${new Date(s.signedAt).toLocaleDateString('de-DE')}`
+                              : ''}
                           </p>
                         </div>
                         <div className="flex flex-wrap gap-2">

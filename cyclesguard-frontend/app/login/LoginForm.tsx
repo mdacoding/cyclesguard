@@ -19,6 +19,8 @@ const ALLOWED_REDIRECTS: Route[] = [
   '/admin/teams',
 ];
 
+// Note: /trainer/onboarding & /player/welcome use <a>/assign (typedRoutes); invite callback allows any /path.
+
 function getSafeRedirect(path: string | null): Route {
   if (path && ALLOWED_REDIRECTS.includes(path as Route)) {
     return path as Route;

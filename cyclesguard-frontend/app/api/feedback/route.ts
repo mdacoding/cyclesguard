@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createAdminClient, isClubAdmin, isTrainer } from '@/lib/supabase/admin';
+import { getAdminClubIds } from '@/lib/admin-scope';
 import { checkRateLimit } from '@/lib/rate-limit';
 
 const FeedbackSchema = z.object({
@@ -18,6 +19,34 @@ function resolveRole(user: {
   const role = user.app_metadata?.role;
   if (role === 'player') return 'player';
   return 'other';
+}
+
+async function resolveUserClubId(
+  admin: ReturnType<typeof createAdminClient>,
+  userId: string
+): Promise<string | null> {
+  const { data: clubMember } = await admin
+    .from('club_members')
+    .select('club_id')
+    .eq('user_id', userId)
+    .limit(1)
+    .maybeSingle();
+  if (clubMember?.club_id) return clubMember.club_id as string;
+
+  const { data: membership } = await admin
+    .from('team_members')
+    .select('team_id')
+    .eq('user_id', userId)
+    .limit(1)
+    .maybeSingle();
+  if (!membership?.team_id) return null;
+
+  const { data: team } = await admin
+    .from('teams')
+    .select('club_id')
+    .eq('id', membership.team_id)
+    .maybeSingle();
+  return (team?.club_id as string | null) ?? null;
 }
 
 /** Authenticated users submit product feedback (no health fields). */
@@ -41,13 +70,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
   }
 
+  const admin = createAdminClient();
   const role = resolveRole(user);
-  const { error } = await supabase.from('pilot_feedback').insert({
+  const clubId = await resolveUserClubId(admin, user.id);
+
+  const { error } = await admin.from('pilot_feedback').insert({
     user_id: user.id,
     role,
     score: parsed.data.score,
     message: parsed.data.message?.trim() || null,
     context: parsed.data.context?.trim() || null,
+    club_id: clubId,
   });
 
   if (error) {
@@ -58,7 +91,7 @@ export async function POST(request: Request) {
   return NextResponse.json({ ok: true }, { status: 201 });
 }
 
-/** Club admins: recent feedback scores (no emails — privacy-safe ops view). */
+/** Club admins: recent feedback scores scoped to their clubs (no emails). */
 export async function GET() {
   const supabase = await createServerSupabaseClient();
   const {
@@ -68,11 +101,26 @@ export async function GET() {
   if (!isClubAdmin(user)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   const admin = createAdminClient();
-  const { data, error } = await admin
+  const clubIds = await getAdminClubIds(
+    admin,
+    user.id,
+    user.app_metadata?.role as string | undefined
+  );
+
+  let query = admin
     .from('pilot_feedback')
-    .select('id, role, score, message, context, created_at')
+    .select('id, role, score, message, context, club_id, created_at')
     .order('created_at', { ascending: false })
     .limit(100);
+
+  if (clubIds !== 'all') {
+    if (clubIds.length === 0) {
+      return NextResponse.json({ avgScore: null, count: 0, items: [] });
+    }
+    query = query.in('club_id', clubIds);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error('Feedback list failed:', error.message);

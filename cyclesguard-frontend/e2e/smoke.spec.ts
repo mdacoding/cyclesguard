@@ -57,6 +57,10 @@ test.describe('trainer flow', () => {
       expect(entry).not.toHaveProperty('energy_level');
       expect(String(entry.recommendation)).not.toMatch(/menstru|zyklus|eisprung|ovulation/i);
     }
+
+    await expect(page.getByRole('button', { name: /Heute fehlend/i })).toBeVisible();
+    await page.getByRole('button', { name: /Heute fehlend/i }).click();
+    await expect(page.getByRole('button', { name: /Teilen/i })).toBeVisible();
   });
 });
 
