@@ -10,6 +10,7 @@ import { redirect } from 'next/navigation';
 import { CalendarDays, Settings, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import LogoutButton from '@/components/LogoutButton';
+import PilotFeedbackCapture from '@/components/PilotFeedbackCapture';
 
 export default async function DashboardPage() {
   const supabase = await createServerSupabaseClient();
@@ -124,6 +125,7 @@ export default async function DashboardPage() {
             <section className="glass-card p-6 animate-slideUp" style={{ animationDelay: '0.2s' }}>
               <RecentLogsCard logs={logs} />
             </section>
+            <PilotFeedbackCapture context="player_dashboard" enabled={!isFirstRun} />
           </div>
         </div>
       </div>

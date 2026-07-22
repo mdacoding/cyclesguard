@@ -11,6 +11,7 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import LogoutButton from '@/components/LogoutButton';
+import PilotFeedbackCapture from '@/components/PilotFeedbackCapture';
 import {
   getStatusColor,
   getStatusLabel,
@@ -404,6 +405,11 @@ export default function TrainerDashboardPage() {
             })}
           </div>
         )}
+
+        <PilotFeedbackCapture
+          context="trainer_dashboard"
+          enabled={!isLoading && team.length > 0}
+        />
 
         <p className="text-center text-xs text-cream/30 pt-4">
           Dieses Dashboard zeigt ausschließlich aggregierte Readiness-Signale.

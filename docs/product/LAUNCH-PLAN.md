@@ -33,19 +33,22 @@ Zeitlich ehrlich: Soft-Pilot 8–12 Wochen + GTM laufen **parallel** zum Feature
 | Trainer Kabine | Heute-geloggt, Status-Counts, Print/Share, Filter | ✅ |
 | Admin | Teams, CSV, Saison, Contract-Felder, Audit, Archive | ✅ |
 | Admin Proof | Pilot-KPI (Adherence %) | ✅ |
-| Trust | RLS, AVV-Pfad, Retention, Support-Doc | ✅ Docs / ⬜ Sign-off |
+| Admin UX | Tabs Roster / Saison / Compliance | ✅ |
+| Paid Path | Fee / Ref / Signed-by manuell (ohne Stripe) | ✅ |
+| Feedback | In-App Score + Admin-View | ✅ |
+| Trust | RLS, AVV-Pfad, Retention, Support, GO-LIVE | ✅ Docs / ⬜ Sign-off |
 | Sales | Landing, Pitch-Pack, Seed-Demo | ✅ |
 | Onboarding | Spielerin Consent ✅ · Trainer in-app ✅ · Admin Seed ✅ |
 
 ### Should-have (Launch-Qualität ↑)
 
-| Feature | Warum |
-|---------|--------|
-| Trainer First-Run in-app | Weniger Founder-Call |
-| Admin UX Tabs (Roster / Saison / Compliance) | Weniger Power-User-Chaos |
-| Push live verifiziert + Custom Domain | Production-Feel |
-| Optional 1 GPS-Provider | Nur wenn Club fordert |
-| Feedback-Capture im Pilot | Produkt lernt |
+| Feature | Warum | Status |
+|---------|--------|--------|
+| Trainer First-Run in-app | Weniger Founder-Call | ✅ |
+| Admin UX Tabs | Weniger Power-User-Chaos | ✅ |
+| Feedback-Capture im Pilot | Produkt lernt | ✅ |
+| Push live verifiziert + Custom Domain | Production-Feel | ⬜ Founder/Tech (`PUSH-LIVE` + `GO-LIVE`) |
+| Optional 1 GPS-Provider | Nur wenn Club fordert | ⬜ on demand |
 
 ### Post-Launch (bewusst später)
 
@@ -57,9 +60,9 @@ Stripe Self-Serve, Multi-Club-Marketplace, White-Label, EN i18n, SSO, GPS fläch
 
 | Phase | Fokus | Outcome |
 |-------|--------|---------|
-| **L1 (jetzt)** | Trainer Kabine-UX, Pilot-KPIs, Trainer-Onboarding, Trust-Close | Demo wirkt „produktionsreif“ |
-| **L2 (während Pilot)** | Admin Tabs, First-Run Player/Trainer, Feedback-Loop, Push verified | Habit + Ops skalieren |
-| **L3 (Pre-Paid)** | Manual Paid UX, Secrets/Demo-off, optional 1 GPS | Closing ohne Stripe |
+| **L1** | Trainer Kabine-UX, Pilot-KPIs, Trainer-Onboarding | ✅ Demo wirkt produktionsreif |
+| **L2** | Admin Tabs, Feedback-Loop, Trust-Checklisten | ✅ Code · ⬜ Push/Sentry Sign-off |
+| **L3** | Manual Paid UX, Secrets/Demo-off, optional 1 GPS | ✅ Paid UX · ⬜ Founder Closing |
 | **L4 (nach Proof)** | Stripe, Multi-Tenant, Scale | Echtes Plattform-SaaS |
 
 GTM (Outreach, AVV, Termin) läuft **durchgängig parallel** — das ist der Sales-kritische Pfad.
@@ -82,4 +85,5 @@ GTM (Outreach, AVV, Termin) läuft **durchgängig parallel** — das ist der Sal
 | Dieser Plan | **Nordstern Launch** |
 | [`FINISH-PLAN.md`](./FINISH-PLAN.md) | Realistische M1/M2/M3-Zeitachsen |
 | [`FINISH-PLAN-4W.md`](./FINISH-PLAN-4W.md) | M1 Tech-Checklist |
+| [`GO-LIVE.md`](../pitch/GO-LIVE.md) | Trust / Push / Pre-Paid Sign-off |
 | [`SUPPORT.md`](../pitch/SUPPORT.md) | Support |

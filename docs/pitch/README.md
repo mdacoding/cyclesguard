@@ -15,6 +15,7 @@
 | [PILOT-FEEDBACK.md](./PILOT-FEEDBACK.md) | Für Soft-Pilot |
 | **[PILOT-RUNBOOK.md](./PILOT-RUNBOOK.md)** | Soft-Pilot Start in 48h |
 | [PUSH-LIVE.md](./PUSH-LIVE.md) | VAPID + Cron Live-Test |
+| **[GO-LIVE.md](./GO-LIVE.md)** | Trust / Push / Pre-Paid Sign-off |
 | [INGESTION-DEPLOY.md](./INGESTION-DEPLOY.md) | GPS-Ingestion hosten (nach Tracker-Zusage) |
 | [SUPPORT.md](./SUPPORT.md) | Support Soft-Pilot / Paid |
 | [SENTRY-LIVE.md](./SENTRY-LIVE.md) | Sentry DSN in Vercel |

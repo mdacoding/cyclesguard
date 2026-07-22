@@ -46,4 +46,10 @@
 
 ---
 
-*Als PDF/Notion exportierbar — kein App-Feature nötig für Pitch.*
+## In-App Capture (Launch L2)
+
+Spielerinnen und Trainer sehen nach erster Nutzung ein **Pilot-Feedback** (1–5 + optional Text).  
+Admin: Tab **Compliance** → Scores ohne E-Mails / ohne Gesundheitsdaten.  
+API: `POST/GET /api/feedback` · Tabelle `pilot_feedback`.
+
+Wöchentlicher Call bleibt — In-App ergänzt die Scorecard zwischen den Calls.

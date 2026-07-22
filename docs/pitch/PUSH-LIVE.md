@@ -69,3 +69,15 @@ Skip-Logik: Wer heute schon geloggt hat, bekommt keinen Reminder.
 
 Settings → Erinnerungen deaktivieren → Subscription wird gelöscht.  
 Retention-Cron entfernt Subscriptions älter als 180 Tage.
+
+---
+
+## 6. Sign-off (Launch Trust)
+
+| Check | Done |
+|-------|------|
+| B1–B3 aus [`GO-LIVE.md`](./GO-LIVE.md) | ☐ |
+| Notification-Text ohne Zyklus-/Menstruationswort | ☐ |
+| Skip-Wochenende Preferenzen (Settings) | ☐ |
+
+**Verifiziert von:** _____________ **Datum:** _______
