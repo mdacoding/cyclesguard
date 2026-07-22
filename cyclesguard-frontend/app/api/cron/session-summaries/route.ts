@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { authorizeCron } from '@/lib/cron-auth';
 
 interface IngestionSessionAggregate {
   playerId: string;
@@ -13,9 +14,7 @@ interface IngestionSessionAggregate {
 }
 
 export async function GET(request: Request) {
-  const auth = request.headers.get('authorization');
-  const secret = process.env.CRON_SECRET;
-  if (!secret || auth !== `Bearer ${secret}`) {
+  if (!authorizeCron(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -25,7 +24,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: true, synced: 0, skipped: 'ingestion not configured' });
   }
 
-  const since = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+  // Daily cron (Hobby) — look back >24h so sessions are not missed between runs
+  const since = new Date(Date.now() - 26 * 60 * 60 * 1000).toISOString();
   const response = await fetch(
     `${baseUrl}/api/v1/internal/session-aggregates?since=${encodeURIComponent(since)}`,
     { headers: { 'X-Management-Key': managementKey } }

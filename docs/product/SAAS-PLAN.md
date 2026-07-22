@@ -47,8 +47,11 @@ Pitch-Ready ✅  →  Pre-Meeting  →  Soft-Pilot (48h-ready) ✅  →  Club Pr
 
 ### Stage C — Club Product (Paid)
 
-- Saisonvertrag, Support, Club-Admin Roster  
-- Optional GPS mit separatem Consent  
+- [x] Club-Admin E-Mail-Invite + Saison-Setup + Audit-CSV  
+- [x] Player Insights / Reminder-Prefs / Landing  
+- [x] GPS Bridge Lookback + Deploy-Doc + Session-Card  
+- [ ] Saisonvertrag, Support, AVV unterschrieben  
+- [ ] Optional GPS live mit Club-Tracker  
 
 ### Stage D — Multi-Tenant SaaS
 

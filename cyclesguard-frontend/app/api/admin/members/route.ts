@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createAdminClient, isClubAdmin } from '@/lib/supabase/admin';
+import { assertClubScope } from '@/lib/admin-scope';
 
 const AssignSchema = z.object({
   teamId: z.string().uuid(),
@@ -13,20 +14,6 @@ const RemoveSchema = z.object({
   teamId: z.string().uuid(),
   userId: z.string().uuid(),
 });
-
-async function assertClubScope(admin: ReturnType<typeof createAdminClient>, userId: string, teamId: string, role: string | undefined) {
-  if (role === 'platform_admin') return true;
-  const { data: team } = await admin.from('teams').select('club_id').eq('id', teamId).maybeSingle();
-  if (!team?.club_id) return false;
-  const { data: membership } = await admin
-    .from('club_members')
-    .select('id')
-    .eq('club_id', team.club_id)
-    .eq('user_id', userId)
-    .eq('role', 'club_admin')
-    .maybeSingle();
-  return !!membership;
-}
 
 export async function GET(request: Request) {
   const supabase = await createServerSupabaseClient();

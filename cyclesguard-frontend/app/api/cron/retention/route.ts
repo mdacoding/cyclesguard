@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { authorizeCron } from '@/lib/cron-auth';
 
-/** CTO retention: prune stale push subscriptions older than 180 days without activity proxy. */
+/** CTO retention: prune push subscriptions inactive for 180+ days (last_seen_at). */
 export async function GET(request: Request) {
-  const auth = request.headers.get('authorization');
-  const secret = process.env.CRON_SECRET;
-  if (!secret || auth !== `Bearer ${secret}`) {
+  if (!authorizeCron(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -16,7 +15,7 @@ export async function GET(request: Request) {
   const { data, error } = await admin
     .from('push_subscriptions')
     .delete()
-    .lt('created_at', cutoff.toISOString())
+    .lt('last_seen_at', cutoff.toISOString())
     .select('id');
 
   if (error) {

@@ -15,6 +15,7 @@
 | [PILOT-FEEDBACK.md](./PILOT-FEEDBACK.md) | Für Soft-Pilot |
 | **[PILOT-RUNBOOK.md](./PILOT-RUNBOOK.md)** | Soft-Pilot Start in 48h |
 | [PUSH-LIVE.md](./PUSH-LIVE.md) | VAPID + Cron Live-Test |
+| [INGESTION-DEPLOY.md](./INGESTION-DEPLOY.md) | GPS-Ingestion hosten (nach Tracker-Zusage) |
 | [AVV-TOM-DRAFT.md](../privacy/AVV-TOM-DRAFT.md) | AVV/TOM-Entwurf |
 | [RLS-PENETRATION-CHECKLIST.md](../privacy/RLS-PENETRATION-CHECKLIST.md) | Privacy-Checks |
 

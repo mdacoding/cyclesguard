@@ -21,9 +21,10 @@ test.describe('public smoke', () => {
     await expect(page.getByLabel(/E-Mail/i)).toBeVisible();
   });
 
-  test('home page shows brand', async ({ page }) => {
+  test('home page shows brand and login CTA', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { name: /CyclesGuard/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: /^Anmelden$/i }).first()).toBeVisible();
   });
 });
 

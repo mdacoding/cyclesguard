@@ -34,10 +34,19 @@ export async function DELETE() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const ingestionConfigured = !!(process.env.INGESTION_BASE_URL && process.env.INGESTION_MANAGEMENT_KEY);
   const ingestion = await deleteIngestionPlayerData(user.id);
   if (!ingestion.ok) {
     console.error('Ingestion GPS cleanup failed:', ingestion.detail);
-    // Continue with auth delete — do not leave Supabase identity if GPS cleanup fails in staging without ingestion
+    if (ingestionConfigured) {
+      return NextResponse.json(
+        {
+          error: 'GPS-Daten konnten nicht gelöscht werden. Bitte später erneut versuchen.',
+          detail: ingestion.detail,
+        },
+        { status: 502 }
+      );
+    }
   }
 
   const admin = createAdminClient();

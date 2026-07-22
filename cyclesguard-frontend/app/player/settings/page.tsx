@@ -26,6 +26,8 @@ export default function SettingsPage() {
   const [pushEnabled, setPushEnabled] = useState(false);
   const [pushLoading, setPushLoading] = useState(false);
   const [pushError, setPushError] = useState<string | null>(null);
+  const [skipWeekends, setSkipWeekends] = useState(false);
+  const [prefsLoading, setPrefsLoading] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -36,6 +38,15 @@ export default function SettingsPage() {
       .then((subscription) => setPushEnabled(!!subscription))
       .catch(() => {
         // Ignore — push state stays disabled
+      });
+
+    fetch('/api/player/push-subscribe')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: { skipWeekends?: boolean } | null) => {
+        if (data) setSkipWeekends(!!data.skipWeekends);
+      })
+      .catch(() => {
+        /* ignore */
       });
   }, []);
 
@@ -82,6 +93,13 @@ export default function SettingsPage() {
         const success = await subscribeToPushNotifications();
         if (success) {
           setPushEnabled(true);
+          if (skipWeekends) {
+            await fetch('/api/player/push-subscribe', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ skipWeekends: true }),
+            });
+          }
         } else {
           setPushError(
             'Benachrichtigungen konnten nicht aktiviert werden. Prüfe die Browser-Berechtigung.'
@@ -92,6 +110,21 @@ export default function SettingsPage() {
       setPushError('Fehler beim Konfigurieren der Benachrichtigungen.');
     } finally {
       setPushLoading(false);
+    }
+  };
+
+  const handleSkipWeekends = async (next: boolean) => {
+    setSkipWeekends(next);
+    if (!pushEnabled) return;
+    setPrefsLoading(true);
+    try {
+      await fetch('/api/player/push-subscribe', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ skipWeekends: next }),
+      });
+    } finally {
+      setPrefsLoading(false);
     }
   };
 
@@ -131,6 +164,13 @@ export default function SettingsPage() {
             <h2 className="text-xl font-semibold">Erinnerungen</h2>
           </div>
 
+          {!isPushSupported() && (
+            <p className="text-sm text-cream/50 mb-4 p-4 rounded-xl bg-white/5">
+              Push wird in diesem Browser nicht unterstützt. Installiere die App auf dem Homescreen
+              (iOS 16.4+) für Erinnerungen.
+            </p>
+          )}
+
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-xl bg-white/5">
             <div>
               <h3 className="font-medium text-cream mb-1">Tägliche Erinnerungen aktivieren</h3>
@@ -161,6 +201,19 @@ export default function SettingsPage() {
               <span>{pushEnabled ? 'Aktiv' : 'Aktivieren'}</span>
             </button>
           </div>
+
+          <label className="mt-4 flex items-center gap-3 p-4 rounded-xl bg-white/5 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={skipWeekends}
+              disabled={prefsLoading}
+              onChange={(e) => void handleSkipWeekends(e.target.checked)}
+              className="w-4 h-4 accent-[#E8C4B8]"
+            />
+            <span className="text-sm text-cream/80">
+              Wochenenden pausieren (Sa/So keine Erinnerung)
+            </span>
+          </label>
         </section>
 
         <section className="glass-card p-6 md:p-8 animate-slideUp">

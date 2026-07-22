@@ -1,8 +1,14 @@
 import { CyclePhase } from '@/lib/types';
 import { PHASE_DEFINITIONS } from '@/lib/cycle-phases';
-import { ShieldAlert, Info, Activity } from 'lucide-react';
+import { ShieldAlert, Activity } from 'lucide-react';
 
-export default function FeedbackBanner({ phase }: { phase: CyclePhase }) {
+export default function FeedbackBanner({
+  phase,
+  isToday = true,
+}: {
+  phase: CyclePhase;
+  isToday?: boolean;
+}) {
   const definition = PHASE_DEFINITIONS[phase];
 
   return (
@@ -23,7 +29,7 @@ export default function FeedbackBanner({ phase }: { phase: CyclePhase }) {
           <div className="flex items-center gap-3">
             <span className="text-2xl">{definition.emoji}</span>
             <h2 className="font-display text-2xl font-semibold" style={{ color: definition.color }}>
-              Aktuelle Phase: {definition.labelDE}
+              {isToday ? 'Aktuelle Phase' : 'Letzte Phase'}: {definition.labelDE}
             </h2>
           </div>
           

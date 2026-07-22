@@ -1,7 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2, ShieldCheck, Users, Link2, UserMinus } from 'lucide-react';
+import {
+  Loader2,
+  ShieldCheck,
+  Users,
+  Link2,
+  UserMinus,
+  Mail,
+  CalendarRange,
+  Download,
+  CheckCircle2,
+} from 'lucide-react';
 import LogoutButton from '@/components/LogoutButton';
 
 interface TeamRow {
@@ -20,8 +30,24 @@ interface MemberRow {
   joinedAt: string;
 }
 
+interface ClubRow {
+  id: string;
+  name: string;
+}
+
+interface SeasonRow {
+  id: string;
+  clubId: string;
+  name: string;
+  startsOn: string;
+  endsOn: string;
+  status: 'planned' | 'active' | 'completed';
+}
+
 export default function AdminTeamsPage() {
   const [teams, setTeams] = useState<TeamRow[]>([]);
+  const [clubs, setClubs] = useState<ClubRow[]>([]);
+  const [seasons, setSeasons] = useState<SeasonRow[]>([]);
   const [selectedTeamId, setSelectedTeamId] = useState('');
   const [members, setMembers] = useState<MemberRow[]>([]);
   const [name, setName] = useState('');
@@ -31,21 +57,41 @@ export default function AdminTeamsPage() {
   const [error, setError] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
 
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteName, setInviteName] = useState('');
+  const [inviteRole, setInviteRole] = useState<'player' | 'trainer'>('player');
+  const [inviteBusy, setInviteBusy] = useState(false);
+
   const [linkUserId, setLinkUserId] = useState('');
   const [linkProvider, setLinkProvider] = useState('catapult');
   const [linkExternalId, setLinkExternalId] = useState('');
   const [assignUserId, setAssignUserId] = useState('');
   const [assignRole, setAssignRole] = useState<'player' | 'trainer'>('trainer');
 
+  const [seasonClubId, setSeasonClubId] = useState('');
+  const [seasonName, setSeasonName] = useState('');
+  const [seasonStart, setSeasonStart] = useState('');
+  const [seasonEnd, setSeasonEnd] = useState('');
+
   const load = async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/admin/teams');
-      if (!res.ok) throw new Error('load failed');
-      const data = (await res.json()) as TeamRow[];
+      const [teamsRes, clubsRes, seasonsRes] = await Promise.all([
+        fetch('/api/admin/teams'),
+        fetch('/api/admin/clubs'),
+        fetch('/api/admin/seasons'),
+      ]);
+      if (!teamsRes.ok) throw new Error('load failed');
+      const data = (await teamsRes.json()) as TeamRow[];
       setTeams(data);
       if (data.length > 0 && !selectedTeamId) setSelectedTeamId(data[0].id);
+      if (clubsRes.ok) {
+        const clubData = (await clubsRes.json()) as ClubRow[];
+        setClubs(clubData);
+        if (clubData.length > 0 && !seasonClubId) setSeasonClubId(clubData[0].id);
+      }
+      if (seasonsRes.ok) setSeasons((await seasonsRes.json()) as SeasonRow[]);
     } catch {
       setError('Teams konnten nicht geladen werden.');
     } finally {
@@ -69,6 +115,7 @@ export default function AdminTeamsPage() {
 
   useEffect(() => {
     void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -94,12 +141,46 @@ export default function AdminTeamsPage() {
 
   const removeMember = async (userId: string) => {
     if (!selectedTeamId) return;
+    if (!window.confirm('Mitglied wirklich aus dem Roster entfernen?')) return;
     const res = await fetch('/api/admin/members', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ teamId: selectedTeamId, userId }),
     });
-    if (res.ok) await loadMembers(selectedTeamId);
+    if (res.ok) {
+      await loadMembers(selectedTeamId);
+      await load();
+    }
+  };
+
+  const inviteMember = async () => {
+    if (!selectedTeamId || !inviteEmail) return;
+    setInviteBusy(true);
+    setMsg(null);
+    try {
+      const res = await fetch('/api/admin/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: inviteEmail.trim(),
+          teamId: selectedTeamId,
+          fullName: inviteName.trim() || undefined,
+          role: inviteRole,
+        }),
+      });
+      const data = (await res.json()) as { message?: string; error?: string };
+      if (!res.ok) {
+        setMsg(data.error ?? 'Einladung fehlgeschlagen.');
+        return;
+      }
+      setInviteEmail('');
+      setInviteName('');
+      setMsg(data.message ?? 'Einladung gesendet.');
+      await loadMembers(selectedTeamId);
+      await load();
+    } finally {
+      setInviteBusy(false);
+    }
   };
 
   const assignMember = async () => {
@@ -145,6 +226,44 @@ export default function AdminTeamsPage() {
     setLinkExternalId('');
   };
 
+  const createSeason = async () => {
+    if (!seasonClubId || !seasonName || !seasonStart || !seasonEnd) return;
+    setMsg(null);
+    const res = await fetch('/api/admin/seasons', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clubId: seasonClubId,
+        name: seasonName,
+        startsOn: seasonStart,
+        endsOn: seasonEnd,
+        status: 'planned',
+      }),
+    });
+    if (!res.ok) {
+      setMsg('Saison konnte nicht angelegt werden.');
+      return;
+    }
+    setSeasonName('');
+    setMsg('Saison angelegt.');
+    await load();
+  };
+
+  const activateSeason = async (id: string) => {
+    const res = await fetch('/api/admin/seasons', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status: 'active' }),
+    });
+    if (res.ok) {
+      setMsg('Saison aktiviert.');
+      await load();
+    }
+  };
+
+  const statusLabel = (s: SeasonRow['status']) =>
+    s === 'active' ? 'Aktiv' : s === 'completed' ? 'Abgeschlossen' : 'Geplant';
+
   return (
     <div className="min-h-screen py-10 px-4 animate-fadeIn">
       <div className="max-w-5xl mx-auto space-y-8">
@@ -154,13 +273,103 @@ export default function AdminTeamsPage() {
               <ShieldCheck className="w-4 h-4" />
               <span>Club Admin · Keine Gesundheitsdaten einsehbar</span>
             </div>
-            <h1 className="font-display text-4xl font-semibold text-gradient mb-2">Teams</h1>
+            <h1 className="font-display text-4xl font-semibold text-gradient mb-2">Club Product</h1>
             <p className="text-cream/70">
-              Roster & Logging-Quote — ohne Phasen, Symptome oder medizinische Rohdaten.
+              Teams, Roster, Saison & Audit — ohne Phasen, Symptome oder medizinische Rohdaten.
             </p>
           </div>
-          <LogoutButton className="self-start" />
+          <div className="flex flex-wrap gap-2 self-start">
+            <a
+              href="/api/admin/audit?format=csv"
+              className="inline-flex items-center gap-2 min-h-11 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-sm"
+            >
+              <Download className="w-4 h-4" />
+              Audit CSV
+            </a>
+            <LogoutButton />
+          </div>
         </header>
+
+        <section className="glass-card p-5 space-y-3">
+          <h2 className="font-semibold inline-flex items-center gap-2">
+            <CalendarRange className="w-4 h-4 text-rose-gold" />
+            Saison-Setup
+          </h2>
+          {clubs.length === 0 ? (
+            <p className="text-sm text-cream/50">
+              Kein Verein verknüpft — Saisons benötigen eine Club-Zuordnung in{' '}
+              <code className="text-cream/70">club_members</code>.
+            </p>
+          ) : (
+            <>
+              <div className="grid md:grid-cols-5 gap-3">
+                <select
+                  value={seasonClubId}
+                  onChange={(e) => setSeasonClubId(e.target.value)}
+                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+                >
+                  {clubs.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  value={seasonName}
+                  onChange={(e) => setSeasonName(e.target.value)}
+                  placeholder="z. B. Saison 26/27"
+                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12 md:col-span-1"
+                />
+                <input
+                  type="date"
+                  value={seasonStart}
+                  onChange={(e) => setSeasonStart(e.target.value)}
+                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+                />
+                <input
+                  type="date"
+                  value={seasonEnd}
+                  onChange={(e) => setSeasonEnd(e.target.value)}
+                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+                />
+                <button
+                  onClick={createSeason}
+                  disabled={!seasonName.trim() || !seasonStart || !seasonEnd}
+                  className="rounded-xl bg-rose-gold text-navy font-medium px-4 py-3 min-h-12 disabled:opacity-40"
+                >
+                  Anlegen
+                </button>
+              </div>
+              {seasons.length > 0 && (
+                <div className="space-y-2 pt-2">
+                  {seasons.map((s) => (
+                    <div
+                      key={s.id}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-xl bg-white/5 border border-white/10"
+                    >
+                      <div>
+                        <p className="font-medium">{s.name}</p>
+                        <p className="text-xs text-cream/50">
+                          {s.startsOn} → {s.endsOn} · {statusLabel(s.status)}
+                        </p>
+                      </div>
+                      {s.status !== 'active' && (
+                        <button
+                          type="button"
+                          onClick={() => activateSeason(s.id)}
+                          className="inline-flex items-center gap-2 min-h-11 px-3 rounded-lg bg-sage/20 text-sage text-sm"
+                        >
+                          <CheckCircle2 className="w-4 h-4" />
+                          Aktivieren
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </section>
 
         <section className="glass-card p-5 space-y-3">
           <h2 className="font-semibold">Neues Team</h2>
@@ -268,7 +477,45 @@ export default function AdminTeamsPage() {
             )}
 
             <div className="border-t border-white/10 pt-4 space-y-3">
-              <h3 className="text-sm font-medium">Trainer / Mitglied zuweisen</h3>
+              <h3 className="text-sm font-medium inline-flex items-center gap-2">
+                <Mail className="w-4 h-4 text-rose-gold" />
+                Per E-Mail einladen
+              </h3>
+              <div className="grid md:grid-cols-4 gap-3">
+                <input
+                  type="email"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  placeholder="name@verein.de"
+                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+                />
+                <input
+                  value={inviteName}
+                  onChange={(e) => setInviteName(e.target.value)}
+                  placeholder="Name (optional)"
+                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+                />
+                <select
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value as 'player' | 'trainer')}
+                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+                >
+                  <option value="player">Spielerin</option>
+                  <option value="trainer">Trainer</option>
+                </select>
+                <button
+                  onClick={inviteMember}
+                  disabled={!inviteEmail || inviteBusy}
+                  className="rounded-xl bg-rose-gold text-navy font-medium px-4 py-3 min-h-12 disabled:opacity-40 inline-flex items-center justify-center gap-2"
+                >
+                  {inviteBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                  Einladen
+                </button>
+              </div>
+            </div>
+
+            <div className="border-t border-white/10 pt-4 space-y-3">
+              <h3 className="text-sm font-medium">Per User-ID zuweisen (Fallback)</h3>
               <div className="grid md:grid-cols-3 gap-3">
                 <input
                   value={assignUserId}
@@ -297,7 +544,7 @@ export default function AdminTeamsPage() {
             <div className="border-t border-white/10 pt-4 space-y-3">
               <h3 className="text-sm font-medium inline-flex items-center gap-2">
                 <Link2 className="w-4 h-4 text-rose-gold" />
-                Athlete-Link (Wearable)
+                Athlete-Link (Wearable / GPS)
               </h3>
               <div className="grid md:grid-cols-4 gap-3">
                 <input
@@ -306,12 +553,16 @@ export default function AdminTeamsPage() {
                   placeholder="User-ID"
                   className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12 font-mono text-sm"
                 />
-                <input
+                <select
                   value={linkProvider}
                   onChange={(e) => setLinkProvider(e.target.value)}
-                  placeholder="Provider"
                   className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
-                />
+                >
+                  <option value="catapult">Catapult</option>
+                  <option value="statsports">STATSports</option>
+                  <option value="polar">Polar</option>
+                  <option value="custom">Custom</option>
+                </select>
                 <input
                   value={linkExternalId}
                   onChange={(e) => setLinkExternalId(e.target.value)}
@@ -327,7 +578,8 @@ export default function AdminTeamsPage() {
                 </button>
               </div>
               <p className="text-xs text-cream/40">
-                Ohne laufende Ingestion wird der Link in Supabase gespeichert; Sync warnt nur in den Logs.
+                Ohne laufende Ingestion wird der Link in Supabase gespeichert; Sync warnt nur in den
+                Logs. Siehe docs/pitch/INGESTION-DEPLOY.md.
               </p>
             </div>
           </section>

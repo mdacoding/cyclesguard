@@ -8,6 +8,11 @@ const PushSubscriptionSchema = z.object({
     p256dh: z.string().min(1),
     auth: z.string().min(1),
   }),
+  skipWeekends: z.boolean().optional(),
+});
+
+const PrefsSchema = z.object({
+  skipWeekends: z.boolean(),
 });
 
 export async function POST(request: Request) {
@@ -30,7 +35,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { endpoint, keys } = result.data;
+  const { endpoint, keys, skipWeekends } = result.data;
 
   const { error } = await supabase.from('push_subscriptions').upsert(
     {
@@ -38,6 +43,8 @@ export async function POST(request: Request) {
       endpoint,
       p256dh: keys.p256dh,
       auth: keys.auth,
+      last_seen_at: new Date().toISOString(),
+      ...(typeof skipWeekends === 'boolean' ? { skip_weekends: skipWeekends } : {}),
     },
     { onConflict: 'user_id,endpoint' }
   );
@@ -48,6 +55,59 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({ success: true });
+}
+
+/** Update reminder prefs on existing subscriptions without re-subscribing. */
+export async function PATCH(request: Request) {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const parsed = PrefsSchema.safeParse(await request.json());
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
+  }
+
+  const { error } = await supabase
+    .from('push_subscriptions')
+    .update({
+      skip_weekends: parsed.data.skipWeekends,
+      last_seen_at: new Date().toISOString(),
+    })
+    .eq('user_id', user.id);
+
+  if (error) {
+    return NextResponse.json({ error: 'Failed to update prefs' }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
+}
+
+export async function GET() {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { data } = await supabase
+    .from('push_subscriptions')
+    .select('skip_weekends')
+    .eq('user_id', user.id)
+    .limit(1)
+    .maybeSingle();
+
+  return NextResponse.json({
+    skipWeekends: data?.skip_weekends ?? false,
+  });
 }
 
 export async function DELETE(request: Request) {

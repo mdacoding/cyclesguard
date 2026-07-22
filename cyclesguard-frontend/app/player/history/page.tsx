@@ -8,7 +8,9 @@ import { mapDbCycleLog } from '@/lib/cycle-log-mapper';
 import { berlinDate } from '@/lib/date';
 import { PHASE_DEFINITIONS } from '@/lib/cycle-phases';
 import { SYMPTOM_OPTIONS } from '@/lib/symptoms';
+import { computePlayerInsights } from '@/lib/player-insights';
 import { CycleLog, CyclePhase } from '@/lib/types';
+import PlayerInsightsCard from './components/PlayerInsightsCard';
 
 function symptomLabel(key: string): string {
   return SYMPTOM_OPTIONS.find((s) => s.key === key)?.labelDE ?? key;
@@ -43,7 +45,7 @@ export default function HistoryPage() {
         .select('*')
         .eq('user_id', user.id)
         .order('logged_at', { ascending: false })
-        .limit(40);
+        .limit(90);
 
       setLogs((data ?? []).map((row) => mapDbCycleLog(row as Record<string, unknown>)));
       setLoading(false);
@@ -61,7 +63,9 @@ export default function HistoryPage() {
     return map;
   }, [logs]);
 
+  const insights = useMemo(() => computePlayerInsights(logs, 28), [logs]);
   const selectedLog = selectedDay ? byDay.get(selectedDay) ?? null : null;
+  const todayKey = berlinDate();
 
   return (
     <div className="min-h-screen py-10 px-4 animate-fadeIn">
@@ -83,14 +87,19 @@ export default function HistoryPage() {
           <div className="glass-card p-10 text-center text-cream/60">Lade Verlauf…</div>
         ) : (
           <>
+            <PlayerInsightsCard insights={insights} />
+
             <section className="glass-card p-5">
+              <p className="text-sm text-cream/60 mb-4">
+                {insights.loggedDays}/28 Tage geloggt
+                {insights.streak > 0 ? ` · Streak ${insights.streak}` : ''}
+              </p>
               <div className="grid grid-cols-7 gap-2 mb-3 text-center text-[11px] text-cream/40">
                 {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map((d) => (
                   <span key={d}>{d}</span>
                 ))}
               </div>
               <div className="grid grid-cols-7 gap-2">
-                {/* Pad first week to Monday */}
                 {Array.from({
                   length: (new Date(dayKeys[0] + 'T12:00:00').getDay() + 6) % 7,
                 }).map((_, i) => (
@@ -101,12 +110,13 @@ export default function HistoryPage() {
                   const phase = log?.phase as CyclePhase | undefined;
                   const color = phase ? PHASE_DEFINITIONS[phase].color : undefined;
                   const isSelected = selectedDay === day;
+                  const energy = log?.energyLevel;
                   return (
                     <button
                       key={day}
                       type="button"
                       onClick={() => setSelectedDay(day)}
-                      className={`aspect-square min-h-11 rounded-xl text-xs font-medium border transition-all ${
+                      className={`aspect-square min-h-11 rounded-xl text-xs font-medium border transition-all relative ${
                         isSelected
                           ? 'border-rose-gold scale-105'
                           : 'border-white/10 hover:border-white/30'
@@ -115,9 +125,23 @@ export default function HistoryPage() {
                         backgroundColor: color ? `${color}33` : 'rgba(255,255,255,0.04)',
                         color: color ?? 'rgba(245,240,232,0.5)',
                       }}
-                      aria-label={`${day}${phase ? `, ${PHASE_DEFINITIONS[phase].labelDE}` : ''}`}
+                      aria-label={`${day}${phase ? `, ${PHASE_DEFINITIONS[phase].labelDE}` : ''}${energy ? `, Energie ${energy}` : ''}`}
                     >
                       {Number(day.slice(-2))}
+                      {energy != null && (
+                        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <span
+                              key={i}
+                              className="w-1 h-1 rounded-full"
+                              style={{
+                                backgroundColor:
+                                  i < energy ? 'rgba(232,196,184,0.95)' : 'rgba(255,255,255,0.15)',
+                              }}
+                            />
+                          ))}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
@@ -160,9 +184,21 @@ export default function HistoryPage() {
                       {new Date(selectedLog.loggedAt).toLocaleDateString('de-DE')}
                     </time>
                   </div>
-                  <p className="text-sm text-cream/70">
-                    Energie: {selectedLog.energyLevel ?? '—'}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-cream/60">Energie</span>
+                    <div className="flex gap-1.5">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <span
+                          key={i}
+                          className={`w-3 h-3 rounded-full border ${
+                            (selectedLog.energyLevel ?? 0) > i
+                              ? 'bg-rose-gold border-rose-gold'
+                              : 'border-white/20'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
                   {selectedLog.symptoms.length > 0 && (
                     <p className="text-sm text-cream/60">
                       {selectedLog.symptoms.map(symptomLabel).join(' · ')}
@@ -173,6 +209,24 @@ export default function HistoryPage() {
                       {selectedLog.notes}
                     </p>
                   )}
+                  {selectedDay === todayKey && (
+                    <Link
+                      href="/player/dashboard"
+                      className="inline-flex min-h-11 items-center text-sm text-rose-gold hover:underline"
+                    >
+                      Heutigen Eintrag anpassen →
+                    </Link>
+                  )}
+                </div>
+              )}
+              {selectedDay && !selectedLog && selectedDay === todayKey && (
+                <div className="text-center">
+                  <Link
+                    href="/player/dashboard"
+                    className="inline-flex min-h-12 items-center px-6 py-3 rounded-full bg-rose-gold text-navy font-semibold text-sm"
+                  >
+                    Heute eintragen
+                  </Link>
                 </div>
               )}
             </section>

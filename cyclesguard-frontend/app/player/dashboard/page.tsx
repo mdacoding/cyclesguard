@@ -2,6 +2,8 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import CycleLogForm from './components/CycleLogForm';
 import FeedbackBanner from './components/FeedbackBanner';
 import RecentLogsCard from './components/RecentLogsCard';
+import PushPromptBanner from './components/PushPromptBanner';
+import SessionSummaryCard from './components/SessionSummaryCard';
 import { mapDbCycleLog } from '@/lib/cycle-log-mapper';
 import { isSameBerlinDay } from '@/lib/date';
 import { redirect } from 'next/navigation';
@@ -34,6 +36,15 @@ export default async function DashboardPage() {
   const lastLog = logs[0] ?? null;
   const todayLog = logs.find((log) => isSameBerlinDay(log.loggedAt)) ?? null;
   const isFirstRun = logs.length === 0;
+  const bannerLog = todayLog ?? lastLog;
+
+  const { data: sessionRow } = await supabase
+    .from('session_summaries')
+    .select('started_at, duration_minutes, distance_km, avg_heart_rate, load_score')
+    .eq('user_id', user.id)
+    .order('started_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   return (
     <div className="min-h-screen py-10 px-4 animate-fadeIn">
@@ -82,9 +93,11 @@ export default async function DashboardPage() {
           </section>
         )}
 
-        {lastLog && (
+        <PushPromptBanner hasLogged={!isFirstRun} />
+
+        {bannerLog && (
           <section className="animate-slideUp">
-            <FeedbackBanner phase={lastLog.phase} />
+            <FeedbackBanner phase={bannerLog.phase} isToday={!!todayLog} />
           </section>
         )}
 
@@ -99,6 +112,15 @@ export default async function DashboardPage() {
           </div>
 
           <div className="md:col-span-1 space-y-6">
+            {sessionRow && (
+              <SessionSummaryCard
+                startedAt={sessionRow.started_at}
+                durationMinutes={sessionRow.duration_minutes}
+                distanceKm={sessionRow.distance_km}
+                avgHeartRate={sessionRow.avg_heart_rate}
+                loadScore={sessionRow.load_score}
+              />
+            )}
             <section className="glass-card p-6 animate-slideUp" style={{ animationDelay: '0.2s' }}>
               <RecentLogsCard logs={logs} />
             </section>

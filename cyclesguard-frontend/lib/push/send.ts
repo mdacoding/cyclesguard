@@ -1,5 +1,6 @@
 import webpush from 'web-push';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { berlinDate, berlinWeekday, startOfBerlinDayUtc } from '@/lib/date';
 
 let configured = false;
 
@@ -18,6 +19,7 @@ export interface PushSendStats {
   sent: number;
   failed: number;
   pruned: number;
+  skippedWeekend: number;
 }
 
 /**
@@ -29,24 +31,28 @@ export async function sendDailyReminders(): Promise<PushSendStats> {
 
   const { data: subscriptions, error } = await admin
     .from('push_subscriptions')
-    .select('id, user_id, endpoint, p256dh, auth');
+    .select('id, user_id, endpoint, p256dh, auth, skip_weekends');
 
   if (error || !subscriptions) {
     console.error('Failed to load push subscriptions', error);
-    return { sent: 0, failed: 0, pruned: 0 };
+    return { sent: 0, failed: 0, pruned: 0, skippedWeekend: 0 };
   }
 
-  const berlinDay = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Berlin' });
+  const weekday = berlinWeekday();
+  const isWeekend = weekday === 0 || weekday === 6;
+  const dayStart = startOfBerlinDayUtc(berlinDate()).toISOString();
+
   const { data: loggedToday } = await admin
     .from('cycle_logs')
     .select('user_id')
-    .gte('logged_at', `${berlinDay}T00:00:00.000Z`);
+    .gte('logged_at', dayStart);
 
   const alreadyLogged = new Set((loggedToday ?? []).map((r) => r.user_id));
 
   let sent = 0;
   let failed = 0;
   let pruned = 0;
+  let skippedWeekend = 0;
 
   const payload = JSON.stringify({
     title: 'CyclesGuard',
@@ -55,6 +61,10 @@ export async function sendDailyReminders(): Promise<PushSendStats> {
 
   for (const sub of subscriptions) {
     if (alreadyLogged.has(sub.user_id)) continue;
+    if (isWeekend && sub.skip_weekends) {
+      skippedWeekend += 1;
+      continue;
+    }
 
     try {
       await webpush.sendNotification(
@@ -65,6 +75,10 @@ export async function sendDailyReminders(): Promise<PushSendStats> {
         payload
       );
       sent += 1;
+      await admin
+        .from('push_subscriptions')
+        .update({ last_seen_at: new Date().toISOString() })
+        .eq('id', sub.id);
     } catch (err: unknown) {
       const statusCode =
         typeof err === 'object' && err && 'statusCode' in err
@@ -81,7 +95,7 @@ export async function sendDailyReminders(): Promise<PushSendStats> {
   }
 
   console.info(
-    JSON.stringify({ event: 'daily_reminders', sent, failed, pruned })
+    JSON.stringify({ event: 'daily_reminders', sent, failed, pruned, skippedWeekend })
   );
-  return { sent, failed, pruned };
+  return { sent, failed, pruned, skippedWeekend };
 }

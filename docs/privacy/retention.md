@@ -4,7 +4,7 @@
 |-----------|--------------|----------|
 | `cycle_logs` | Solange Account aktiv | Sofort bei Art. 17 Delete |
 | `player_consents` | 3 Jahre nach Widerruf/Delete (Nachweis) — Pilot: mit Account | Mit Account |
-| `push_subscriptions` | Bis Opt-out oder 180 Tage inaktiv | Cron `/api/cron/retention` |
+| `push_subscriptions` | Bis Opt-out oder **180 Tage ohne Aktivität** (`last_seen_at`) | Cron `/api/cron/retention` |
 | `session_summaries` | Solange Account aktiv | Sofort bei Delete (Cascade) |
 | `athlete_links` | Solange Account aktiv | Sofort bei Delete |
 | `gps_metrics` / quarantine | Solange Account aktiv | Sofort via Ingestion `DELETE /internal/players/{id}` |

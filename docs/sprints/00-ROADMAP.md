@@ -62,11 +62,24 @@ Siehe **[`docs/pitch/PILOT-RUNBOOK.md`](../pitch/PILOT-RUNBOOK.md)**.
 
 | Item | Wann |
 |------|------|
-| Ingestion deploy + GPS live | Wenn Club Tracker nennt |
+| Ingestion deploy + GPS live | Wenn Club Tracker nennt — siehe [`INGESTION-DEPLOY.md`](../pitch/INGESTION-DEPLOY.md) |
 | Custom Domain | Nach Pilot-Zusage |
 | Billing / Multi-Tenant | Nach 2. Club / Saisonvertrag |
 | Sentry DSN in Vercel setzen | Empfohlen vor Echtdaten |
 | E2E mit Credentials in CI Secrets | Optional |
+| Migration `010` in Supabase anwenden | ✅ Live via MCP (`seasons_and_push_last_seen`) |
+
+---
+
+## Club Product Fortschritt (Wartezeit A–E)
+
+| Strang | Status |
+|--------|--------|
+| A Club-Admin Invite / Saison / Audit CSV | ✅ Code |
+| B Player History Insights / Reminder UX | ✅ Code |
+| C Retention `last_seen_at` + Cron-Auth Tests | ✅ Code |
+| D Landing Marketing | ✅ Code |
+| E GPS Lookback 26h + Deploy-Doc + Session-Card | ✅ Code |
 
 ---
 
@@ -79,4 +92,4 @@ Siehe **[`docs/pitch/PILOT-RUNBOOK.md`](../pitch/PILOT-RUNBOOK.md)**.
 | [PILOT-RUNBOOK.md](../pitch/PILOT-RUNBOOK.md) | Soft-Pilot Start |
 | [PUSH-LIVE.md](../pitch/PUSH-LIVE.md) | Reminder live |
 | [PRODUCT-BRIEF.md](../pitch/PRODUCT-BRIEF.md) | 1-Seiten-Brief |
-| [SAAS-PLAN.md](../product/SAAS-PLAN.md) | Stages |
+| [INGESTION-DEPLOY.md](../pitch/INGESTION-DEPLOY.md) | GPS Ingestion hosten |
