@@ -1,8 +1,11 @@
-# CyclesGuard — 4-Wochen Finish Plan (Club Product Paid-Ready)
+# CyclesGuard — M1 Engineering Checklist (Club Product tech-ready)
 
 **Stand:** 22.07.2026  
-**North star Exit:** Ein Club kann Soft-Pilot → bezahlte Saison ohne Engineering-Handarbeit fahren.  
-**Nicht-Ziel:** Stripe Self-Serve, Multi-Tenant Marketplace (Stage D).
+**Scope:** Nur **Meilenstein M1** (~4–6 Wochen Engineering) — **nicht** „SaaS fertig“.  
+**Gesamt-Timeline:** [`FINISH-PLAN.md`](./FINISH-PLAN.md)
+
+**North star dieses Docs:** Ein Club kann Ops ohne SQL fahren, sobald er „Ja“ sagt.  
+**Nicht-Ziel hier:** Stripe, Soft-Pilot-Abschluss, Multi-Tenant.
 
 Day-to-day: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.md).
 
@@ -14,12 +17,12 @@ Day-to-day: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.md).
 2. **Idempotente Ops** — Invite/Seed/Archive wiederholbar  
 3. **Kleine Migrationen** — eine Schema-Änderung = eine Migration, MCP + Repo synchron  
 4. **Fail closed** bei GPS-Delete wenn Ingestion konfiguriert  
-5. **Scope Freeze W4** — nur Bugs aus Pilot, keine Feature-Expansion  
-6. **Manual commercial path** vor Payment-Rails (Vertrauen → Vertrag → später Billing)
+5. **Manual commercial path** vor Payment-Rails  
+6. Kein Fake: Soft-Pilot und Paid liegen auf **M2** (Monate), nicht in diesem Checklist
 
 ---
 
-## Woche 1 — Harden (Engineering)
+## M1 Harden (Engineering)
 
 | Item | Best Practice | Done |
 |------|---------------|------|
@@ -34,53 +37,20 @@ Day-to-day: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.md).
 
 ---
 
-## Woche 2 — Compliance & Pilot-Ops (Founder + Tech)
+## Noch offen für M1-Exit
 
 | Item | Owner |
 |------|--------|
-| AVV/TOM mit DSB finalisieren | Founder |
-| RLS-Checkliste abhaken (`docs/privacy/RLS-PENETRATION-CHECKLIST.md`) | Tech |
-| Sentry DSN Production (`SENTRY-LIVE.md`) | Founder |
-| Runbook Dry-Run: Admin CSV, Archive, Season Contract | Tech |
-| Secrets-Rotation Checklist vor Echtdaten | Founder |
+| Sentry DSN Production | Founder |
+| RLS-Checkliste manuell signieren | Tech |
+| Runbook Dry-Run mit Demo-Admin | Tech |
 
 ---
 
-## Woche 3 — Paid Packaging
+## Danach (nicht M1)
 
-| Item | Owner |
-|------|--------|
-| Soft-Pilot → Season Offer (2–5k) nutzen | Founder |
-| Contract-Felder in Admin pflegen | Club Admin / Founder |
-| `clubs.billing_email` / legal_name gesetzt | Ops |
-| Support-E-Mail erreichbar | Founder |
-
----
-
-## Woche 4 — Buffer
-
-- Nur Feedback-Bugs aus Soft-Pilot  
-- Keine neuen Produktflächen  
-- Exit-Review gegen Kriterien in `00-ROADMAP.md`
-
----
-
-## Deferred (nach Exit)
-
-| Item | Warum später |
-|------|----------------|
-| Stripe / Invoices | Nach 1. bezahltem Vertrag |
-| Self-Serve Multi-Tenant | Nach 2. Club |
-| Live GPS Host | Club muss Tracker nennen |
-| Custom Domain | Nach Pilot-Zusage |
-| GPS-ML / Risk Models | Kein Paid-Gate |
-
----
-
-## Risiken
-
-| Risiko | Mitigation |
-|--------|------------|
-| Pitch verzögert sich | W1–W2 Code/Compliance trotzdem fertig |
-| AVV blockiert Produktiv | Soft-Pilot nur mit Freiwilligen + Entwurf; Paid erst nach Signatur |
-| Auth Rate-Limits bei Bulk | Cap 50, Delay, Rate-Limit pro Actor |
+| Item | Meilenstein |
+|------|-------------|
+| Soft-Pilot 8–12 Wochen | **M2** |
+| AVV unterschrieben + Paid Season | **M2** |
+| Stripe / Self-Serve | **M3** |

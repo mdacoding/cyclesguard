@@ -5,7 +5,10 @@
 **Live:** https://cyclesguard.vercel.app  
 **North star:** Privacy-first readiness platform for women’s football clubs in DACH → later EU.
 
-**Finish plan (≤4 Wochen):** [`FINISH-PLAN-4W.md`](./FINISH-PLAN-4W.md) · Day-to-day: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.md).
+**Führende Timeline (realistisch):** [`FINISH-PLAN.md`](./FINISH-PLAN.md)  
+**M1 Engineering-Detail:** [`FINISH-PLAN-4W.md`](./FINISH-PLAN-4W.md) · Day-to-day: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.md).
+
+> **Hinweis:** 4–6 Wochen gelten nur für **M1 tech-ready**. Soft-Pilot (8–12 Wochen) + erster bezahlter Club + Multi-Tenant brauchen **Monate**, nicht Wochen.
 
 ---
 
@@ -25,7 +28,7 @@
 ## 2. Product stages
 
 ```
-Pitch-Ready ✅ → Soft-Pilot Tech ✅ → Club Product Paid-Ready (4W Exit) → Multi-Tenant SaaS
+Pitch-Ready ✅ → Soft-Pilot Tech ✅ → M1 tech-ready → Soft-Pilot (8–12 W) → M2 Paid Club → M3 Multi-Tenant SaaS
 ```
 
 ### Stage A — Pitch-Ready ✅
@@ -35,24 +38,24 @@ Pitch-Ready ✅ → Soft-Pilot Tech ✅ → Club Product Paid-Ready (4W Exit) �
 - [x] Pitch-Docs + Outreach  
 - [ ] Founder: Auth Site URL + Termin anfragen  
 
-### Stage B — Soft-Pilot (technisch vorbereitet ✅)
+### Stage B — Soft-Pilot (technisch vorbereitet ✅ · Laufzeit 8–12 Wochen)
 
 - [x] Invite / Callback / Runbook / AVV-Entwurf / CI  
-- [ ] Nach Ja: Secrets rotieren, Demo-Mode off, AVV unterschreiben  
+- [ ] Nach Ja: Secrets rotieren, Demo-Mode off, AVV unterschreiben, Pilot fahren  
 
-### Stage C — Club Product → **Exit „fertig“**
+### Stage C — Club Product (M1 tech ~fertig · M2 = bezahlter Club)
 
 - [x] Admin Invite / CSV / Saison / Audit / Insights / Landing / GPS-Bridge-Docs  
 - [x] Season commercial fields (manuell, ohne Stripe)  
 - [x] Support-Pfad dokumentiert  
-- [ ] AVV unterschrieben + Sentry DSN + Soft-Pilot Proof  
+- [ ] AVV + Sentry + Soft-Pilot Proof → **erster bezahlter Vertrag (M2, Monate)**  
 - [ ] Optional GPS live mit Club-Tracker  
 
-**Exit-Kriterien:** siehe `FINISH-PLAN-4W.md` / `00-ROADMAP.md`.
-
-### Stage D — Multi-Tenant SaaS (nach Exit)
+### Stage D — Multi-Tenant SaaS (**M3, nach M2**)
 
 - Stripe / Self-serve / Multi-Club Marketplace / advanced Observability  
+
+**Timeline-Wahrheit:** siehe [`FINISH-PLAN.md`](./FINISH-PLAN.md).
 
 ---
 
@@ -79,9 +82,10 @@ Pitch-Ready ✅ → Soft-Pilot Tech ✅ → Club Product Paid-Ready (4W Exit) �
 
 | Prio | Action |
 |------|--------|
-| **Engineering** | 4W-Plan W1 Harden (diese Iteration) → W2 Compliance Support |
-| **Founder** | Outreach + Sentry DSN + AVV-Pfad |
-| **Nicht jetzt** | Stripe, GPS-ML, Self-Serve Multi-Tenant |
+| **Kritischer Pfad** | Outreach / Termin (`OUTREACH.md`) — bestimmt M2 |
+| **Engineering** | M1 Rest (Sentry/RLS Dry-Run), dann nur Pilot-Feedback |
+| **Legal** | AVV/DSB früh |
+| **Nicht jetzt** | Stripe, Self-Serve Multi-Tenant (M3) |
 
 ---
 
@@ -92,6 +96,7 @@ Pitch-Ready ✅ → Soft-Pilot Tech ✅ → Club Product Paid-Ready (4W Exit) �
 | Pitch before market-ready | Clubs kaufen Story + Demo + Angebot |
 | Soft-Pilot free | Vertrauen vor Revenue |
 | Ampel-only trainer | Compliance non-negotiable |
+| Scope Freeze in Woche 4 | Nur für **M1**-Polish, nicht Gesamt-SaaS |
+| Soft-Pilot 8–12 Wochen | Vertrauen; deshalb M2 = Monate |
 | Manual season contract before Stripe | Paid-ready ohne Payment-Komplexität |
-| Scope Freeze in Woche 4 | Fertigstellung schützt vor Feature-Creep |
 | Hobby Vercel crons daily | Plan-Limit; genug für Pitch/Pilot |
