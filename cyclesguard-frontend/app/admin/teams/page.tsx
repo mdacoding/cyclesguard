@@ -1239,7 +1239,12 @@ export default function AdminTeamsPage() {
                             {m.role === 'trainer' ? 'Trainer' : 'Spielerin'}
                             {m.email ? ` · ${m.email}` : ''}
                           </p>
-                          <p className="text-[11px] text-cream/30 mt-1 font-mono">{m.userId}</p>
+                          <details className="mt-1">
+                            <summary className="text-[11px] text-cream/35 cursor-pointer hover:text-cream/55">
+                              Erweitert (User-ID)
+                            </summary>
+                            <p className="text-[11px] text-cream/30 mt-1 font-mono break-all">{m.userId}</p>
+                          </details>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {m.invitePending && (
@@ -1342,74 +1347,79 @@ export default function AdminTeamsPage() {
                   </p>
                 </div>
 
-                <div className="border-t border-white/10 pt-4 space-y-3">
-                  <h3 className="text-sm font-medium">Per User-ID zuweisen (Fallback)</h3>
-                  <div className="grid md:grid-cols-3 gap-3">
-                    <input
-                      value={assignUserId}
-                      onChange={(e) => setAssignUserId(e.target.value)}
-                      placeholder="User-ID (UUID)"
-                      className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12 font-mono text-sm"
-                    />
-                    <select
-                      value={assignRole}
-                      onChange={(e) => setAssignRole(e.target.value as 'player' | 'trainer')}
-                      className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
-                    >
-                      <option value="trainer">Trainer</option>
-                      <option value="player">Spielerin</option>
-                    </select>
-                    <button
-                      onClick={assignMember}
-                      disabled={!assignUserId}
-                      className="rounded-xl bg-white/10 hover:bg-white/15 px-4 py-3 min-h-12 disabled:opacity-40"
-                    >
-                      Zuweisen
-                    </button>
+                <details className="border-t border-white/10 pt-4 space-y-4">
+                  <summary className="text-sm font-medium text-cream/70 cursor-pointer hover:text-cream/90">
+                    Erweitert — User-ID / GPS Athlete-Link
+                  </summary>
+                  <div className="space-y-3 pt-2">
+                    <h3 className="text-sm font-medium">Per User-ID zuweisen (Fallback)</h3>
+                    <div className="grid md:grid-cols-3 gap-3">
+                      <input
+                        value={assignUserId}
+                        onChange={(e) => setAssignUserId(e.target.value)}
+                        placeholder="User-ID (UUID)"
+                        className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12 font-mono text-sm"
+                      />
+                      <select
+                        value={assignRole}
+                        onChange={(e) => setAssignRole(e.target.value as 'player' | 'trainer')}
+                        className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+                      >
+                        <option value="trainer">Trainer</option>
+                        <option value="player">Spielerin</option>
+                      </select>
+                      <button
+                        onClick={assignMember}
+                        disabled={!assignUserId}
+                        className="rounded-xl bg-white/10 hover:bg-white/15 px-4 py-3 min-h-12 disabled:opacity-40"
+                      >
+                        Zuweisen
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                <div className="border-t border-white/10 pt-4 space-y-3">
-                  <h3 className="text-sm font-medium inline-flex items-center gap-2">
-                    <Link2 className="w-4 h-4 text-rose-gold" />
-                    Athlete-Link (Wearable / GPS)
-                  </h3>
-                  <div className="grid md:grid-cols-4 gap-3">
-                    <input
-                      value={linkUserId}
-                      onChange={(e) => setLinkUserId(e.target.value)}
-                      placeholder="User-ID"
-                      className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12 font-mono text-sm"
-                    />
-                    <select
-                      value={linkProvider}
-                      onChange={(e) => setLinkProvider(e.target.value)}
-                      className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
-                    >
-                      <option value="catapult">Catapult</option>
-                      <option value="statsports">STATSports</option>
-                      <option value="polar">Polar</option>
-                      <option value="custom">Custom</option>
-                    </select>
-                    <input
-                      value={linkExternalId}
-                      onChange={(e) => setLinkExternalId(e.target.value)}
-                      placeholder="External Athlete ID"
-                      className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
-                    />
-                    <button
-                      onClick={saveAthleteLink}
-                      disabled={!linkUserId || !linkExternalId}
-                      className="rounded-xl bg-rose-gold text-navy font-medium px-4 py-3 min-h-12 disabled:opacity-40"
-                    >
-                      Speichern
-                    </button>
+                  <div className="space-y-3">
+                    <h3 className="text-sm font-medium inline-flex items-center gap-2">
+                      <Link2 className="w-4 h-4 text-rose-gold" />
+                      Athlete-Link (Wearable / GPS)
+                    </h3>
+                    <div className="grid md:grid-cols-4 gap-3">
+                      <input
+                        value={linkUserId}
+                        onChange={(e) => setLinkUserId(e.target.value)}
+                        placeholder="User-ID"
+                        className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12 font-mono text-sm"
+                      />
+                      <select
+                        value={linkProvider}
+                        onChange={(e) => setLinkProvider(e.target.value)}
+                        className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+                      >
+                        <option value="catapult">Catapult</option>
+                        <option value="statsports">STATSports</option>
+                        <option value="polar">Polar</option>
+                        <option value="custom">Custom</option>
+                      </select>
+                      <input
+                        value={linkExternalId}
+                        onChange={(e) => setLinkExternalId(e.target.value)}
+                        placeholder="External Athlete ID"
+                        className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+                      />
+                      <button
+                        onClick={saveAthleteLink}
+                        disabled={!linkUserId || !linkExternalId}
+                        className="rounded-xl bg-rose-gold text-navy font-medium px-4 py-3 min-h-12 disabled:opacity-40"
+                      >
+                        Speichern
+                      </button>
+                    </div>
+                    <p className="text-xs text-cream/40">
+                      Ohne laufende Ingestion wird der Link in Supabase gespeichert; Sync warnt nur in
+                      den Logs. Siehe docs/pitch/INGESTION-DEPLOY.md. Nur nötig, wenn der Club GPS fordert.
+                    </p>
                   </div>
-                  <p className="text-xs text-cream/40">
-                    Ohne laufende Ingestion wird der Link in Supabase gespeichert; Sync warnt nur in
-                    den Logs. Siehe docs/pitch/INGESTION-DEPLOY.md.
-                  </p>
-                </div>
+                </details>
               </section>
             )}
           </div>

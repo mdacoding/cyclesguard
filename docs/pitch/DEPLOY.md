@@ -1,12 +1,13 @@
 # Pitch-Deploy: Vercel aus GitHub
 
-**Stand:** 21.07.2026  
+**Stand:** 23.07.2026  
 **Repo:** https://github.com/mdacoding/cyclesguard  
+**Live:** https://cyclesguard.vercel.app  
 **Supabase:** ✅ Cloud + Migrationen + Seed — siehe [SUPABASE-SETUP.md](./SUPABASE-SETUP.md)
 
-**Einziger offener P0-Schritt:** Production-URL auf Vercel.
+**Status:** Production-URL live. Offene Ops: Soft-Pilot Outreach / AVV (Founder) — siehe [`GO-LIVE.md`](./GO-LIVE.md).
 
-Geschätzte Dauer: **30–60 Minuten**.
+Geschätzte Dauer (neuer Fork/Deploy): **30–60 Minuten**.
 
 ---
 
