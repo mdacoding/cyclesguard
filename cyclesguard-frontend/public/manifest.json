@@ -2,7 +2,7 @@
   "name": "CyclesGuard",
   "short_name": "CyclesGuard",
   "description": "Private Readiness-App für Fußballspielerinnen",
-  "start_url": "/",
+  "start_url": "/player/dashboard",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",

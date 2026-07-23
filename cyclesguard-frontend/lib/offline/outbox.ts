@@ -1,10 +1,9 @@
-'use client';
-
 import type { CyclePhase } from '@/lib/types';
 
 const DB_NAME = 'cyclesguard-outbox';
 const STORE = 'pending_cycle_logs';
 const DB_VERSION = 1;
+export const OUTBOX_SYNC_TAG = 'cyclesguard-outbox';
 
 export interface PendingCycleLog {
   clientLogId: string;
@@ -48,7 +47,26 @@ export async function enqueueLog(
     tx.onerror = () => reject(tx.error);
   });
   db.close();
+  await registerOutboxSync();
   return entry;
+}
+
+/** Ask the browser to retry flush when connectivity returns (Chromium; no-op elsewhere). */
+export async function registerOutboxSync(): Promise<void> {
+  if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const syncManager = (
+      reg as ServiceWorkerRegistration & {
+        sync?: { register: (tag: string) => Promise<void> };
+      }
+    ).sync;
+    if (syncManager) {
+      await syncManager.register(OUTBOX_SYNC_TAG);
+    }
+  } catch {
+    // Background Sync unsupported or permission denied — online listener still covers open tabs.
+  }
 }
 
 export async function listPending(): Promise<PendingCycleLog[]> {
@@ -96,6 +114,7 @@ export async function flushOutbox(): Promise<{ synced: number; failed: number }>
       const response = await fetch('/api/player/log', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({
           clientLogId: entry.clientLogId,
           phase: entry.phase,

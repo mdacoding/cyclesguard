@@ -46,10 +46,14 @@ export async function GET(request: Request) {
 
       const role = getAppRole(user);
       const hasConsented = user?.user_metadata?.has_consented === true;
-      let destination =
-        nextParam && nextParam.startsWith('/') ? nextParam : homePathForRole(role);
+      const nextOk = nextParam && nextParam.startsWith('/') && !nextParam.startsWith('//');
+      let destination = nextOk ? nextParam : homePathForRole(role);
 
-      if (role === 'player' && !hasConsented) {
+      // Invite/recovery must reach set-password before consent onboarding.
+      const isSetPassword =
+        destination === '/auth/set-password' || destination.startsWith('/auth/set-password?');
+
+      if (role === 'player' && !hasConsented && !isSetPassword) {
         destination = '/player/onboarding';
       }
 

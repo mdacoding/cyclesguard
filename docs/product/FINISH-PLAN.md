@@ -37,11 +37,11 @@ Jetzt ──M1 tech (~4–6 W)──► Soft-Pilot (8–12 W) ──M2 Paid─�
 |--------|------|
 | ✅ | Ampel, Invite, Offline, Admin, Landing, GPS-Bridge-Docs |
 | ✅ | Bulk CSV, Archive, Season commercial fields, Harden Invites |
-| ⬜ | Sentry DSN Production |
-| ⬜ | RLS-Checkliste manuell signiert |
-| ⬜ | Runbook Dry-Run mit Demo-Admin |
+| ✅ | Sentry DSN Production (EU) |
+| ✅ | RLS live verifiziert (`verify:rls-trainer`) |
+| ✅ | Runbook Dry-Run / Admin Dry-Run gegen Prod |
 
-**Exit M1:** Tech blockiert Soft-Pilot/Paid nicht mehr.
+**Exit M1:** Tech blockiert Soft-Pilot/Paid nicht mehr. **M1 tech ✅ 23.07.2026**
 
 ---
 

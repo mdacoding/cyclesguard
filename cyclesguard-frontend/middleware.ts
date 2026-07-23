@@ -37,7 +37,11 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const role = getAppRole(user)
 
-  if (user && pathname === '/login') {
+  if (user && (pathname === '/login' || pathname === '/auth/set-password')) {
+    // Allow set-password while session from invite/recovery is active.
+    if (pathname === '/auth/set-password') {
+      return supabaseResponse
+    }
     const url = request.nextUrl.clone()
     url.pathname = homePathForRole(role)
     return NextResponse.redirect(url)

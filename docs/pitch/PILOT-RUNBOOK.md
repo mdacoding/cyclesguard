@@ -8,7 +8,7 @@
 ## 0. Vorbedingungen (einmalig)
 
 - [ ] Supabase Auth: Site URL = `https://cyclesguard.vercel.app`
-- [ ] Redirect URLs enthalten `…/auth/callback`
+- [ ] Redirect URLs enthalten `…/auth/callback` und ggf. `…/auth/set-password` (oder Wildcard `…/**`)
 - [ ] Vercel Env vollständig (`npm run pitch:env-checklist` lokal)
 - [ ] Secrets rotieren (Service Role / Secret Key) — siehe Security unten
 - [ ] Optional: Custom Domain gesetzt + Auth-URLs angepasst
@@ -37,9 +37,11 @@ Demo-Passwort (`CyclesGuard2026!`) bleibt **intern**.
 1. Trainer einloggen → `/trainer/dashboard`
 2. Team wählen
 3. Name + E-Mail → **Einladen**
-   - Neu: Supabase sendet Invite-Mail → Link → Passwort setzen → Onboarding (Consent) → Dashboard
-   - Bereits registriert: wird dem Roster hinzugefügt (ohne zweite Invite-Mail)
+   - Neu: Supabase Invite-Mail → `/auth/callback` → **Passwort festlegen** (`/auth/set-password`) → Onboarding (Consent) → Dashboard
+   - Bereits registriert & bestätigt: Roster-Add (keine zweite Mail)
+   - Bereits eingeladen, aber noch nie eingeloggt: Roster-Add **plus** Passwort-Setup-Mail erneut
 4. Ampel prüfen: neue Spielerin erscheint als **NO_DATA**, bis erster Log
+5. Spielerin: optional Homescreen-Install-Banner (Push zuverlässiger)
 
 Smoke (5 Min.):
 

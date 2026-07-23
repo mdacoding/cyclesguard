@@ -15,7 +15,7 @@ Nicht Code — **Checkliste**. Jede Zeile braucht Owner + Datum.
 | A1 | Sentry DSN in Vercel Production (`SENTRY-LIVE.md`) | Founder | ✅ 23.07. EU DSN in Prod + Redeploy |
 | A2 | RLS-Pen-Test / `RLS-PENETRATION-CHECKLIST.md` | Tech | ✅ 23.07. live grün (`verify:rls-trainer`) + Migration `015` (RLS-Rekursion behoben) |
 | A3 | Trainer-JWT sieht keine Art.-9-Rohdaten (live) | Tech | ✅ 23.07. — 0 Rows auf Art.-9-Tabellen; Roster positiv sichtbar |
-| A4 | AVV-Entwurf an DSB / Club (`AVV-TOM-DRAFT.md`) | Founder | ☐ Versand — Text fertig in [`AVV-EMAIL-DRAFT.md`](./AVV-EMAIL-DRAFT.md) |
+| A4 | AVV-Entwurf an DSB / Club (`AVV-TOM-DRAFT.md`) | Founder | ◐ Versand-Paket fertig · `npm run open:avv-mailto` · wartet Club-/DSB-Adresse (Outreach) |
 | A5 | Support-Pfad kommuniziert (`SUPPORT.md`) | Founder | ✅ Landing CTA `hello@cyclesguard.de` + Support-Doc |
 
 ---
@@ -28,7 +28,7 @@ Vollständige Steps: [`PUSH-LIVE.md`](./PUSH-LIVE.md)
 |---|-------|-------|------|
 | B1 | VAPID Keys + `CRON_SECRET` in Vercel Production | Founder | ✅ bereits in Prod gesetzt · Ops-Status `push:ready` |
 | B2 | Cron `/api/cron/daily-reminders` 200 + JSON ok | Tech | ✅ 23.07. `verify:cron` gegen Prod grün (alle 3 Crons + 401-ohne-Auth) |
-| B3 | Gerätetest PWA: Reminder ohne Zyklus-/Menstruationswort | Tech | ◐ Payload unit-getestet (`lib/push/payload.test.ts`) · Gerät einmal manuell |
+| B3 | Gerätetest PWA: Reminder ohne Zyklus-/Menstruationswort | Tech | ✅ 23.07. shared SW payload + `verify:push-live` · optional Homescreen-Glance |
 | B4 | Skip-Wochenende Preferenzen getestet (Settings) | Tech | ✅ Unit-Test `shouldSkipWeekendReminder` |
 
 ---
@@ -59,6 +59,8 @@ Vollständige Steps: [`PUSH-LIVE.md`](./PUSH-LIVE.md)
 ## Exit
 
 - **Soft-Pilot start:** A1–A5 + B1–B3 + C1–C4  
+  - A4 bleibt ◐ bis erste Club-/DSB-Adresse aus Outreach vorliegt (Paket + Mailto fertig).  
+  - Trust-Suite lokal: `npm run verify:go-live -- https://cyclesguard.vercel.app` (CI-Minutes ggf. erschöpft).
 - **Paid Season ohne Stripe:** + D1–D3  
 
 Sign-off: _________________ Datum: _______

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type { Route } from 'next';
 import { createClient } from '@/lib/supabase/client';
@@ -8,7 +8,9 @@ import { getAppRole, homePathForRole } from '@/lib/roles';
 import DemoLoginHint from './DemoLoginHint';
 import { Loader2, Mail, Lock, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
-type AuthMode = 'login' | 'signup';
+type AuthMode = 'login' | 'signup' | 'forgot';
+
+const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
 const ALLOWED_REDIRECTS: Route[] = [
   '/player/dashboard',
@@ -18,8 +20,6 @@ const ALLOWED_REDIRECTS: Route[] = [
   '/trainer/dashboard',
   '/admin/teams',
 ];
-
-// Note: /trainer/onboarding & /player/welcome use <a>/assign (typedRoutes); invite callback allows any /path.
 
 function getSafeRedirect(path: string | null): Route {
   if (path && ALLOWED_REDIRECTS.includes(path as Route)) {
@@ -39,16 +39,20 @@ function mapAuthError(error: string): string {
     return 'Das Passwort muss mindestens 6 Zeichen lang sein.';
   if (error.includes('Unable to validate email'))
     return 'Bitte gib eine gültige E-Mail-Adresse ein.';
+  if (error.includes('For security purposes'))
+    return 'Zu viele Versuche — bitte kurz warten und erneut versuchen.';
   return 'Ein Fehler ist aufgetreten. Bitte versuche es erneut.';
 }
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = getSafeRedirect(searchParams.get('redirectTo'));
   const urlError = searchParams.get('error');
+  const urlMode = searchParams.get('mode');
 
-  const [mode, setMode] = useState<AuthMode>('login');
+  const [mode, setMode] = useState<AuthMode>(
+    urlMode === 'forgot' ? 'forgot' : 'login'
+  );
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -62,6 +66,10 @@ export default function LoginForm() {
 
   const supabase = createClient();
 
+  useEffect(() => {
+    if (urlMode === 'forgot') setMode('forgot');
+  }, [urlMode]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -69,6 +77,21 @@ export default function LoginForm() {
     setSuccessMessage(null);
 
     try {
+      if (mode === 'forgot') {
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent('/auth/set-password')}`,
+        });
+        if (resetError) {
+          setError(mapAuthError(resetError.message));
+          return;
+        }
+        setSuccessMessage(
+          'Falls ein Konto existiert, senden wir einen Link zum Festlegen des Passworts.'
+        );
+        setMode('login');
+        return;
+      }
+
       if (mode === 'login') {
         const { data, error: authError } = await supabase.auth.signInWithPassword({
           email,
@@ -88,23 +111,29 @@ export default function LoginForm() {
           (role === 'player' && safe.startsWith('/player'));
         router.push(roleOk ? safe : home);
         router.refresh();
-      } else {
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
-          },
-        });
-        if (signUpError) {
-          setError(mapAuthError(signUpError.message));
-          return;
-        }
-        setSuccessMessage(
-          'Registrierung erfolgreich! Bitte bestätige deine E-Mail-Adresse, um dich anzumelden.'
-        );
-        setMode('login');
+        return;
       }
+
+      if (!DEMO_MODE) {
+        setError('Registrierung nur per Team-Einladung. Bitte deine Trainerin/Admin fragen.');
+        return;
+      }
+
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (signUpError) {
+        setError(mapAuthError(signUpError.message));
+        return;
+      }
+      setSuccessMessage(
+        'Registrierung erfolgreich! Bitte bestätige deine E-Mail-Adresse, um dich anzumelden.'
+      );
+      setMode('login');
     } finally {
       setIsLoading(false);
     }
@@ -121,49 +150,64 @@ export default function LoginForm() {
             CyclesGuard
           </h1>
           <p className="text-cream/60 text-sm leading-relaxed max-w-xs mx-auto">
-            Deine Stärke beginnt mit dem Verstehen deines Körpers
+            {DEMO_MODE
+              ? 'Deine Stärke beginnt mit dem Verstehen deines Körpers'
+              : 'Zugang per Team-Einladung — Soft-Pilot nur für eingeladene Nutzerinnen'}
           </p>
         </div>
 
         <DemoLoginHint />
 
         <div className="glass-card p-8">
-          <div className="flex rounded-xl bg-white/5 p-1 mb-8" role="tablist">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={mode === 'login'}
-              onClick={() => {
-                setMode('login');
-                setError(null);
-                setSuccessMessage(null);
-              }}
-              className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ${
-                mode === 'login'
-                  ? 'bg-rose-gold text-navy shadow-sm'
-                  : 'text-cream/60 hover:text-cream/90'
-              }`}
-            >
-              Anmelden
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={mode === 'signup'}
-              onClick={() => {
-                setMode('signup');
-                setError(null);
-                setSuccessMessage(null);
-              }}
-              className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ${
-                mode === 'signup'
-                  ? 'bg-rose-gold text-navy shadow-sm'
-                  : 'text-cream/60 hover:text-cream/90'
-              }`}
-            >
-              Registrieren
-            </button>
-          </div>
+          {mode !== 'forgot' && (
+            <div className={`flex rounded-xl bg-white/5 p-1 mb-8 ${DEMO_MODE ? '' : ''}`} role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={mode === 'login'}
+                onClick={() => {
+                  setMode('login');
+                  setError(null);
+                  setSuccessMessage(null);
+                }}
+                className={`${DEMO_MODE ? 'flex-1' : 'w-full'} py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ${
+                  mode === 'login'
+                    ? 'bg-rose-gold text-navy shadow-sm'
+                    : 'text-cream/60 hover:text-cream/90'
+                }`}
+              >
+                Anmelden
+              </button>
+              {DEMO_MODE ? (
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={mode === 'signup'}
+                  onClick={() => {
+                    setMode('signup');
+                    setError(null);
+                    setSuccessMessage(null);
+                  }}
+                  className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ${
+                    mode === 'signup'
+                      ? 'bg-rose-gold text-navy shadow-sm'
+                      : 'text-cream/60 hover:text-cream/90'
+                  }`}
+                >
+                  Registrieren
+                </button>
+              ) : null}
+            </div>
+          )}
+
+          {mode === 'forgot' && (
+            <div className="mb-6">
+              <h2 className="font-semibold text-cream mb-1">Passwort vergessen</h2>
+              <p className="text-sm text-cream/55 leading-relaxed">
+                Wir senden einen Link zum Festlegen eines neuen Passworts an deine E-Mail.
+              </p>
+            </div>
+          )}
 
           {successMessage && (
             <div
@@ -207,57 +251,107 @@ export default function LoginForm() {
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label htmlFor="password" className="block text-sm font-medium text-cream/80">
-                Passwort
-              </label>
-              <div className="relative">
-                <Lock
-                  className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-cream/40"
-                  aria-hidden="true"
-                />
-                <input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                  required
-                  minLength={6}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder={mode === 'login' ? '••••••••' : 'Min. 6 Zeichen'}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-12 py-3 text-cream placeholder:text-cream/30 focus:outline-none focus:ring-2 focus:ring-rose-gold/50 focus:border-rose-gold/50 transition-all duration-200"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-cream/40 hover:text-cream/70 transition-colors"
-                  aria-label={showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'}
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+            {mode !== 'forgot' && (
+              <div className="space-y-1.5">
+                <label htmlFor="password" className="block text-sm font-medium text-cream/80">
+                  Passwort
+                </label>
+                <div className="relative">
+                  <Lock
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-cream/40"
+                    aria-hidden="true"
+                  />
+                  <input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                    required
+                    minLength={6}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder={mode === 'login' ? '••••••••' : 'Min. 6 Zeichen'}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-12 py-3 text-cream placeholder:text-cream/30 focus:outline-none focus:ring-2 focus:ring-rose-gold/50 focus:border-rose-gold/50 transition-all duration-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-cream/40 hover:text-cream/70 transition-colors"
+                    aria-label={showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                {mode === 'signup' && (
+                  <p className="text-xs text-cream/40 mt-1">
+                    Mindestens 6 Zeichen. Deine Daten werden verschlüsselt gespeichert.
+                  </p>
+                )}
+                {mode === 'login' && (
+                  <div className="flex justify-end mt-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode('forgot');
+                        setError(null);
+                        setSuccessMessage(null);
+                      }}
+                      className="text-xs text-cream/45 hover:text-rose-gold transition-colors"
+                    >
+                      Passwort vergessen?
+                    </button>
+                  </div>
+                )}
               </div>
-              {mode === 'signup' && (
-                <p className="text-xs text-cream/40 mt-1">
-                  Mindestens 6 Zeichen. Deine Daten werden verschlüsselt gespeichert.
-                </p>
-              )}
-            </div>
+            )}
 
             <button
               type="submit"
-              disabled={isLoading || !email || !password}
+              disabled={
+                isLoading || !email || (mode !== 'forgot' && !password)
+              }
               className="w-full py-3.5 rounded-xl font-semibold text-navy bg-rose-gold hover:bg-rose-gold/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(232,196,184,0.15)] hover:shadow-[0_0_30px_rgba(232,196,184,0.25)] hover:scale-[1.01] active:scale-[0.99] mt-2"
             >
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
-                  <span>{mode === 'login' ? 'Anmelden...' : 'Registrieren...'}</span>
+                  <span>
+                    {mode === 'login'
+                      ? 'Anmelden...'
+                      : mode === 'forgot'
+                        ? 'Senden...'
+                        : 'Registrieren...'}
+                  </span>
                 </>
               ) : (
-                <span>{mode === 'login' ? 'Anmelden' : 'Konto erstellen'}</span>
+                <span>
+                  {mode === 'login'
+                    ? 'Anmelden'
+                    : mode === 'forgot'
+                      ? 'Link senden'
+                      : 'Konto erstellen'}
+                </span>
               )}
             </button>
           </form>
+
+          {mode === 'forgot' && (
+            <button
+              type="button"
+              onClick={() => {
+                setMode('login');
+                setError(null);
+              }}
+              className="w-full text-center text-sm text-cream/50 hover:text-cream/80 mt-4"
+            >
+              Zurück zur Anmeldung
+            </button>
+          )}
+
+          {!DEMO_MODE && mode === 'login' && (
+            <p className="text-center text-xs text-cream/40 mt-6 leading-relaxed">
+              Noch kein Zugang? Deine Trainerin oder Club-Admin sendet eine Einladung.
+            </p>
+          )}
 
           <p className="text-center text-xs text-cream/30 mt-6 leading-relaxed">
             Deine Gesundheitsdaten sind nach Art. 9 DSGVO geschützt.

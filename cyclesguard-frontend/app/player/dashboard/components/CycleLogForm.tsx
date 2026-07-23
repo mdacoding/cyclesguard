@@ -58,9 +58,18 @@ export default function CycleLogForm({ todayLog = null }: CycleLogFormProps) {
     window.addEventListener('offline', onOffline);
     void flushOutbox().then(() => refreshPending());
 
+    const onSwMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'OUTBOX_FLUSHED') {
+        void refreshPending();
+        router.refresh();
+      }
+    };
+    navigator.serviceWorker?.addEventListener('message', onSwMessage);
+
     return () => {
       window.removeEventListener('online', onOnline);
       window.removeEventListener('offline', onOffline);
+      navigator.serviceWorker?.removeEventListener('message', onSwMessage);
     };
   }, [router]);
 

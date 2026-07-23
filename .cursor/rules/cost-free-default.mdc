@@ -1,0 +1,12 @@
+---
+description: Prefer free/zero-cost paths for CyclesGuard SaaS; no surprise paid usage
+alwaysApply: true
+---
+
+# Cost-free by default
+
+- Never create hidden or surprise costs for the Founder (GitHub Actions overages, paid SaaS tiers, paid APIs, paid Vercel add-ons, paid domains unless explicitly requested).
+- Prefer free tiers and local/open alternatives: free GitHub Actions minutes, Vercel Hobby, Supabase free/EU, Sentry free, local `verify:*` scripts instead of paid CI minutes when possible.
+- Keep GitHub budgets at $0 with stop-on-limit for metered products; do not raise spending limits without explicit Founder approval.
+- Before enabling any paid feature, flag cost and ask. If a free path exists, use it.
+- Lean CI: avoid Playwright/heavy jobs on every push; use workflow_dispatch or local verify suites.

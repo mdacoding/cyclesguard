@@ -48,20 +48,42 @@ export default function Home() {
             Spielerinnen loggen privat. Trainer sehen nur Ampel — nie Rohdaten.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 mb-16">
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center min-h-14 px-8 rounded-full bg-rose-gold text-navy font-semibold text-lg hover:bg-opacity-90 transition-all duration-300 hover:scale-[1.02] active:scale-95"
-            >
-              Anmelden
-            </Link>
+          <div className="flex flex-col sm:flex-row gap-3 mb-4">
             <a
-              href="mailto:hello@cyclesguard.de?subject=CyclesGuard%20Pilot"
-              className="inline-flex items-center justify-center min-h-14 px-8 rounded-full border border-cream/20 text-cream/90 font-medium text-lg hover:bg-white/5 transition-colors"
+              href={
+                'mailto:hello@cyclesguard.de' +
+                '?subject=' +
+                encodeURIComponent('CyclesGuard Soft-Pilot anfragen') +
+                '&body=' +
+                encodeURIComponent(
+                  [
+                    'Hallo CyclesGuard-Team,',
+                    '',
+                    'wir interessieren uns für einen kostenlosen Soft-Pilot (ca. 8–12 Wochen, 5–10 Freiwillige).',
+                    '',
+                    'Wichtig für uns: Trainer sehen nur Ampel-Signale — keine Zyklus-/Gesundheits-Rohdaten.',
+                    '',
+                    'Nächster Schritt: kurzer Call / Demo.',
+                    '',
+                    'Verein / Rolle:',
+                    'Name:',
+                  ].join('\n')
+                )
+              }
+              className="inline-flex items-center justify-center min-h-14 px-8 rounded-full bg-rose-gold text-navy font-semibold text-lg hover:bg-opacity-90 transition-all duration-300 hover:scale-[1.02] active:scale-95"
             >
               Soft-Pilot anfragen
             </a>
+            <Link
+              href="/login"
+              className="inline-flex items-center justify-center min-h-14 px-8 rounded-full border border-cream/20 text-cream/90 font-medium text-lg hover:bg-white/5 transition-colors"
+            >
+              Bereits Zugang?
+            </Link>
           </div>
+          <p className="text-sm text-cream/45 mb-16 max-w-md">
+            Kostenloser Soft-Pilot · keine Rohdaten für Trainer · Antwort = nächster Schritt
+          </p>
         </div>
 
         <section className="grid sm:grid-cols-3 gap-6 md:gap-8 border-t border-white/10 pt-10 animate-fadeIn">

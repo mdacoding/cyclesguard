@@ -11,6 +11,7 @@ import { CalendarDays, Settings, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import LogoutButton from '@/components/LogoutButton';
 import PilotFeedbackCapture from '@/components/PilotFeedbackCapture';
+import InstallAppBanner from '@/components/InstallAppBanner';
 
 export default async function DashboardPage() {
   const supabase = await createServerSupabaseClient();
@@ -95,6 +96,7 @@ export default async function DashboardPage() {
         )}
 
         <PushPromptBanner hasLogged={!isFirstRun} />
+        <InstallAppBanner />
 
         {bannerLog && (
           <section className="animate-slideUp">

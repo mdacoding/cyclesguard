@@ -23,10 +23,11 @@ test.describe('public smoke', () => {
     await expect(page.getByLabel(/E-Mail/i)).toBeVisible();
   });
 
-  test('home page shows brand and login CTA', async ({ page }) => {
+  test('home page shows Soft-Pilot CTA and login', async ({ page }) => {
     await page.goto('/');
     await expect(page.getByRole('heading', { name: /CyclesGuard/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /^Anmelden$/i }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: /Soft-Pilot anfragen/i }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: /Bereits Zugang/i }).first()).toBeVisible();
   });
 });
 

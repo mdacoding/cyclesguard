@@ -9,6 +9,7 @@ import {
   ensurePlayerTeamMembership,
   findAuthUserByEmail,
 } from '@/lib/invite-membership';
+import { inviteCallbackRedirect, sendPasswordSetupEmail } from '@/lib/auth-password-email';
 
 const InviteSchema = z.object({
   email: z.string().email(),
@@ -96,6 +97,14 @@ export async function POST(request: Request) {
       });
     }
 
+    const needsSetupMail = !existing.email_confirmed_at || !existing.last_sign_in_at;
+    let setupMailSent = false;
+    if (needsSetupMail) {
+      const mail = await sendPasswordSetupEmail(email);
+      setupMailSent = mail.ok;
+      if (!mail.ok) console.warn('Password setup mail failed:', mail.error);
+    }
+
     await auditInvite(admin, user.id, existing.id, teamId, email, 'roster_add');
 
     return NextResponse.json(
@@ -103,19 +112,20 @@ export async function POST(request: Request) {
         success: true,
         userId: existing.id,
         mode: 'roster_add',
-        message: 'Bestehende Nutzerin dem Team hinzugefügt.',
+        message: setupMailSent
+          ? 'Bestehende Nutzerin dem Team hinzugefügt. Passwort-/Einladungs-Mail erneut gesendet.'
+          : 'Bestehende Nutzerin dem Team hinzugefügt.',
       },
       { status: 200 }
     );
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
   const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
     data: {
       full_name: fullName ?? email.split('@')[0],
       invited_team_id: teamId,
     },
-    redirectTo: `${siteUrl}/auth/callback?next=/player/onboarding`,
+    redirectTo: inviteCallbackRedirect('player'),
   });
 
   if (inviteError || !invited.user) {

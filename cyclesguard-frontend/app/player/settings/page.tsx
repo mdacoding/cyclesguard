@@ -15,6 +15,7 @@ import {
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import LogoutButton from '@/components/LogoutButton';
+import InstallAppBanner from '@/components/InstallAppBanner';
 import {
   isPushSupported,
   subscribeToPushNotifications,
@@ -145,6 +146,8 @@ export default function SettingsPage() {
           </div>
           <LogoutButton />
         </header>
+
+        <InstallAppBanner />
 
         <section className="glass-card p-6 md:p-8 animate-slideUp">
           <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/10">

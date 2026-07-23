@@ -39,11 +39,13 @@ Day-to-day: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.md).
 
 ## Noch offen für M1-Exit
 
-| Item | Owner |
-|------|--------|
-| Sentry DSN Production | Founder |
-| RLS-Checkliste manuell signieren | Tech |
-| Runbook Dry-Run mit Demo-Admin | Tech |
+| Item | Owner | Status |
+|------|--------|--------|
+| Sentry DSN Production | Founder | ✅ |
+| RLS live / Checkliste | Tech | ✅ |
+| Runbook Dry-Run mit Demo-Admin | Tech | ✅ |
+
+**M1 Exit erreicht (23.07.2026).**
 
 ---
 

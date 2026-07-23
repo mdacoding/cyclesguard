@@ -44,16 +44,15 @@ cd C:\Users\AkbaS\Desktop\SaaS\Projekte\cyclesguard
 
 ## 3. GitHub Actions Minutes (CI 0 Jobs)
 
-Seit ~22.07. starten viele Runs **ohne Jobs** (`total_count: 0`) — typisch **Actions-Minutes / Spending-Limit** beim privaten Repo.
+Seit ~22.07. schlugen Runs mit **0 Jobs** fehl — Ursache war **Invalid workflow file** (nicht Minutes; Free-Plan hat noch ~1974 min).
 
-1. https://github.com/settings/billing → Actions  
-2. Spending Limit > 0 setzen **oder** Payment Method  
-3. Danach: neues Push auf `main` oder `gh run rerun <id> --failed`
+Fix: Lean `ci.yml` (frontend + ingestion) + separates `ci-e2e.yml` (manuell).
 
-Push-CI ist jetzt lean (nur `frontend` + `ingestion`). E2E/RLS nur manuell:
-`gh workflow run ci.yml -f run_e2e=true`
+```powershell
+& "$env:ProgramFiles\GitHub CLI\gh.exe" workflow run "CI E2E / RLS.yml"
+```
 
-E2E/RLS Secrets sind gesetzt (23.07.).
+Lokal Soft-Pilot-Trust: `npm run verify:go-live -- https://cyclesguard.vercel.app`
 
 ---
 

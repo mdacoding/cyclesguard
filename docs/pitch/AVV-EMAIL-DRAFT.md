@@ -1,7 +1,11 @@
 # AVV — Versand-Entwurf an Vereins-DSB (A4)
 
 **Status:** Copy-paste-fertig · Entwurf in [`../privacy/AVV-TOM-DRAFT.md`](../privacy/AVV-TOM-DRAFT.md)  
-**Owner:** Founder · vor Soft-Pilot mit Echtdaten senden
+**Owner:** Founder · vor Soft-Pilot mit Echtdaten senden  
+**One-click Draft:** `cd cyclesguard-frontend && npm run open:avv-mailto`  
+(optional `$env:AVV_TO="dsb@verein.de"`)
+
+**Hinweis:** Öffentliche DSB-Mails sind oft nicht gelistet — Erstkontakt via Outreach/LinkedIn (Medizin/Athletik), AVV als Follow-up sobald Adresse da ist.
 
 ---
 

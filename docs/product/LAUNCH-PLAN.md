@@ -47,7 +47,7 @@ Zeitlich ehrlich: Soft-Pilot 8–12 Wochen + GTM laufen **parallel** zum Feature
 | Trainer First-Run in-app | Weniger Founder-Call | ✅ |
 | Admin UX Tabs | Weniger Power-User-Chaos | ✅ |
 | Feedback-Capture im Pilot | Produkt lernt | ✅ |
-| Push/Sentry Env sichtbar in Admin | Production-Feel | ✅ Ops-Status · ⬜ DSN/Keys in Vercel |
+| Push/Sentry Env sichtbar in Admin | Production-Feel | ✅ Ops-Status · ✅ DSN/Keys in Vercel |
 | Optional 1 GPS-Provider | Nur wenn Club fordert | ⬜ on demand (`INGESTION-DEPLOY`) |
 
 ### Post-Launch (bewusst später)

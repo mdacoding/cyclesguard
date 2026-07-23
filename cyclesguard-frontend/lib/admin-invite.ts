@@ -5,6 +5,7 @@ import {
   ensurePlayerTeamMembership,
   findAuthUserByEmail,
 } from '@/lib/invite-membership';
+import { inviteCallbackRedirect, sendPasswordSetupEmail } from '@/lib/auth-password-email';
 
 export type InviteRole = 'player' | 'trainer';
 
@@ -77,7 +78,6 @@ export async function adminInviteOrRosterAdd(
 ): Promise<AdminInviteResult> {
   const email = input.email.trim().toLowerCase();
   const { teamId, fullName, role, actorId } = input;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
 
   const existing = await findAuthUserByEmail(admin, email);
 
@@ -120,11 +120,25 @@ export async function adminInviteOrRosterAdd(
       },
     });
 
+    const needsSetupMail = !existing.email_confirmed_at || !existing.last_sign_in_at;
+    let setupMailSent = false;
+    if (needsSetupMail) {
+      const mail = await sendPasswordSetupEmail(email);
+      setupMailSent = mail.ok;
+      if (!mail.ok) console.warn('Password setup mail failed:', mail.error);
+    }
+
     await writeAudit(admin, {
       actor_id: actorId,
       action: 'admin_roster_add',
       target_user_id: existing.id,
-      metadata: { team_id: teamId, email, role, mode: 'roster_add' },
+      metadata: {
+        team_id: teamId,
+        email,
+        role,
+        mode: 'roster_add',
+        setup_mail_sent: setupMailSent,
+      },
     });
 
     return {
@@ -133,17 +147,18 @@ export async function adminInviteOrRosterAdd(
       status: 200,
       userId: existing.id,
       mode: 'roster_add',
-      message: 'Bestehende Nutzerin dem Team hinzugefügt.',
+      message: setupMailSent
+        ? 'Bestehende Nutzerin dem Team hinzugefügt. Passwort-/Einladungs-Mail erneut gesendet.'
+        : 'Bestehende Nutzerin dem Team hinzugefügt.',
     };
   }
 
-  const redirectNext = role === 'trainer' ? '/trainer/onboarding' : '/player/onboarding';
   const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
     data: {
       full_name: fullName ?? email.split('@')[0],
       invited_team_id: teamId,
     },
-    redirectTo: `${siteUrl}/auth/callback?next=${redirectNext}`,
+    redirectTo: inviteCallbackRedirect(role),
   });
 
   if (inviteError || !invited.user) {
