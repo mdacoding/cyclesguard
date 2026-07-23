@@ -167,6 +167,146 @@ if (teamId) {
 }
 
 {
+  const seasons = await api('/api/admin/seasons', { cookie });
+  if (!seasons.res.ok || !Array.isArray(seasons.json)) {
+    console.error(`✗ GET /api/admin/seasons — ${seasons.res.status}`);
+    failed++;
+  } else {
+    console.log(`✓ GET /api/admin/seasons — ${seasons.json.length} season(s)`);
+  }
+
+  const clubs = await api('/api/admin/clubs', { cookie });
+  if (!clubs.res.ok || !Array.isArray(clubs.json)) {
+    console.error(`✗ GET /api/admin/clubs — ${clubs.res.status}`);
+    failed++;
+  } else if (clubs.json.length === 0) {
+    console.log('○ No clubs — skip season commercial dry-run');
+  } else {
+    const clubId = clubs.json[0].id;
+    const seasonName = `DryRun Season ${stamp}`;
+    const today = new Date();
+    const startsOn = today.toISOString().slice(0, 10);
+    const end = new Date(today);
+    end.setMonth(end.getMonth() + 1);
+    const endsOn = end.toISOString().slice(0, 10);
+
+    const created = await api('/api/admin/seasons', {
+      method: 'POST',
+      cookie,
+      body: {
+        clubId,
+        name: seasonName,
+        startsOn,
+        endsOn,
+        status: 'planned',
+        commercialStatus: 'pilot_free',
+      },
+    });
+    if (!created.res.ok || !created.json?.id) {
+      console.error(`✗ POST /api/admin/seasons — ${created.res.status}`);
+      failed++;
+    } else {
+      const seasonId = created.json.id;
+      console.log('✓ Created ephemeral dry-run season');
+
+      const quoted = await api('/api/admin/seasons', {
+        method: 'PATCH',
+        cookie,
+        body: { id: seasonId, commercialStatus: 'quoted' },
+      });
+      if (!quoted.res.ok) {
+        console.error(`✗ PATCH quoted — ${quoted.res.status}`);
+        failed++;
+      } else {
+        console.log('✓ Season → quoted');
+      }
+
+      const details = await api('/api/admin/seasons', {
+        method: 'PATCH',
+        cookie,
+        body: {
+          id: seasonId,
+          feeCents: 100,
+          contractRef: `DRY-${stamp}`,
+          signedByEmail: email,
+          internalNotes: 'verify-admin-dryrun cleanup ok',
+        },
+      });
+      if (!details.res.ok) {
+        console.error(`✗ PATCH contract details — ${details.res.status}`);
+        failed++;
+      } else {
+        console.log('✓ Season fee/ref saved');
+      }
+
+      const signed = await api('/api/admin/seasons', {
+        method: 'PATCH',
+        cookie,
+        body: { id: seasonId, commercialStatus: 'signed' },
+      });
+      if (!signed.res.ok) {
+        console.error(`✗ PATCH signed — ${signed.res.status} ${JSON.stringify(signed.json)}`);
+        failed++;
+      } else {
+        console.log('✓ Season → signed (signed_at set)');
+      }
+
+      const guard = await api('/api/admin/seasons', {
+        method: 'POST',
+        cookie,
+        body: {
+          clubId,
+          name: `${seasonName} guard`,
+          startsOn,
+          endsOn,
+          status: 'planned',
+        },
+      });
+      if (guard.res.ok && guard.json?.id) {
+        const blocked = await api('/api/admin/seasons', {
+          method: 'PATCH',
+          cookie,
+          body: { id: guard.json.id, commercialStatus: 'active_paid' },
+        });
+        if (blocked.res.status === 400) {
+          console.log('✓ Guard: active_paid without fee/ref → 400');
+        } else {
+          console.error(`✗ Guard expected 400, got ${blocked.res.status}`);
+          failed++;
+        }
+        await api('/api/admin/seasons', {
+          method: 'PATCH',
+          cookie,
+          body: {
+            id: guard.json.id,
+            status: 'completed',
+            commercialStatus: 'ended',
+            feeCents: 1,
+            contractRef: `DRY-G-${stamp}`,
+          },
+        });
+      }
+
+      const cleanup = await api('/api/admin/seasons', {
+        method: 'PATCH',
+        cookie,
+        body: {
+          id: seasonId,
+          status: 'completed',
+          commercialStatus: 'ended',
+        },
+      });
+      if (!cleanup.res.ok) {
+        console.error(`✗ Season cleanup — ${cleanup.res.status}`);
+        failed++;
+      } else {
+        console.log('✓ Season marked completed/ended (cleanup)');
+      }
+    }
+  }
+}
+
+{
   const ops = await api('/api/admin/ops-status', { cookie });
   if (!ops.res.ok) {
     console.error(`✗ GET /api/admin/ops-status — ${ops.res.status}`);

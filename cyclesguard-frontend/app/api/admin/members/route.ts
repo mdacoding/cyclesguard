@@ -38,6 +38,21 @@ export async function GET(request: Request) {
 
   if (error) return NextResponse.json({ error: 'Failed to load members' }, { status: 500 });
 
+  const playerIds = (members ?? []).filter((m) => m.role === 'player').map((m) => m.user_id);
+  const activeLast7Days = new Set<string>();
+  if (playerIds.length > 0) {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const { data: logs } = await admin
+      .from('cycle_logs')
+      .select('user_id')
+      .in('user_id', playerIds)
+      .gte('logged_at', sevenDaysAgo.toISOString());
+    for (const l of logs ?? []) {
+      activeLast7Days.add(l.user_id);
+    }
+  }
+
   const result = [];
   for (const m of members ?? []) {
     const { data: authUser } = await admin.auth.admin.getUserById(m.user_id);
@@ -51,6 +66,8 @@ export async function GET(request: Request) {
         'Unbekannt',
       email: authUser.user?.email ?? null,
       invitePending: !authUser.user?.last_sign_in_at,
+      /** Player only: ≥1 coach-safe log in last 7d (no phase/symptoms). */
+      activeLast7Days: m.role === 'player' ? activeLast7Days.has(m.user_id) : null,
     });
   }
 

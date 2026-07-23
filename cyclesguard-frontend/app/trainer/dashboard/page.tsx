@@ -28,6 +28,7 @@ interface TeamMember {
   loadFlag: LoadFlag;
   recommendation: string;
   loggedToday: boolean;
+  daysSinceLog: number | null;
   invitePending: boolean;
 }
 
@@ -38,6 +39,13 @@ interface TeamOption {
 }
 
 type FilterMode = 'all' | 'needs_attention' | 'missing_today' | 'logged_today';
+
+function logAgeLabel(m: Pick<TeamMember, 'loggedToday' | 'daysSinceLog'>): string {
+  if (m.loggedToday) return 'heute geloggt';
+  if (m.daysSinceLog == null) return 'nie geloggt';
+  if (m.daysSinceLog === 1) return 'vor 1 Tag';
+  return `vor ${m.daysSinceLog} Tagen`;
+}
 
 export default function TrainerDashboardPage() {
   const [team, setTeam] = useState<TeamMember[]>([]);
@@ -224,7 +232,7 @@ export default function TrainerDashboardPage() {
       (m) =>
         `${m.name}: ${getStatusLabel(m.status)}${
           m.loadFlag !== 'UNKNOWN' ? ` · ${getLoadLabel(m.loadFlag)}` : ''
-        }${m.loggedToday ? '' : ' · heute fehlend'}`
+        } · ${logAgeLabel(m)}`
     );
     const text = [
       `CyclesGuard · ${teamName}`,
@@ -526,7 +534,7 @@ export default function TrainerDashboardPage() {
                         {member.loadFlag !== 'UNKNOWN'
                           ? ` · ${getLoadLabel(member.loadFlag)}`
                           : ''}
-                        {member.loggedToday ? ' · heute geloggt' : ' · heute fehlend'}
+                        {` · ${logAgeLabel(member)}`}
                         {member.invitePending ? ' · Einladung offen' : ''}
                       </p>
                     </div>

@@ -28,6 +28,7 @@ describe('team-status response contract (shape)', () => {
       'loadFlag',
       'recommendation',
       'loggedToday',
+      'daysSinceLog',
       'invitePending',
     ]);
     const sample = {
@@ -37,6 +38,7 @@ describe('team-status response contract (shape)', () => {
       loadFlag: 'UNKNOWN',
       recommendation: 'Volle Belastung möglich',
       loggedToday: true,
+      daysSinceLog: 0,
       invitePending: false,
     };
     for (const key of Object.keys(sample)) {

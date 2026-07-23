@@ -164,7 +164,7 @@ export async function PATCH(request: Request) {
   const admin = createAdminClient();
   const { data: existing } = await admin
     .from('seasons')
-    .select('id, club_id')
+    .select('id, club_id, commercial_status, fee_cents, contract_ref, signed_at')
     .eq('id', parsed.data.id)
     .maybeSingle();
   if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 });
@@ -191,20 +191,39 @@ export async function PATCH(request: Request) {
   if (parsed.data.startsOn) patch.starts_on = parsed.data.startsOn;
   if (parsed.data.endsOn) patch.ends_on = parsed.data.endsOn;
   if (parsed.data.status) patch.status = parsed.data.status;
-  if (parsed.data.commercialStatus) {
-    patch.commercial_status = parsed.data.commercialStatus;
-    if (
-      parsed.data.commercialStatus === 'signed' ||
-      parsed.data.commercialStatus === 'active_paid'
-    ) {
-      patch.signed_at = new Date().toISOString();
-    }
-  }
   if (parsed.data.feeCents !== undefined) patch.fee_cents = parsed.data.feeCents;
   if (parsed.data.currency) patch.currency = parsed.data.currency;
   if (parsed.data.contractRef !== undefined) patch.contract_ref = parsed.data.contractRef;
   if (parsed.data.signedByEmail !== undefined) patch.signed_by_email = parsed.data.signedByEmail;
   if (parsed.data.internalNotes !== undefined) patch.internal_notes = parsed.data.internalNotes;
+
+  if (parsed.data.commercialStatus) {
+    patch.commercial_status = parsed.data.commercialStatus;
+    const nextFee =
+      parsed.data.feeCents !== undefined ? parsed.data.feeCents : existing.fee_cents;
+    const nextRef =
+      parsed.data.contractRef !== undefined
+        ? parsed.data.contractRef
+        : existing.contract_ref;
+    if (
+      (parsed.data.commercialStatus === 'signed' ||
+        parsed.data.commercialStatus === 'active_paid') &&
+      nextFee == null &&
+      !nextRef
+    ) {
+      return NextResponse.json(
+        { error: 'Fee oder Contract-Ref erforderlich für signed/active_paid' },
+        { status: 400 }
+      );
+    }
+    if (
+      (parsed.data.commercialStatus === 'signed' ||
+        parsed.data.commercialStatus === 'active_paid') &&
+      !existing.signed_at
+    ) {
+      patch.signed_at = new Date().toISOString();
+    }
+  }
 
   if (Object.keys(patch).length === 0) {
     return NextResponse.json({ error: 'Nothing to update' }, { status: 400 });

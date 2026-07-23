@@ -50,7 +50,7 @@ Vollständige Steps: [`PUSH-LIVE.md`](./PUSH-LIVE.md)
 | # | Check | Owner | Done |
 |---|-------|-------|------|
 | D1 | Saison angelegt + commercial Status `quoted` → `signed` / `active_paid` | Founder | ☐ |
-| D2 | Fee / Contract-Ref / Signed-by in Admin Saison-Tab gesetzt | Founder | ☐ |
+| D2 | Fee / Contract-Ref / Signed-by in Admin Saison-Tab gesetzt | Founder | ☐ API-Guard: signed/active_paid braucht Fee oder Ref · Churn Confirm |
 | D3 | Club: Secrets + Demo-Mode off Checklist ([`DEMO-MODE-OFF.md`](./DEMO-MODE-OFF.md)) | Founder | ☐ |
 | D4 | GPS nur wenn Club fordert (`INGESTION-DEPLOY.md`) | Tech | ☐ |
 

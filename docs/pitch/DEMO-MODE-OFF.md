@@ -1,6 +1,6 @@
 # CyclesGuard — Demo-Mode Off / Secrets (Pre-Paid & Soft-Pilot)
 
-**Stand:** 22.07.2026  
+**Stand:** 23.07.2026  
 **Wann:** Nach Club-„Ja“, vor echten Freiwilligen oder Paid Season.  
 **Siehe auch:** [`PILOT-RUNBOOK.md`](./PILOT-RUNBOOK.md) · [`GO-LIVE.md`](./GO-LIVE.md)
 
@@ -23,10 +23,10 @@ Kein Stripe nötig — nur Ops-Hygiene.
 
 | Check | Done |
 |-------|------|
-| Demo-Accounts nur intern (`DEMO-ACCOUNTS.md` nicht an Club) | ☐ |
-| Seed-Skript nicht gegen Prod mit echten Spielerinnen laufen lassen | ☐ |
-| Landing / Soft-Pilot CTA zeigt Support-Pfad | ☐ |
-| Club-Admin Dry-Run mit **Club**-Konto, nicht nur Platform | ☐ |
+| Demo-Accounts nur intern (`DEMO-ACCOUNTS.md` nicht an Club) | ✅ intern halten |
+| Seed-Skript nicht gegen Prod mit echten Spielerinnen laufen lassen | ✅ Checkliste / Runbook |
+| Landing / Soft-Pilot CTA zeigt Support-Pfad | ✅ `hello@cyclesguard.de` |
+| Club-Admin Dry-Run mit **Club**-Konto, nicht nur Platform | ✅ `verify:admin-dryrun` (DEMO_ALLOW) · nach Club-Ja mit Club-Konto wiederholen |
 
 ---
 

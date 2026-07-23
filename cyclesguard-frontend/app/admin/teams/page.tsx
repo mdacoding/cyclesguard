@@ -38,6 +38,8 @@ interface MemberRow {
   email: string | null;
   joinedAt: string;
   invitePending?: boolean;
+  /** Player only: ≥1 log in last 7d (coach-safe). */
+  activeLast7Days?: boolean | null;
 }
 
 interface ClubRow {
@@ -123,6 +125,7 @@ export default function AdminTeamsPage() {
   const [editSignedBy, setEditSignedBy] = useState('');
   const [editNotes, setEditNotes] = useState('');
   const [contractBusy, setContractBusy] = useState(false);
+  const [pendingChurnId, setPendingChurnId] = useState<string | null>(null);
 
   const [clubLegalName, setClubLegalName] = useState('');
   const [clubBillingEmail, setClubBillingEmail] = useState('');
@@ -458,15 +461,38 @@ export default function AdminTeamsPage() {
   };
 
   const setSeasonCommercial = async (id: string, commercialStatus: string) => {
+    if (commercialStatus === 'churned') {
+      if (pendingChurnId !== id) {
+        setPendingChurnId(id);
+        setMsg('Nochmal „Churned“ wählen zum Bestätigen — Season als verloren markieren.');
+        return;
+      }
+      setPendingChurnId(null);
+    } else if (pendingChurnId === id) {
+      setPendingChurnId(null);
+    }
+
+    if (commercialStatus === 'signed' || commercialStatus === 'active_paid') {
+      const season = seasons.find((s) => s.id === id);
+      if (season && season.feeCents == null && !season.contractRef) {
+        setMsg('Zuerst Fee oder Contract-Ref unter Details speichern — dann signed/aktiv bezahlt.');
+        openContractEditor(season);
+        return;
+      }
+    }
+
     const res = await fetch('/api/admin/seasons', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id, commercialStatus }),
     });
-    if (res.ok) {
-      setMsg('Vertragsstatus aktualisiert.');
-      await load();
+    if (!res.ok) {
+      const data = (await res.json().catch(() => ({}))) as { error?: string };
+      setMsg(data.error ?? 'Vertragsstatus aktualisieren fehlgeschlagen.');
+      return;
     }
+    setMsg('Vertragsstatus aktualisiert.');
+    await load();
   };
 
   const openContractEditor = (s: SeasonRow) => {
@@ -491,22 +517,38 @@ export default function AdminTeamsPage() {
         setMsg('Fee ungültig — Euro-Betrag prüfen.');
         return;
       }
+      const contractRef = editContractRef.trim() || null;
+      const season = seasons.find((s) => s.id === editSeasonId);
+      const commercial = season?.commercialStatus ?? 'pilot_free';
+      if (
+        (commercial === 'signed' || commercial === 'active_paid') &&
+        feeCents == null &&
+        !contractRef
+      ) {
+        setMsg('Bei signed/aktiv bezahlt: Fee oder Contract-Ref angeben.');
+        return;
+      }
       const res = await fetch('/api/admin/seasons', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: editSeasonId,
           feeCents,
-          contractRef: editContractRef.trim() || null,
+          contractRef,
           signedByEmail: editSignedBy.trim() || null,
           internalNotes: editNotes.trim() || null,
         }),
       });
       if (!res.ok) {
-        setMsg('Vertragsdetails speichern fehlgeschlagen.');
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
+        setMsg(data.error ?? 'Vertragsdetails speichern fehlgeschlagen.');
         return;
       }
-      setMsg('Vertragsdetails gespeichert (manuell, ohne Stripe).');
+      setMsg(
+        season?.signedAt
+          ? 'Vertragsdetails gespeichert (signiert-Datum unverändert).'
+          : 'Vertragsdetails gespeichert (manuell, ohne Stripe).'
+      );
       setEditSeasonId(null);
       await load();
     } finally {
@@ -660,10 +702,16 @@ export default function AdminTeamsPage() {
               >
                 {adherencePct}%
               </p>
+              <p className="text-[11px] text-cream/35 mt-1 leading-snug">
+                Anteil mit ≥1 Log · Ziel ≥70%
+              </p>
             </div>
             <div className="glass-card p-4">
               <p className="text-xs text-cream/50 mb-1">Teams &lt;70%</p>
               <p className="text-2xl font-semibold">{teamsBelowTarget}</p>
+              <p className="text-[11px] text-cream/35 mt-1 leading-snug">
+                Soft-Pilot KPI
+              </p>
             </div>
           </section>
         )}
@@ -850,7 +898,9 @@ export default function AdminTeamsPage() {
                             <option value="signed">Unterschrieben</option>
                             <option value="active_paid">Aktiv bezahlt</option>
                             <option value="ended">Beendet</option>
-                            <option value="churned">Churned</option>
+                            <option value="churned">
+                              {pendingChurnId === s.id ? 'Churned (nochmal tippen)' : 'Churned'}
+                            </option>
                           </select>
                           <button
                             type="button"
@@ -1151,12 +1201,25 @@ export default function AdminTeamsPage() {
                       </p>
                     </div>
                     <div className="text-sm text-cream/70">
-                      {team.playerCount} Spielerinnen · Logging-Quote 7d:{' '}
-                      <strong className="text-cream">
+                      {team.playerCount} Spielerinnen · Adherence 7d:{' '}
+                      <strong
+                        className={
+                          team.playerCount === 0
+                            ? 'text-cream'
+                            : team.loggedLast7Days / team.playerCount >= 0.7
+                              ? 'text-sage'
+                              : 'text-rose-gold'
+                        }
+                      >
                         {team.playerCount === 0
                           ? '—'
-                          : `${team.loggedLast7Days}/${team.playerCount}`}
+                          : `${team.loggedLast7Days}/${team.playerCount} (${Math.round(
+                              (team.loggedLast7Days / team.playerCount) * 100
+                            )}%)`}
                       </strong>
+                      {team.playerCount > 0 ? (
+                        <span className="text-cream/40"> · Ziel ≥70%</span>
+                      ) : null}
                     </div>
                   </button>
                 ))}
@@ -1232,6 +1295,18 @@ export default function AdminTeamsPage() {
                             {m.invitePending ? (
                               <span className="ml-2 text-[11px] font-normal text-rose-gold/90">
                                 Einladung offen
+                              </span>
+                            ) : null}
+                            {m.role === 'player' && m.activeLast7Days === true ? (
+                              <span className="ml-2 text-[11px] font-normal text-sage">
+                                aktiv 7d
+                              </span>
+                            ) : null}
+                            {m.role === 'player' &&
+                            m.activeLast7Days === false &&
+                            !m.invitePending ? (
+                              <span className="ml-2 text-[11px] font-normal text-rose-gold/80">
+                                still 7d
                               </span>
                             ) : null}
                           </p>

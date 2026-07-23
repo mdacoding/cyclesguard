@@ -53,6 +53,7 @@ test.describe('trainer flow', () => {
       expect(entry).toHaveProperty('status');
       expect(entry).toHaveProperty('recommendation');
       expect(entry).toHaveProperty('loggedToday');
+      expect(entry).toHaveProperty('daysSinceLog');
       expect(entry).not.toHaveProperty('phase');
       expect(entry).not.toHaveProperty('symptoms');
       expect(entry).not.toHaveProperty('energy_level');

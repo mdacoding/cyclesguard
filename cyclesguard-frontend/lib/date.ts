@@ -17,6 +17,18 @@ export function startOfBerlinDayUtc(day: string = berlinDate()): Date {
   return new Date(`${day}T00:00:00.000Z`);
 }
 
+/** Whole Berlin calendar days between `from` and `to` (`to` − `from`). */
+export function berlinCalendarDaysBetween(
+  from: string | Date,
+  to: string | Date = new Date()
+): number {
+  const a = berlinDate(from);
+  const b = berlinDate(to);
+  const aUtc = Date.parse(`${a}T12:00:00.000Z`);
+  const bUtc = Date.parse(`${b}T12:00:00.000Z`);
+  return Math.round((bUtc - aUtc) / 86_400_000);
+}
+
 /** Berlin weekday: 0 = Sunday … 6 = Saturday (Date.getDay semantics). */
 export function berlinWeekday(iso: string | Date = new Date()): number {
   const parts = new Intl.DateTimeFormat('en-US', {

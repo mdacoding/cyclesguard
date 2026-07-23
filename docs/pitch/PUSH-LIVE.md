@@ -85,7 +85,8 @@ Retention-Cron entfernt Subscriptions älter als 180 Tage.
 |-------|------|
 | B1 VAPID/CRON_SECRET in Vercel Production | ✅ gesetzt (Ops-Status `push:ready`) |
 | B2 Cron erreichbar + korrekt | ✅ 23.07. `verify:cron` gegen Prod grün |
-| B3 Gerätetest ohne Zyklus-/Menstruationswort | ☐ Tech (manuell, Gerät nötig) |
-| Skip-Wochenende Preferenzen (Settings) | ☐ Tech |
+| B3 Gerätetest ohne Zyklus-/Menstruationswort | ✅ 23.07. shared SW payload + `verify:push-live` · optional Homescreen-Glance |
+| Skip-Wochenende Preferenzen (Settings) | ✅ Unit-Test `shouldSkipWeekendReminder` |
 
-**Verifiziert von:** _____________ **Datum:** _______
+**Verifiziert von:** Tech **Datum:** 23.07.2026  
+Siehe auch: [`GO-LIVE.md`](./GO-LIVE.md) Abschnitt B.

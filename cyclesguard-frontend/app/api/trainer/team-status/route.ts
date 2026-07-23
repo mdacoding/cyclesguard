@@ -10,7 +10,7 @@ import {
   LoadFlag,
 } from '@/lib/trainer-status';
 import { CyclePhase } from '@/lib/types';
-import { isSameBerlinDay } from '@/lib/date';
+import { berlinCalendarDaysBetween, isSameBerlinDay } from '@/lib/date';
 
 export interface TeamStatusEntry {
   playerId: string;
@@ -20,6 +20,8 @@ export interface TeamStatusEntry {
   recommendation: string;
   /** Coach-safe: logged on Berlin calendar day — no phase/symptoms. */
   loggedToday: boolean;
+  /** Coach-safe: Berlin calendar days since last log; null = never logged. */
+  daysSinceLog: number | null;
   /** Coach-safe: never completed first login — invite/setup mail may be resent. */
   invitePending: boolean;
 }
@@ -141,6 +143,7 @@ export async function GET(request: Request) {
       loadFlag: insight.loadFlag,
       recommendation: insight.recommendation,
       loggedToday: log ? isSameBerlinDay(log.logged_at) : false,
+      daysSinceLog: log ? berlinCalendarDaysBetween(log.logged_at) : null,
       invitePending: !player.last_sign_in_at,
     });
   }
