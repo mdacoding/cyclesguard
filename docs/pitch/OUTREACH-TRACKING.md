@@ -6,7 +6,7 @@ Demo https://cyclesguard.vercel.app · Datenschutz `/datenschutz` · Angebot `/p
 
 Texte: [`OUTREACH.md`](./OUTREACH.md) · Demo: [`DEMO-SCRIPT.md`](./DEMO-SCRIPT.md)
 
-Vor Versand ersetzen: `DEIN_NAME` · `DEINE_EMAIL` · `DEINE_TELEFON`
+**Absender:** M. Daud Abdulle · m.daud-abdulle@web.de · Texte in [`OUTREACH.md`](./OUTREACH.md)
 
 ---
 
@@ -69,6 +69,50 @@ Quellen: Club-News / Soccerdonna Staff · Athletik u. a. Hamid Masoum Beygi, Mor
 | O1 | 1. FC Köln Frauen | Athletiktrainerin / Physio Frauen | | |
 | O2 | SGS Essen | Athletik / Sportmedizin | | |
 | O3 | Regionalliga Südwest (lokal) | Athletik + 1 Medizin | | |
+
+---
+
+## LinkedIn-Entwürfe (ready — Club-Namen schon gesetzt)
+
+### Wolfsburg — Lars Edel
+
+```
+Hallo Herr Edel,
+
+ich entwickle CyclesGuard — privacy-first Readiness für Frauenfußball:
+Trainer:innen sehen nur eine Ampel, nie Zyklus-Rohdaten (DOSB/DSGVO Art. 9).
+
+Live-Demo: https://cyclesguard.vercel.app
+Datenschutz: https://cyclesguard.vercel.app/privacy
+Soft-Pilot (8–12 Wochen, kostenlos): https://cyclesguard.vercel.app/pilot
+
+Hätten Sie 20–30 Minuten für eine kurze Vorstellung — auch mit Blick auf den VfL Wolfsburg Frauen?
+
+Viele Grüße
+M. Daud Abdulle
+m.daud-abdulle@web.de
+```
+
+### Bayern — Hamid Masoum Beygi
+
+```
+Hallo Herr Masoum Beygi,
+
+ich entwickle CyclesGuard — privacy-first Readiness für Frauenfußball:
+Trainer:innen sehen nur eine Ampel, nie Zyklus-Rohdaten (DOSB/DSGVO Art. 9).
+
+Live-Demo: https://cyclesguard.vercel.app
+Datenschutz: https://cyclesguard.vercel.app/privacy
+Soft-Pilot (8–12 Wochen, kostenlos): https://cyclesguard.vercel.app/pilot
+
+Hätten Sie 20–30 Minuten für eine kurze Vorstellung?
+
+Viele Grüße
+M. Daud Abdulle
+m.daud-abdulle@web.de
+```
+
+Weitere Texte: [`OUTREACH.md`](./OUTREACH.md) · Tracking-Zeilen oben abhaken nach Versand.
 
 ---
 

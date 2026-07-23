@@ -1,7 +1,9 @@
 # Sentry Live — Soft-Pilot Observability
 
-Code ist verdrahtet (`sentry.*.config.ts`, `instrumentation.ts`, `withSentryConfig`).  
+Code ist verdrahtet (`sentry.*.config.ts`, `instrumentation.ts`, `withSentryConfig`, `lib/sentry-strip.ts`).  
 Ohne DSN in Vercel bleiben Events stumm.
+
+**Unit:** `npm test` — `lib/sentry-strip.test.ts` beweist Strip von `phase` / `symptoms` / Request-Bodies.
 
 ---
 
@@ -37,14 +39,15 @@ npm run pitch:env-checklist
 
 1. Eingeloggt eine geschützte Route öffnen  
 2. Optional: temporär `throw new Error('sentry-smoke')` in einer Server-Route → Event in Sentry  
-3. Prüfen: Request-Bodies / Health-Felder (`phase`, `symptoms`) werden per `beforeSend` gestrippt  
+3. Prüfen: Request-Bodies / Health-Felder (`phase`, `symptoms`) werden per `beforeSend` / `stripSentryEventHealth` gestrippt  
 
 ---
 
 ## 4. Vor Echtdaten
 
-- [ ] DSN in Production gesetzt  
-- [ ] Ein Test-Event sichtbar  
-- [ ] Keine Zyklus-Rohdaten in Event-Payloads  
+- [x] DSN in Production gesetzt (GO-LIVE A1, 23.07.2026)
+- [x] Strip-Logic unit-getestet (`sentry-strip.test.ts`)
+- [ ] Ein Test-Event sichtbar (Founder: einmal Smoke in Sentry UI)
+- [x] Keine Zyklus-Rohdaten in Event-Payloads (Code + Unit)
 
 Roadmap: empfohlen vor Soft-Pilot mit echten Spielerinnen.

@@ -64,7 +64,7 @@ Kurzvariante 5 Min.: nur Abschnitte 1–2 + Ask.
 
 **Bitte:** 1 Ansprechperson Athletik/Medizin · 5–10 Freiwillige · Kick-off-Termin  
 **Links mailen:** `/pilot` · `/datenschutz` · Demo-URL  
-**Follow-up:** 7 Tage · Tracking in [OUTREACH.md](./OUTREACH.md)
+**Follow-up:** 7 Tage · Tracking in [OUTREACH-TRACKING.md](./OUTREACH-TRACKING.md) · Texte [OUTREACH.md](./OUTREACH.md)
 
 ---
 

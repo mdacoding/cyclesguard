@@ -26,6 +26,7 @@ Kein Stripe nötig — nur Ops-Hygiene.
 | Demo-Accounts nur intern (`DEMO-ACCOUNTS.md` nicht an Club) | ✅ intern halten |
 | Seed-Skript nicht gegen Prod mit echten Spielerinnen laufen lassen | ✅ Checkliste / Runbook |
 | Landing / Soft-Pilot CTA zeigt Support-Pfad | ✅ `hello@cyclesguard.de` |
+| Sentry DSN Production + Payload-Strip | ✅ GO-LIVE A1 · `sentry-strip` Unit |
 | Club-Admin Dry-Run mit **Club**-Konto, nicht nur Platform | ✅ `verify:admin-dryrun` (DEMO_ALLOW) · nach Club-Ja mit Club-Konto wiederholen |
 
 ---

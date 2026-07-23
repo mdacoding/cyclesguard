@@ -15,8 +15,10 @@ Default Team-Name: **CyclesGuard Demo Frauen** (Legacy „Eintracht Frankfurt Fr
 | E-Mail | Rolle | Dashboard |
 |--------|-------|-----------|
 | `trainer@eintracht-demo.de` | Athletik (Demo) | `/trainer/dashboard` |
+| `trainer-b@eintracht-demo.de` | Isolation Trainer (Cross-Team Fixture) | anderes Team |
 
 Domain `@eintracht-demo.de` bleibt stabil für bestehende Auth-User — Anzeigename des Teams ist club-agnostisch.
+Zweites Team: **CyclesGuard Isolation Frauen** (nur für RLS-Tests, nicht für Pitch-Demo).
 
 ---
 

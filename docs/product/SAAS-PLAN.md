@@ -36,7 +36,8 @@ Pitch-Ready ✅ → Soft-Pilot Tech ✅ → M1 tech-ready → Soft-Pilot (8–12
 - [x] App + Ampel + Offline + Logout  
 - [x] Supabase + Seed + Vercel  
 - [x] Pitch-Docs + Outreach  
-- [ ] Founder: Auth Site URL + Termin anfragen  
+- [ ] Founder: Auth Site URL + Redirects einmal in Dashboard abhaken (`TERMIN-BEREIT.md` §1)
+- [ ] Founder: Termin anfragen / Outreach (`OUTREACH-TRACKING.md`)  
 
 ### Stage B — Soft-Pilot (technisch vorbereitet ✅ · Laufzeit 8–12 Wochen)
 

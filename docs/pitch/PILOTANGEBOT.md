@@ -30,7 +30,7 @@ Gemeinsam testen, ob die **Trainer-Ampel** im Alltag (Training, Reise, Spiel) di
 
 | Erwartung | Details |
 |-----------|---------|
-| **5–10 freiwillige Spielerinnen** | Schriftliche Info + Einwilligung (Vorlage stellen wir) |
+| **5–10 freiwillige Spielerinnen** | Schriftliche Info + Einwilligung — Vorlage: [`SPIELERINNEN-INFO.md`](./SPIELERINNEN-INFO.md) |
 | **1 feste Ansprechperson** | Athletik oder Sportmedizin |
 | **Ehrliches Feedback** | Was hilft / was stört — wöchentlich |
 

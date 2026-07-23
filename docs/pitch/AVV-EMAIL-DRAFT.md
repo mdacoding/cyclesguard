@@ -45,8 +45,8 @@ Wir bitten um Termin zur Abstimmung vor produktivem Echtdaten-Betrieb.
 Demo-/Seed-Accounts sind kein Ersatz für einen unterschriebenen AVV.
 
 Mit freundlichen Grüßen
-[Founder Name]
-CyclesGuard · hello@cyclesguard.de
+M. Daud Abdulle
+CyclesGuard · hello@cyclesguard.de · m.daud-abdulle@web.de
 ```
 
 ---
@@ -57,5 +57,6 @@ CyclesGuard · hello@cyclesguard.de
 |---------|------|
 | Entwurf an DSB / Club-Kontakt gesendet | ☐ |
 | Rückmeldung / Termin notiert | ☐ |
-| Rechtsträger CyclesGuard im Entwurf eingetragen | ☐ |
+| Rechtsträger CyclesGuard im Entwurf eingetragen | ✅ `AVV-TOM-DRAFT.md` §1 (M. Daud Abdulle / CyclesGuard) |
+| Postanschrift Impressum final | ☐ Env `NEXT_PUBLIC_IMPRESSUM_STREET` |
 | Unterschrift vor Echtdaten | ☐ |

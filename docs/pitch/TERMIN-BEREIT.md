@@ -25,24 +25,24 @@ Wenn diese Liste abgehakt ist, bleibt nur noch **Outreach** (`OUTREACH.md`) — 
 
 Dashboard → Project `jgtqtuwtrulwehrtcydf` → **Authentication → URL Configuration**:
 
-| Feld | Wert |
-|------|------|
-| Site URL | `https://cyclesguard.vercel.app` |
-| Redirect URLs | `https://cyclesguard.vercel.app/auth/callback` |
-| | `http://localhost:3000/auth/callback` |
-| | Optional: `https://cyclesguard.vercel.app/**` (Invite → Passwort setzen) |
+| Feld | Wert | Status |
+|------|------|--------|
+| Site URL | `https://cyclesguard.vercel.app` | ☐ Founder einmal bestätigen |
+| Redirect URLs | `https://cyclesguard.vercel.app/auth/callback` | ☐ |
+| | `http://localhost:3000/auth/callback` | ☐ |
+| | `https://cyclesguard.vercel.app/auth/set-password` oder `https://cyclesguard.vercel.app/**` | ☐ Invite → Passwort |
 
-Speichern. Danach einmal Login + Logout auf der Live-URL testen (bereits von dir ok — nach URL-Änderung kurz wiederholen).
+Speichern. Danach einmal Login + Logout auf der Live-URL testen.
 
 ### 2. Kontakt in Docs
 
-In `DATENSCHUTZ-DOSB-1-PAGER.md` und `PILOTANGEBOT.md` steht jetzt **CyclesGuard**; vor Versand an den Club deine **persönliche E-Mail** in der Outreach-Nachricht eintragen (`DEINE_EMAIL` in `OUTREACH.md`).
+Absender in Outreach ist gesetzt (**M. Daud Abdulle** / `m.daud-abdulle@web.de`). Optional Telefon in LinkedIn ergänzen.
 
 ### 3. PDF für Meeting (optional, 2 Min.)
 
 1. https://cyclesguard.vercel.app/privacy bzw. `/pilot` öffnen  
 2. Drucken → **Als PDF speichern**  
-3. Alternativ Markdown: `DATENSCHUTZ-DOSB-1-PAGER.md` / `PILOTANGEBOT.md`  
+3. Alternativ Markdown: `DATENSCHUTZ-DOSB-1-PAGER.md` / `PILOTANGEBOT.md` / `SPIELERINNEN-INFO.md`  
 
 ### 4. Security (nach erstem Kontakt / vor echtem Pilot)
 

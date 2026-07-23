@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   description: 'Anbieterkennzeichnung CyclesGuard.',
 };
 
+const OPERATOR_NAME = process.env.NEXT_PUBLIC_IMPRESSUM_NAME || 'M. Daud Abdulle';
+const OPERATOR_STREET =
+  process.env.NEXT_PUBLIC_IMPRESSUM_STREET || 'Anschrift auf Anfrage / vor Soft-Pilot-Echtdaten ergänzen';
+const OPERATOR_CITY = process.env.NEXT_PUBLIC_IMPRESSUM_CITY || 'Deutschland';
+
 export default function ImpressumPage() {
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -33,7 +38,7 @@ export default function ImpressumPage() {
       <article className="relative z-10 max-w-3xl mx-auto px-6 md:px-10 pb-20 pt-4 space-y-8 animate-fadeIn">
         <h1 className="font-display text-4xl font-semibold text-gradient">Impressum</h1>
         <p className="text-sm text-cream/50">
-          Angaben gemäß § 5 TMG / Anbieterkennzeichnung. Platzhalter bis Rechtsträger final eingetragen.
+          Angaben gemäß § 5 TMG / Anbieterkennzeichnung. CyclesGuard ist ein Soft-Pilot / Early-Access-Produkt.
         </p>
 
         <section className="space-y-2 text-sm text-cream/75 leading-relaxed">
@@ -41,11 +46,11 @@ export default function ImpressumPage() {
           <p>
             CyclesGuard
             <br />
-            [Vor- und Nachname / Firma]
+            {OPERATOR_NAME}
             <br />
-            [Straße, PLZ Ort]
+            {OPERATOR_STREET}
             <br />
-            Deutschland
+            {OPERATOR_CITY}
           </p>
         </section>
 
@@ -66,7 +71,9 @@ export default function ImpressumPage() {
 
         <section className="space-y-2 text-sm text-cream/75 leading-relaxed">
           <h2 className="font-semibold text-cream text-base">Verantwortlich für den Inhalt</h2>
-          <p>[Name], Anschrift wie oben</p>
+          <p>
+            {OPERATOR_NAME}, Anschrift wie oben
+          </p>
         </section>
 
         <section className="space-y-2 text-sm text-cream/55 leading-relaxed">
@@ -85,7 +92,9 @@ export default function ImpressumPage() {
         </section>
 
         <p className="text-xs text-cream/35">
-          Founder: Platzhalter in eckigen Klammern vor öffentlichem Club-Pitch mit Echtdaten ersetzen.
+          Postanschrift finalisieren über Vercel Env:{' '}
+          <code className="text-cream/45">NEXT_PUBLIC_IMPRESSUM_STREET</code> /{' '}
+          <code className="text-cream/45">NEXT_PUBLIC_IMPRESSUM_CITY</code>.
         </p>
       </article>
     </div>

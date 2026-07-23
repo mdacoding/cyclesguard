@@ -5,7 +5,7 @@ Privacy-first readiness SaaS for female soccer players — menstrual cycle loggi
 **GitHub:** https://github.com/mdacoding/cyclesguard  
 **Live-Demo:** https://cyclesguard.vercel.app  
 
-Pitch focus: Eintracht Frankfurt Frauen (demo + pilot offer) · Status: **Pitch-Ready (Produkt)** — Pre-Meeting-Checklist in `docs/sprints/00-ROADMAP.md`.
+Pitch: **Multi-Club Soft-Pilot** (Eintracht Priorität 1, parallel Wolfsburg/Bayern) · Status: **Pitch-Ready** — Pack: `docs/pitch/` · Tracking: `docs/pitch/OUTREACH-TRACKING.md`.
 
 ---
 
@@ -43,7 +43,7 @@ cd cyclesguard-frontend
 cp .env.example .env.local   # or: npm run pitch:setup-env
 # fill Supabase keys — see docs/pitch/SUPABASE-SETUP.md
 npm install
-npm run seed:eintracht       # after migrations on Supabase
+npm run seed:demo            # after migrations on Supabase
 npm run dev
 ```
 

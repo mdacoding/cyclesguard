@@ -36,7 +36,7 @@ Zeitlich ehrlich: Soft-Pilot 8–12 Wochen + GTM laufen **parallel** zum Feature
 | Admin UX | Tabs Roster / Saison / Compliance + Ops-Status | ✅ |
 | Paid Path | Fee / Ref / Signed-by + Club Billing/Legal manuell | ✅ |
 | Feedback | In-App Score + Admin-View | ✅ |
-| Trust | RLS, AVV, Retention, Support, GO-LIVE, Ops-Status API | ✅ Code · ⬜ Founder Sign-off |
+| Trust | RLS, AVV, Retention, Support, GO-LIVE, Ops-Status API | ✅ Code · ◐ Founder Auth-URLs + Impressum-Straße + Outreach |
 | Sales | Landing, Pitch-Pack, Seed-Demo | ✅ |
 | Onboarding | Consent → Welcome · Trainer in-app · Admin Seed | ✅ |
 

@@ -58,10 +58,11 @@ export async function GET(request: Request) {
     } satisfies TeamStatusResponse);
   }
 
-  const teamIds =
-    requestedTeamId && trainerTeamIds.includes(requestedTeamId)
-      ? [requestedTeamId]
-      : trainerTeamIds;
+  if (requestedTeamId && !trainerTeamIds.includes(requestedTeamId)) {
+    return NextResponse.json({ error: 'Team not in your scope' }, { status: 403 });
+  }
+
+  const teamIds = requestedTeamId ? [requestedTeamId] : trainerTeamIds;
 
   const playerIds = await getTeamPlayerIds(teamIds);
   if (playerIds.length === 0) {

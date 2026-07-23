@@ -1,7 +1,8 @@
 /**
  * Seeds a pitch/demo club on Supabase (Cloud or local).
  *
- * Requires .env.local with NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY.
+ * Requires .env.local with NEXT_PUBLIC_SUPABASE_URL +
+ * SUPABASE_SERVICE_ROLE_KEY (legacy JWT) or SUPABASE_SECRET_KEY (sb_secret_…).
  *
  * Env (optional, club-agnostic defaults):
  *   DEMO_TEAM_NAME   default "CyclesGuard Demo Frauen"
@@ -13,10 +14,11 @@
  *
  * Usage: npm run seed:demo   (alias: npm run seed:eintracht)
  */
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { type SupabaseClient } from '@supabase/supabase-js';
 import { createHash, randomUUID } from 'node:crypto';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { createServiceRoleClient } from '../lib/supabase/service-client';
 
 const DEMO_PASSWORD = 'CyclesGuard2026!';
 const TEAM_NAME = process.env.DEMO_TEAM_NAME?.trim() || 'CyclesGuard Demo Frauen';
@@ -50,6 +52,18 @@ interface DemoPlayer {
 const DEMO_TRAINER = {
   email: 'trainer@eintracht-demo.de',
   fullName: 'Lisa Athletik (Demo)',
+};
+
+/** Second club/team — Cross-Team RLS / invite 403 fixture (no shared membership with DEMO_TRAINER). */
+const ISOLATION_CLUB_NAME = 'CyclesGuard Isolation Club';
+const ISOLATION_TEAM_NAME = 'CyclesGuard Isolation Frauen';
+const DEMO_ISOLATION_TRAINER = {
+  email: 'trainer-b@eintracht-demo.de',
+  fullName: 'Isolation Trainer B (Demo)',
+};
+const DEMO_ISOLATION_PLAYER = {
+  email: 'isolation.player@eintracht-demo.de',
+  fullName: 'Isolation Player (Demo)',
 };
 
 const DEMO_CLUB_ADMIN = {
@@ -143,22 +157,60 @@ function hashIp(ip: string): string {
 
 type AdminClient = SupabaseClient;
 
-async function findUserByEmail(admin: AdminClient, email: string): Promise<string | null> {
-  const needle = email.toLowerCase();
+async function sleep(ms: number): Promise<void> {
+  await new Promise((r) => setTimeout(r, ms));
+}
+
+function isRetryableAuthError(err: unknown): boolean {
+  if (!err || typeof err !== 'object') return false;
+  const e = err as { message?: string; code?: string; status?: number };
+  const msg = (e.message ?? '').toLowerCase();
+  return (
+    e.code === 'bad_jwt' ||
+    e.status === 429 ||
+    msg.includes('bad_jwt') ||
+    msg.includes('rate') ||
+    msg.includes('fetch failed')
+  );
+}
+
+async function withAuthRetry<T>(label: string, fn: () => Promise<T>): Promise<T> {
+  let last: unknown;
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      last = err;
+      if (!isRetryableAuthError(err) || attempt === 4) throw err;
+      await sleep(350 * (attempt + 1));
+      console.warn(`  ○ retry ${label} (${attempt + 1})…`);
+    }
+  }
+  throw last;
+}
+
+async function loadEmailIndex(admin: AdminClient): Promise<Map<string, string>> {
+  const index = new Map<string, string>();
   let page = 1;
   for (;;) {
-    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 200 });
-    if (error) throw error;
-    const user = data.users.find((u) => u.email?.toLowerCase() === needle);
-    if (user) return user.id;
-    if (data.users.length < 200) return null;
+    const data = await withAuthRetry(`listUsers p${page}`, async () => {
+      const res = await admin.auth.admin.listUsers({ page, perPage: 200 });
+      if (res.error) throw res.error;
+      return res.data;
+    });
+    for (const u of data.users) {
+      if (u.email) index.set(u.email.toLowerCase(), u.id);
+    }
+    if (data.users.length < 200) break;
     page += 1;
-    if (page > 20) return null;
+    if (page > 20) break;
   }
+  return index;
 }
 
 async function upsertUser(
   admin: AdminClient,
+  emailIndex: Map<string, string>,
   opts: {
     email: string;
     password: string;
@@ -167,7 +219,8 @@ async function upsertUser(
     hasConsented?: boolean;
   }
 ): Promise<string> {
-  const existingId = await findUserByEmail(admin, opts.email);
+  const needle = opts.email.toLowerCase();
+  const existingId = emailIndex.get(needle) ?? null;
   const userMetadata = {
     full_name: opts.fullName,
     ...(opts.hasConsented ? { has_consented: true } : {}),
@@ -175,44 +228,59 @@ async function upsertUser(
   const appMetadata = { role: opts.role };
 
   if (existingId) {
-    const { data, error } = await admin.auth.admin.updateUserById(existingId, {
+    const data = await withAuthRetry(`update ${opts.email}`, async () => {
+      const res = await admin.auth.admin.updateUserById(existingId, {
+        password: opts.password,
+        email_confirm: true,
+        user_metadata: userMetadata,
+        app_metadata: appMetadata,
+      });
+      if (res.error) throw res.error;
+      return res.data;
+    });
+    return data.user.id;
+  }
+
+  const data = await withAuthRetry(`create ${opts.email}`, async () => {
+    const res = await admin.auth.admin.createUser({
+      email: opts.email,
       password: opts.password,
       email_confirm: true,
       user_metadata: userMetadata,
       app_metadata: appMetadata,
     });
-    if (error) throw error;
-    return data.user.id;
-  }
-
-  const { data, error } = await admin.auth.admin.createUser({
-    email: opts.email,
-    password: opts.password,
-    email_confirm: true,
-    user_metadata: userMetadata,
-    app_metadata: appMetadata,
+    if (res.error) throw res.error;
+    return res.data;
   });
-  if (error) throw error;
+  emailIndex.set(needle, data.user.id);
+  await sleep(150);
   return data.user.id;
+}
+
+/** New sb_* keys must go on `apikey` only — Bearer makes Auth return bad_jwt. */
+function createAdminClient(url: string, serviceKey: string): AdminClient {
+  return createServiceRoleClient(url, serviceKey);
 }
 
 async function main(): Promise<void> {
   loadEnvLocal();
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
   if (!url || !serviceKey) {
-    console.error('Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env.local');
+    console.error(
+      'Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY / SUPABASE_SECRET_KEY in .env.local'
+    );
     process.exit(1);
   }
 
-  const admin = createClient(url, serviceKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
+  const admin = createAdminClient(url, serviceKey);
+  const emailIndex = await loadEmailIndex(admin);
 
   console.log(`Seeding pitch demo… (${TEAM_NAME} / ${CLUB_NAME})`);
 
-  const trainerId = await upsertUser(admin, {
+  const trainerId = await upsertUser(admin, emailIndex, {
     email: DEMO_TRAINER.email,
     password: DEMO_PASSWORD,
     fullName: DEMO_TRAINER.fullName,
@@ -220,7 +288,7 @@ async function main(): Promise<void> {
   });
   console.log(`  Trainer: ${DEMO_TRAINER.email}`);
 
-  const clubAdminId = await upsertUser(admin, {
+  const clubAdminId = await upsertUser(admin, emailIndex, {
     email: DEMO_CLUB_ADMIN.email,
     password: DEMO_PASSWORD,
     fullName: DEMO_CLUB_ADMIN.fullName,
@@ -230,7 +298,7 @@ async function main(): Promise<void> {
 
   const playerIds: { id: string; spec: DemoPlayer }[] = [];
   for (const spec of DEMO_PLAYERS) {
-    const id = await upsertUser(admin, {
+    const id = await upsertUser(admin, emailIndex, {
       email: spec.email,
       password: DEMO_PASSWORD,
       fullName: spec.fullName,
@@ -427,12 +495,88 @@ async function main(): Promise<void> {
     }
   }
 
+  // ── Cross-Team isolation fixture (separate club + trainer B) ──────────────
+  const isolationTrainerId = await upsertUser(admin, emailIndex, {
+    email: DEMO_ISOLATION_TRAINER.email,
+    password: DEMO_PASSWORD,
+    fullName: DEMO_ISOLATION_TRAINER.fullName,
+    role: 'trainer',
+  });
+  const isolationPlayerId = await upsertUser(admin, emailIndex, {
+    email: DEMO_ISOLATION_PLAYER.email,
+    password: DEMO_PASSWORD,
+    fullName: DEMO_ISOLATION_PLAYER.fullName,
+    role: 'player',
+    hasConsented: true,
+  });
+
+  let isolationClubId: string;
+  const { data: existingIsoClub } = await admin
+    .from('clubs')
+    .select('id')
+    .eq('name', ISOLATION_CLUB_NAME)
+    .maybeSingle();
+  if (existingIsoClub?.id) {
+    isolationClubId = existingIsoClub.id;
+  } else {
+    const { data: isoClub, error: isoClubErr } = await admin
+      .from('clubs')
+      .insert({ name: ISOLATION_CLUB_NAME })
+      .select('id')
+      .single();
+    if (isoClubErr) throw isoClubErr;
+    isolationClubId = isoClub.id;
+  }
+
+  let isolationTeamId: string;
+  const { data: existingIsoTeam } = await admin
+    .from('teams')
+    .select('id')
+    .eq('name', ISOLATION_TEAM_NAME)
+    .maybeSingle();
+  if (existingIsoTeam?.id) {
+    isolationTeamId = existingIsoTeam.id;
+    await admin
+      .from('teams')
+      .update({
+        club_id: isolationClubId,
+        club_name: ISOLATION_CLUB_NAME,
+        status: 'active',
+      })
+      .eq('id', isolationTeamId);
+  } else {
+    const { data: isoTeam, error: isoTeamErr } = await admin
+      .from('teams')
+      .insert({
+        name: ISOLATION_TEAM_NAME,
+        club_name: ISOLATION_CLUB_NAME,
+        club_id: isolationClubId,
+        status: 'active',
+      })
+      .select('id')
+      .single();
+    if (isoTeamErr) throw isoTeamErr;
+    isolationTeamId = isoTeam.id;
+  }
+
+  for (const row of [
+    { team_id: isolationTeamId, user_id: isolationTrainerId, role: 'trainer' as const },
+    { team_id: isolationTeamId, user_id: isolationPlayerId, role: 'player' as const },
+  ]) {
+    const { error } = await admin.from('team_members').upsert(row, {
+      onConflict: 'team_id,user_id',
+    });
+    if (error) throw error;
+  }
+  console.log(`  Isolation team: ${ISOLATION_TEAM_NAME} (${DEMO_ISOLATION_TRAINER.email})`);
+
   console.log('\n✓ Demo seed complete.\n');
   console.log('Team:', TEAM_NAME);
   console.log('Slug (reference):', TEAM_SLUG);
   console.log('Password (all accounts):', DEMO_PASSWORD);
   console.log('\nClub Admin login:', DEMO_CLUB_ADMIN.email, '→ /admin/teams');
   console.log('Trainer login:', DEMO_TRAINER.email);
+  console.log('Isolation trainer (Cross-Team):', DEMO_ISOLATION_TRAINER.email);
   console.log('Sample player:', DEMO_PLAYERS[2].email, '(REST — live demo log)');
   console.log('Load demo:', DEMO_PLAYERS[1].email, '(HIGH load session)');
   console.log('\nExpected trainer ampel:');

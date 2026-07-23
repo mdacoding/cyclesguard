@@ -4,7 +4,8 @@
 **Datenschutz:** https://cyclesguard.vercel.app/privacy  
 **Angebot:** https://cyclesguard.vercel.app/pilot  
 
-Vor dem Absenden ersetzen: `DEIN_NAME` · `DEINE_EMAIL` · `DEINE_TELEFON` (optional) · `[VEREINSNAME]` / `[Nachname]`
+**Absender (fertig):** M. Daud Abdulle · m.daud-abdulle@web.de · hello@cyclesguard.de  
+Vor dem Absenden ersetzen: `[VEREINSNAME]` / `[Nachname]` · optional Telefon ergänzen.
 
 ---
 
@@ -61,8 +62,8 @@ Soft-Pilot (8–12 Wochen, kostenlos, 5–10 Freiwillige): https://cyclesguard.v
 Hätten Sie 20–30 Minuten für eine kurze Vorstellung?
 
 Viele Grüße
-DEIN_NAME
-DEINE_EMAIL
+M. Daud Abdulle
+m.daud-abdulle@web.de
 ```
 
 ### E-Mail
@@ -83,9 +84,9 @@ Athletik steuert Belastung über eine Ampel, ohne Einblick in Intimdaten.
 Dürfte ich einen kurzen Termin (20–30 Min.) vorschlagen?
 
 Mit freundlichen Grüßen
-DEIN_NAME
-DEINE_EMAIL
-DEINE_TELEFON
+M. Daud Abdulle
+m.daud-abdulle@web.de
+hello@cyclesguard.de
 ```
 
 ### Follow-up (7–10 Tage)
@@ -93,7 +94,7 @@ DEINE_TELEFON
 ```
 Kurzer Nachfass zu CyclesGuard — Demo: https://cyclesguard.vercel.app
 Falls Athletik/Medizin gerade keine Kapazität hat: Wer wäre intern die richtige Ansprechperson?
-Sportliche Grüße, DEIN_NAME
+Sportliche Grüße, M. Daud Abdulle
 ```
 
 ---

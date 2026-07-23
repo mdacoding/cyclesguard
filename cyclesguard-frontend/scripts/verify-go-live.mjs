@@ -33,6 +33,7 @@ process.env.DEMO_ALLOW = process.env.DEMO_ALLOW || '1';
 const steps = [
   ['unit', ['npm', ['test']]],
   ['rls-trainer', ['npm', ['run', 'verify:rls-trainer']]],
+  ['rls-privacy', ['npm', ['run', 'verify:rls-privacy', '--', baseUrl]]],
   ['cron', ['npm', ['run', 'verify:cron', '--', baseUrl]]],
   ['admin-dryrun', ['npm', ['run', 'verify:admin-dryrun', '--', baseUrl]]],
   ['push-live', ['npm', ['run', 'verify:push-live', '--', baseUrl]]],
