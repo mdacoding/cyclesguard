@@ -31,17 +31,17 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 | L1 Kabine / KPIs / Trainer-Onboarding | ✅ |
 | L2 Tabs / Feedback / Welcome / Ops-Status | ✅ |
 | L3 Paid UX / Club Billing / Demo-off Docs | ✅ |
-| Trust-Checks automatisiert (RLS Trainer-JWT, Cron) | ✅ 23.07. — `verify:rls-trainer`, `verify:cron`, CI-Job |
-| Founder Sign-off (Sentry DSN, Push Keys, AVV) | ⬜ [`GO-LIVE.md`](../pitch/GO-LIVE.md) |
+| Trust-Checks automatisiert + live verifiziert | ✅ 23.07. — Cron/RLS/Admin-Dry-Run gegen Prod grün |
+| Founder Sign-off (Sentry DSN, Demo-Mode off, AVV) | ⬜ [`GO-LIVE.md`](../pitch/GO-LIVE.md) — Push/Cron Secrets bereits in Prod |
 
-**Als Nächstes:** Founder GTM + GO-LIVE abhaken (jetzt nur noch Secrets setzen + Scripts laufen lassen). Kein weiteres Feature-Bloat ohne Club-Nachfrage — Engineering-Tagesfokus verschiebt sich auf Trust-Automatisierung und Pilot-Härtung.
+**Als Nächstes:** Sentry DSN setzen · Demo-Mode vor Soft-Pilot auf `false` · Outreach/AVV. Kein Feature-Bloat ohne Club-Nachfrage.
 
 **Daily-Ship-Log (jeden Tag ein Fortschritt):**
 
 | Datum | Was |
 |-------|-----|
 | 22.07. | L1–L3 Feature-Set + Audit-Fixes (Club-Scope Feedback, Heute-KPI) |
-| 23.07. | RLS Trainer-JWT Dry-Run + Cron-Check automatisiert (Script + CI) |
+| 23.07. | Trust live: Cron/RLS/Admin-Dry-Run grün; `team_members` RLS-Rekursion gefixt (015/016); Fehlprojekt entfernt |
 
 ---
 

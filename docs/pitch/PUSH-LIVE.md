@@ -83,8 +83,8 @@ Retention-Cron entfernt Subscriptions älter als 180 Tage.
 
 | Check | Done |
 |-------|------|
-| B1 VAPID/CRON_SECRET in Vercel Production | ☐ Founder |
-| B2 Cron erreichbar + korrekt | ✅ Script `npm run verify:cron` — einmal gegen Prod ausführen |
+| B1 VAPID/CRON_SECRET in Vercel Production | ✅ gesetzt (Ops-Status `push:ready`) |
+| B2 Cron erreichbar + korrekt | ✅ 23.07. `verify:cron` gegen Prod grün |
 | B3 Gerätetest ohne Zyklus-/Menstruationswort | ☐ Tech (manuell, Gerät nötig) |
 | Skip-Wochenende Preferenzen (Settings) | ☐ Tech |
 

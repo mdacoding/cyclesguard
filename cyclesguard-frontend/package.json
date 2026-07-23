@@ -18,7 +18,9 @@
     "pitch:smoke": "node scripts/smoke-pitch-demo.mjs",
     "pitch:env-checklist": "node scripts/print-vercel-env-checklist.mjs",
     "verify:rls-trainer": "node scripts/rls-trainer-check.mjs",
-    "verify:cron": "node scripts/verify-cron.mjs"
+    "verify:cron": "node scripts/verify-cron.mjs",
+    "verify:admin-dryrun": "node scripts/verify-admin-dryrun.mjs",
+    "sync:vercel-env": "node scripts/sync-vercel-env.mjs"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.67.0",

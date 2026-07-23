@@ -61,6 +61,10 @@ test.describe('trainer flow', () => {
     await expect(page.getByRole('button', { name: /Heute fehlend/i })).toBeVisible();
     await page.getByRole('button', { name: /Heute fehlend/i }).click();
     await expect(page.getByRole('button', { name: /Teilen/i })).toBeVisible();
+
+    // Trainer must not reach player export (Art. 20 for own data only)
+    const exportRes = await page.request.get('/api/player/export');
+    expect([401, 403, 307, 308]).toContain(exportRes.status());
   });
 });
 

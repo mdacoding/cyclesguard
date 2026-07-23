@@ -77,7 +77,7 @@ Erwartung: deny / leer.
 | Check | Datum | OK |
 |-------|-------|----|
 | SQL DENY cycle_logs | 2026-07-22 | Policies live: `trainer_deny_all` + own-row CRUD (MCP verify) |
-| Trainer-JWT Dry-Run (live) | 2026-07-23 | Automatisiert: `npm run verify:rls-trainer` — auszuführen sobald `E2E_TRAINER_*` Secrets gesetzt sind |
+| Trainer-JWT Dry-Run (live) | 2026-07-23 | ✅ `verify:rls-trainer` gegen Live-DB grün; Migration `015` behob `team_members` Infinite-Recursion |
 | team-status maskiert | 2026-07-22 | E2E credentialed + unit contract |
 | Cross-Team 403 | | ⬜ manuell / erweitertes E2E |
 | Export/Delete | | ⬜ manuell |

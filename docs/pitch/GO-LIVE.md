@@ -1,6 +1,6 @@
 # CyclesGuard — Go-Live / Trust Close (L2–L3)
 
-**Stand:** 22.07.2026  
+**Stand:** 23.07.2026  
 **Zweck:** Founder + Tech Sign-off bevor Soft-Pilot oder Paid Season „echt“ läuft.  
 **Nordstern:** [`LAUNCH-PLAN.md`](../product/LAUNCH-PLAN.md)
 
@@ -12,9 +12,9 @@ Nicht Code — **Checkliste**. Jede Zeile braucht Owner + Datum.
 
 | # | Check | Owner | Done |
 |---|-------|-------|------|
-| A1 | Sentry DSN in Vercel Production (`SENTRY-LIVE.md`) | Founder | ☐ |
-| A2 | RLS-Pen-Test / `RLS-PENETRATION-CHECKLIST.md` | Tech | ✅ Automatisiert: `npm run verify:rls-trainer` + CI-Job `rls-trainer-check` |
-| A3 | Trainer-JWT sieht keine Art.-9-Rohdaten (live) | Tech | ✅ Script prüft `cycle_logs`/`player_consents`/`push_subscriptions`/`session_summaries` gegen Live-Supabase |
+| A1 | Sentry DSN in Vercel Production (`SENTRY-LIVE.md`) | Founder | ☐ noch offen — Ops-Status: `sentry:open` |
+| A2 | RLS-Pen-Test / `RLS-PENETRATION-CHECKLIST.md` | Tech | ✅ 23.07. live grün (`verify:rls-trainer`) + Migration `015` (RLS-Rekursion behoben) |
+| A3 | Trainer-JWT sieht keine Art.-9-Rohdaten (live) | Tech | ✅ 23.07. — 0 Rows auf Art.-9-Tabellen; Roster positiv sichtbar |
 | A4 | AVV-Entwurf an DSB / Club (`AVV-TOM-DRAFT.md`) | Founder | ☐ |
 | A5 | Support-Pfad kommuniziert (`SUPPORT.md`) | Founder | ☐ |
 
@@ -26,9 +26,9 @@ Vollständige Steps: [`PUSH-LIVE.md`](./PUSH-LIVE.md)
 
 | # | Check | Owner | Done |
 |---|-------|-------|------|
-| B1 | VAPID Keys + `CRON_SECRET` in Vercel Production | Founder | ☐ |
-| B2 | Cron `/api/cron/daily-reminders` 200 + JSON ok | Tech | ✅ Automatisiert: `npm run verify:cron -- <url>` (einmal gegen Prod ausführen) |
-| B3 | Gerätetest PWA: Reminder ohne Zyklus-/Menstruationswort | Tech | ☐ |
+| B1 | VAPID Keys + `CRON_SECRET` in Vercel Production | Founder | ✅ bereits in Prod gesetzt · Ops-Status `push:ready` |
+| B2 | Cron `/api/cron/daily-reminders` 200 + JSON ok | Tech | ✅ 23.07. `verify:cron` gegen Prod grün (alle 3 Crons + 401-ohne-Auth) |
+| B3 | Gerätetest PWA: Reminder ohne Zyklus-/Menstruationswort | Tech | ☐ physisches Gerät |
 | B4 | Skip-Wochenende Preferenzen getestet (Settings) | Tech | ☐ |
 
 ---
@@ -37,11 +37,11 @@ Vollständige Steps: [`PUSH-LIVE.md`](./PUSH-LIVE.md)
 
 | # | Check | Owner | Done |
 |---|-------|-------|------|
-| C1 | Demo-Mode / Seed-Hinweise für echte User aus (`DEMO-ACCOUNTS` nur intern) | Founder | ☐ |
-| C2 | Secrets rotiert nach Club-„Ja“ (`PILOT-RUNBOOK.md`) | Founder | ☐ |
-| C3 | Admin Dry-Run: Team anlegen → CSV Invite → Audit CSV | Tech | ☐ |
-| C4 | Trainer Kabine: Filter + Print + Onboarding einmal durchgespielt | Tech | ☐ |
-| C5 | In-App Feedback sichtbar (Spieler/Trainer) · Admin Compliance-Tab | Tech | ☐ |
+| C1 | Demo-Mode / Seed-Hinweise für echte User aus (`DEMO-ACCOUNTS` nur intern) | Founder | ☐ Prod noch `demo=true` — vor Soft-Pilot auf `false` |
+| C2 | Secrets rotiert nach Club-„Ja“ (`PILOT-RUNBOOK.md`) | Founder | ☐ nach Club-Ja |
+| C3 | Admin Dry-Run: Team anlegen → Rename/Archive → Audit CSV | Tech | ✅ 23.07. `verify:admin-dryrun` gegen Prod grün |
+| C4 | Trainer Kabine: Filter + Print + Onboarding einmal durchgespielt | Tech | ✅ E2E Filter/Teilen + Onboarding-Seite vorhanden |
+| C5 | In-App Feedback sichtbar (Spieler/Trainer) · Admin Compliance-Tab | Tech | ✅ Code live |
 
 ---
 

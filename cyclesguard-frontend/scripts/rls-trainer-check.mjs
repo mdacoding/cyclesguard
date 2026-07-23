@@ -106,6 +106,9 @@ const { data: roster, error: rosterError } = await supabase
 
 if (rosterError) {
   console.error(`✗ team_members — unexpected error: ${rosterError.message}`);
+  if (/infinite recursion/i.test(rosterError.message)) {
+    console.error('  → RLS self-reference bug — see migration 015_fix_team_members_rls_recursion.sql');
+  }
   failed++;
 } else if (!roster || roster.length === 0) {
   console.warn('○ team_members — 0 rows (ok only if this trainer has no active team)');
