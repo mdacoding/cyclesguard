@@ -1,6 +1,7 @@
 import webpush from 'web-push';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { berlinDate, berlinWeekday, startOfBerlinDayUtc } from '@/lib/date';
+import { buildDailyReminderPayload, shouldSkipWeekendReminder } from '@/lib/push/payload';
 
 let configured = false;
 
@@ -54,14 +55,11 @@ export async function sendDailyReminders(): Promise<PushSendStats> {
   let pruned = 0;
   let skippedWeekend = 0;
 
-  const payload = JSON.stringify({
-    title: 'CyclesGuard',
-    body: 'Zeichne deine Readiness für heute auf.',
-  });
+  const payload = buildDailyReminderPayload();
 
   for (const sub of subscriptions) {
     if (alreadyLogged.has(sub.user_id)) continue;
-    if (isWeekend && sub.skip_weekends) {
+    if (shouldSkipWeekendReminder(isWeekend, sub.skip_weekends)) {
       skippedWeekend += 1;
       continue;
     }

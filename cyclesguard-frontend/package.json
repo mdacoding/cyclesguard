@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "generate-icons": "node scripts/generate-icons.mjs",
-    "test": "tsx --test lib/**/*.test.ts",
-    "test:trainer-status": "tsx --test lib/trainer-status.test.ts lib/privacy-mask.test.ts lib/invite-membership.test.ts lib/player-insights.test.ts lib/cron-auth.test.ts lib/admin-invite.test.ts lib/rate-limit.test.ts",
+    "test": "tsx --test lib/admin-invite.test.ts lib/cron-auth.test.ts lib/invite-membership.test.ts lib/player-insights.test.ts lib/privacy-mask.test.ts lib/rate-limit.test.ts lib/trainer-status.test.ts lib/push/payload.test.ts",
+    "test:trainer-status": "npm test",
     "test:e2e": "playwright test",
     "test:e2e:public": "playwright test --grep \"public smoke\"",
     "seed:eintracht": "tsx scripts/seed-eintracht-demo.ts",
@@ -20,7 +20,9 @@
     "verify:rls-trainer": "node scripts/rls-trainer-check.mjs",
     "verify:cron": "node scripts/verify-cron.mjs",
     "verify:admin-dryrun": "node scripts/verify-admin-dryrun.mjs",
-    "sync:vercel-env": "node scripts/sync-vercel-env.mjs"
+    "sync:vercel-env": "node scripts/sync-vercel-env.mjs",
+    "set:vercel-env": "node scripts/set-vercel-env.mjs",
+    "set:github-ci-secrets": "node scripts/set-github-ci-secrets.mjs"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.67.0",

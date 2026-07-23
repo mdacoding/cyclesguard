@@ -19,7 +19,9 @@
 | [DEMO-MODE-OFF.md](./DEMO-MODE-OFF.md) | Secrets + Demo vs Prod vor echten Usern |
 | [INGESTION-DEPLOY.md](./INGESTION-DEPLOY.md) | GPS-Ingestion hosten (nach Tracker-Zusage) |
 | [SUPPORT.md](./SUPPORT.md) | Support Soft-Pilot / Paid |
+| **[FOUNDER-SECRETS.md](./FOUNDER-SECRETS.md)** | Letzte manuelle Secrets (Sentry + Actions Minutes) |
 | [SENTRY-LIVE.md](./SENTRY-LIVE.md) | Sentry DSN in Vercel |
+| [AVV-EMAIL-DRAFT.md](./AVV-EMAIL-DRAFT.md) | Versand-Copy an DSB |
 | [AVV-TOM-DRAFT.md](../privacy/AVV-TOM-DRAFT.md) | AVV/TOM-Entwurf |
 | [RLS-PENETRATION-CHECKLIST.md](../privacy/RLS-PENETRATION-CHECKLIST.md) | Privacy-Checks |
 
