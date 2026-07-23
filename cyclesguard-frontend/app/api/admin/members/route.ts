@@ -50,6 +50,7 @@ export async function GET(request: Request) {
         authUser.user?.email?.split('@')[0] ??
         'Unbekannt',
       email: authUser.user?.email ?? null,
+      invitePending: !authUser.user?.last_sign_in_at,
     });
   }
 

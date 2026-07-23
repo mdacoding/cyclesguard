@@ -526,9 +526,15 @@ export default function TrainerDashboardPage() {
           enabled={!isLoading && team.length > 0}
         />
 
-        <p className="text-center text-xs text-cream/30 pt-4">
+        <p className="text-center text-xs text-cream/30 pt-4 print:hidden">
           Dieses Dashboard zeigt ausschließlich aggregierte Readiness-Signale.
-          Medizinische Rohdaten sind nicht einsehbar (DOSB-konform).
+          Medizinische Rohdaten sind nicht einsehbar (DOSB-konform).{' '}
+          <a
+            href="mailto:hello@cyclesguard.de?subject=CyclesGuard%20Trainer%20Support"
+            className="text-cream/45 hover:text-rose-gold underline-offset-2 hover:underline"
+          >
+            Support
+          </a>
         </p>
       </div>
     </div>

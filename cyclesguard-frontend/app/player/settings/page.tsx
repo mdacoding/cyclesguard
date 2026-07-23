@@ -11,6 +11,7 @@ import {
   Bell,
   BellOff,
   LogOut,
+  LifeBuoy,
 } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
@@ -167,6 +168,22 @@ export default function SettingsPage() {
         </section>
 
         <section className="glass-card p-6 md:p-8 animate-slideUp">
+          <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/10">
+            <LifeBuoy className="w-5 h-5 text-sage" />
+            <h2 className="text-xl font-semibold">Hilfe</h2>
+          </div>
+          <p className="text-sm text-cream/60 mb-4 leading-relaxed">
+            Fragen zu Zugang, Privacy oder Soft-Pilot? Schreib uns — wir antworten werktags.
+          </p>
+          <a
+            href="mailto:hello@cyclesguard.de?subject=CyclesGuard%20Support"
+            className="inline-flex items-center justify-center min-h-11 px-4 rounded-lg bg-sage/20 text-sage text-sm font-medium hover:bg-sage/30"
+          >
+            Support mailen
+          </a>
+        </section>
+
+        <section id="reminders" className="glass-card p-6 md:p-8 animate-slideUp scroll-mt-8">
           <div className="flex items-center gap-3 mb-6 pb-6 border-b border-white/10">
             <Bell className="w-6 h-6 text-rose-gold" />
             <h2 className="text-xl font-semibold">Erinnerungen</h2>

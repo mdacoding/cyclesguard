@@ -57,18 +57,22 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(
-    urlError === 'auth_callback_failed'
-      ? 'Authentifizierung fehlgeschlagen. Bitte erneut versuchen.'
-      : null
-  );
+  const [error, setError] = useState<string | null>(() => {
+    if (urlError === 'invite_expired') {
+      return 'Einladungs- oder Reset-Link ist abgelaufen oder ungültig. Nutze „Passwort vergessen“ oder bitte Trainer/Admin um „Einladung erneut“.';
+    }
+    if (urlError === 'auth_callback_failed') {
+      return 'Authentifizierung fehlgeschlagen. Bitte erneut versuchen oder Passwort vergessen nutzen.';
+    }
+    return null;
+  });
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const supabase = createClient();
 
   useEffect(() => {
-    if (urlMode === 'forgot') setMode('forgot');
-  }, [urlMode]);
+    if (urlMode === 'forgot' || urlError === 'invite_expired') setMode('forgot');
+  }, [urlMode, urlError]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

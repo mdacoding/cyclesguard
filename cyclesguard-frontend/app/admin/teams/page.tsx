@@ -37,6 +37,7 @@ interface MemberRow {
   name: string;
   email: string | null;
   joinedAt: string;
+  invitePending?: boolean;
 }
 
 interface ClubRow {
@@ -97,6 +98,7 @@ export default function AdminTeamsPage() {
   const [inviteBusy, setInviteBusy] = useState(false);
   const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
   const [pendingArchive, setPendingArchive] = useState(false);
+  const [resendId, setResendId] = useState<string | null>(null);
 
   const [linkUserId, setLinkUserId] = useState('');
   const [linkProvider, setLinkProvider] = useState('catapult');
@@ -282,6 +284,27 @@ export default function AdminTeamsPage() {
       await load();
     } else {
       setMsg('Entfernen fehlgeschlagen.');
+    }
+  };
+
+  const resendInvite = async (userId: string) => {
+    if (!selectedTeamId) return;
+    setResendId(userId);
+    setMsg(null);
+    try {
+      const res = await fetch('/api/admin/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teamId: selectedTeamId, userId, resend: true }),
+      });
+      const data = (await res.json()) as { message?: string; error?: string };
+      if (!res.ok) {
+        setMsg(data.error ?? 'Erneutes Senden fehlgeschlagen.');
+        return;
+      }
+      setMsg(data.message ?? 'Einladung erneut gesendet.');
+    } finally {
+      setResendId(null);
     }
   };
 
@@ -1195,7 +1218,14 @@ export default function AdminTeamsPage() {
                         className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-white/5 border border-white/10"
                       >
                         <div>
-                          <p className="font-medium">{m.name}</p>
+                          <p className="font-medium">
+                            {m.name}
+                            {m.invitePending ? (
+                              <span className="ml-2 text-[11px] font-normal text-rose-gold/90">
+                                Einladung offen
+                              </span>
+                            ) : null}
+                          </p>
                           <p className="text-xs text-cream/50">
                             {m.role === 'trainer' ? 'Trainer' : 'Spielerin'}
                             {m.email ? ` · ${m.email}` : ''}
@@ -1203,6 +1233,17 @@ export default function AdminTeamsPage() {
                           <p className="text-[11px] text-cream/30 mt-1 font-mono">{m.userId}</p>
                         </div>
                         <div className="flex flex-wrap gap-2">
+                          {m.invitePending && (
+                            <button
+                              type="button"
+                              onClick={() => void resendInvite(m.userId)}
+                              disabled={resendId === m.userId}
+                              className="inline-flex items-center gap-2 min-h-11 px-3 py-2 rounded-lg bg-white/10 text-sm disabled:opacity-50"
+                            >
+                              <Mail className="w-4 h-4" />
+                              {resendId === m.userId ? 'Sende…' : 'Einladung erneut'}
+                            </button>
+                          )}
                           {pendingRemoveId === m.userId && (
                             <button
                               type="button"

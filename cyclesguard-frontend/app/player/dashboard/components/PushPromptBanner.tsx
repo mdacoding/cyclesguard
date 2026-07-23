@@ -46,7 +46,7 @@ export default function PushPromptBanner({ hasLogged }: { hasLogged: boolean }) 
       </div>
       <div className="flex items-center gap-2 self-end sm:self-auto">
         <Link
-          href="/player/settings"
+          href="/player/settings#reminders"
           className="min-h-11 px-4 inline-flex items-center rounded-lg bg-rose-gold text-navy text-sm font-medium"
         >
           Zu Erinnerungen
