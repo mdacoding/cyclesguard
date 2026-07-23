@@ -19,7 +19,7 @@
 | Metrik | Ziel Pilot | Ist-Woche |
 |--------|------------|-----------|
 | Spielerinnen aktiv (mind. 1 Log/Woche) | ≥70 % der Freiwilligen | |
-| Trainer öffnet Dashboard | ≥3× / Woche | |
+| Trainer öffnet Dashboard | ≥3× / Woche | Admin Scorecard „Trainer aktiv 7d“ (Kabine `last_seen`) |
 | „Keine Daten“-Quote | sinkend | |
 | Zufriedenheit Trainer (1–5) | ≥4 | |
 

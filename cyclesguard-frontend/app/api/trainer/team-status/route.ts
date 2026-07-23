@@ -73,6 +73,14 @@ export async function GET(request: Request) {
 
   const admin = createAdminClient();
 
+  // Coach-safe activity: Kabine open counts toward Soft-Pilot „Trainer ≥3×/Woche“.
+  void admin
+    .from('team_members')
+    .update({ last_seen_at: new Date().toISOString() })
+    .eq('user_id', user.id)
+    .eq('role', 'trainer')
+    .in('team_id', teamIds);
+
   const { data: logs, error: logsError } = await admin
     .from('cycle_logs')
     .select('user_id, phase, energy_level, logged_at')

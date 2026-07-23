@@ -1,8 +1,12 @@
-# Demo-Accounts — Eintracht Pitch
+# Demo-Accounts — Pitch / Soft-Pilot Seed
 
 **Passwort für alle Demo-Accounts:** `CyclesGuard2026!`
 
-> Nur für Pitch/Demo-Umgebung. Vor echtem Pilot rotieren.
+> Nur für Pitch/Demo-Umgebung. Vor echtem Pilot rotieren. Nicht an Clubs mit Prod-Echtdaten weitergeben.
+
+**Seed:** `npm run seed:demo` (Alias: `seed:eintracht`)  
+Optional: `DEMO_TEAM_NAME` / `DEMO_CLUB_NAME` / `DEMO_SEASON_NAME`  
+Default Team-Name: **CyclesGuard Demo Frauen** (Legacy „Eintracht Frankfurt Frauen“ wird beim Re-Seed umbenannt).
 
 ---
 
@@ -12,6 +16,8 @@
 |--------|-------|-----------|
 | `trainer@eintracht-demo.de` | Athletik (Demo) | `/trainer/dashboard` |
 
+Domain `@eintracht-demo.de` bleibt stabil für bestehende Auth-User — Anzeigename des Teams ist club-agnostisch.
+
 ---
 
 ## Club Admin
@@ -20,11 +26,11 @@
 |--------|-------|-----------|
 | `admin@eintracht-demo.de` | Club Admin (Demo) | `/admin/teams` |
 
-Zeigt Teams, Saison, Roster-Invite (E-Mail + CSV), Audit — **keine** Zyklus-Rohdaten.
+Zeigt Teams, Saison, Roster-Invite, Scorecard (Adherence + Trainer aktiv 7d) — **keine** Zyklus-Rohdaten.
 
 ---
 
-## Spielerinnen (Team: Eintracht Frankfurt Frauen)
+## Spielerinnen (Demo-Team)
 
 | Name | E-Mail | Erwartete Ampel (Trainer) | Demo-Hinweis |
 |------|--------|---------------------------|--------------|
@@ -40,8 +46,8 @@ Zeigt Teams, Saison, Roster-Invite (E-Mail + CSV), Audit — **keine** Zyklus-Ro
 
 ## Live-Demo-Empfehlung
 
-1. **Trainer zuerst** kurz zeigen (Ampel-Übersicht)
-2. **Als Lisa Weber einloggen** → Log aktualisieren → zurück zum Trainer → Ampel reagiert
-3. **Lea Hoffmann** als Beispiel für „Spielerin kontaktieren“ (NO_DATA)
+1. **Trainer** Ampel + Trend 7d  
+2. **Lisa Weber** Log → zurück Trainer  
+3. **Admin** Scorecard + `/datenschutz` Ask  
 
-Seed erneut ausführen: `npm run seed:eintracht` (idempotent).
+Ablauf: [`DEMO-SCRIPT.md`](./DEMO-SCRIPT.md) · Seed: `npm run seed:demo`

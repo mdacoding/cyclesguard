@@ -34,7 +34,7 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 | Trust-Checks automatisiert + live verifiziert | ✅ 23.07. — Cron/RLS/Admin-Dry-Run gegen Prod grün |
 | Founder Sign-off (Sentry DSN, Demo-Mode off, AVV) | ◐ Sentry ✅ · Demo-Mode off ✅ · AVV-Versand Founder — [`FOUNDER-SECRETS.md`](../pitch/FOUNDER-SECRETS.md) |
 
-**Als Nächstes:** Multi-Club Launch-Pack live (`/privacy`, `/pilot`) · Outreach parallel · AVV bei Club-Adresse. Kein Feature-Bloat ohne Club-Nachfrage.
+**Als Nächstes:** Outreach-Tracking abarbeiten ([`OUTREACH-TRACKING.md`](../pitch/OUTREACH-TRACKING.md)) · `seed:demo` · Trainer-last_seen KPI ✅ · AVV bei Club-Adresse.
 
 **Daily-Ship-Log (jeden Tag ein Fortschritt):**
 
@@ -51,6 +51,7 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 | 23.07. | Adherence CSV · Scorecard NO_DATA%/Ø-by-Role für Pilot-Wochen-Call |
 | 23.07. | Multi-Club Launch: `/privacy` · `/pilot` · Landing Für-Vereine · Outreach parallel · Admin First-Run + Verein anlegen |
 | 23.07. | Trust-URLs: `/datenschutz` · `/impressum` · Login-Footer · 15-Min DEMO-SCRIPT |
+| 23.07. | Outreach-Tracking (Eintracht/Wolfsburg/Bayern) · `seed:demo` neutral · Trainer last_seen + Scorecard |
 
 ---
 

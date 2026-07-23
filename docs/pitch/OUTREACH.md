@@ -100,10 +100,13 @@ Sportliche Grüße, DEIN_NAME
 
 ## c) Weitere Clubs (jetzt parallel ok)
 
-Priorisiere erkennbare Athletik-/Medizin-Struktur (LinkedIn):
+Konkrete Zweitziele + Tracking-Zeilen: [`OUTREACH-TRACKING.md`](./OUTREACH-TRACKING.md)
 
-- Frauen-Bundesliga: z. B. Bayern München Frauen, VfL Wolfsburg, Bayer 04, RB Leipzig, 1. FC Köln, SGS Essen, …
-- Parallel 2. Bundesliga / Regionalliga als schnellere Einstiege
+| Club | Athletik / Physio (öffentlich) | Quelle |
+|------|--------------------------------|--------|
+| **VfL Wolfsburg Frauen** | Lars Edel · Omar Rüppel | [Staff 25/26](https://www.vfl-wolfsburg.de/teams/frauen/kader-2025/2026) |
+| **FC Bayern München Frauen** | Hamid Masoum Beygi · Moritz Lemmle | Club-News / Soccerdonna |
+| Optional | 1. FC Köln · SGS Essen · Regionalliga | LinkedIn „Athletik Frauen“ |
 
 Gleicher Textkern, Club-Namen austauschen.
 
@@ -111,8 +114,19 @@ Gleicher Textkern, Club-Namen austauschen.
 
 ## Tracking
 
+**Arbeitsblatt mit konkreten Namen/Clubs:** [`OUTREACH-TRACKING.md`](./OUTREACH-TRACKING.md)
+
+| Woche | Ziel | Status |
+|-------|------|--------|
+| Diese | ≥6 Erstkontakte (E1–E2, W1–W2, B1–B2) | → Tracking-Datei |
+
+Kurz-Log (optional, Detail in OUTREACH-TRACKING):
+
 | Datum | Club | An | Kanal | Antwort |
 |-------|------|-----|-------|---------|
 | | Eintracht | Fabian Meier | LinkedIn | |
 | | Eintracht | Shaline Deuchert | LinkedIn | |
-| | | | | |
+| | Wolfsburg | Lars Edel | LinkedIn | |
+| | Wolfsburg | Omar Rüppel | LinkedIn | |
+| | Bayern | Hamid Masoum Beygi | LinkedIn | |
+| | Bayern | Moritz Lemmle | LinkedIn | |

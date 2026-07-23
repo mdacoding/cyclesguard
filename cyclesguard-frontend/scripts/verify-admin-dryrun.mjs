@@ -345,6 +345,9 @@ if (teamId) {
     failed++;
   } else {
     console.log('✓ Adherence CSV downloadable');
+    if (String(adh.text).includes('trainers_active_7d')) {
+      console.log('✓ Adherence CSV includes trainers_active_7d');
+    }
   }
 }
 

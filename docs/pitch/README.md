@@ -8,7 +8,8 @@ Produkt ist club-agnostisch launch-ready — Outreach parallel zu mehreren Verei
 
 | Datei | Zweck |
 |-------|--------|
-| **[OUTREACH.md](./OUTREACH.md)** | Multi-Club Texte + Tracking |
+| **[OUTREACH.md](./OUTREACH.md)** | Multi-Club Texte |
+| **[OUTREACH-TRACKING.md](./OUTREACH-TRACKING.md)** | Konkret: Eintracht / Wolfsburg / Bayern + Wochenplan |
 | **[DEMO-SCRIPT.md](./DEMO-SCRIPT.md)** | 5-Min Demo-Ablauf |
 | **[PILOTANGEBOT.md](./PILOTANGEBOT.md)** | Angebot (PDF / parallel zu `/pilot`) |
 | **[DATENSCHUTZ-DOSB-1-PAGER.md](./DATENSCHUTZ-DOSB-1-PAGER.md)** | 1-Pager (parallel zu `/privacy`) |

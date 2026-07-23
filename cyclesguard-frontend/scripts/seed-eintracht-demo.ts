@@ -1,9 +1,17 @@
 /**
- * Seeds the Eintracht Frankfurt Frauen pitch demo on Supabase Cloud or local.
+ * Seeds a pitch/demo club on Supabase (Cloud or local).
  *
  * Requires .env.local with NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY.
  *
- * Usage: npm run seed:eintracht
+ * Env (optional, club-agnostic defaults):
+ *   DEMO_TEAM_NAME   default "CyclesGuard Demo Frauen"
+ *   DEMO_CLUB_NAME   default "CyclesGuard Demo"
+ *   DEMO_SEASON_NAME default "Saison 26/27 (Demo)"
+ *
+ * Emails stay on @eintracht-demo.de for stable DemoLoginHint / existing Auth users.
+ * Legacy team/club names ("Eintracht…") are renamed on re-seed.
+ *
+ * Usage: npm run seed:demo   (alias: npm run seed:eintracht)
  */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { createHash, randomUUID } from 'node:crypto';
@@ -11,10 +19,12 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
 const DEMO_PASSWORD = 'CyclesGuard2026!';
-const TEAM_NAME = 'Eintracht Frankfurt Frauen';
-const CLUB_NAME = 'Eintracht Frankfurt';
-const TEAM_SLUG = 'eintracht-frankfurt-frauen';
-const SEASON_NAME = 'Saison 26/27 (Demo)';
+const TEAM_NAME = process.env.DEMO_TEAM_NAME?.trim() || 'CyclesGuard Demo Frauen';
+const CLUB_NAME = process.env.DEMO_CLUB_NAME?.trim() || 'CyclesGuard Demo';
+const SEASON_NAME = process.env.DEMO_SEASON_NAME?.trim() || 'Saison 26/27 (Demo)';
+const LEGACY_TEAM_NAME = 'Eintracht Frankfurt Frauen';
+const LEGACY_CLUB_NAME = 'Eintracht Frankfurt';
+const TEAM_SLUG = 'demo-frauen';
 
 type CyclePhase = 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
 type AppRole = 'player' | 'trainer' | 'club_admin' | 'platform_admin';
@@ -200,7 +210,7 @@ async function main(): Promise<void> {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  console.log('Seeding Eintracht pitch demo…');
+  console.log(`Seeding pitch demo… (${TEAM_NAME} / ${CLUB_NAME})`);
 
   const trainerId = await upsertUser(admin, {
     email: DEMO_TRAINER.email,
@@ -241,13 +251,24 @@ async function main(): Promise<void> {
   if (existingClub?.id) {
     clubId = existingClub.id;
   } else {
-    const { data: club, error: clubError } = await admin
+    const { data: legacyClub } = await admin
       .from('clubs')
-      .insert({ name: CLUB_NAME })
       .select('id')
-      .single();
-    if (clubError) throw clubError;
-    clubId = club.id;
+      .eq('name', LEGACY_CLUB_NAME)
+      .maybeSingle();
+    if (legacyClub?.id) {
+      clubId = legacyClub.id;
+      await admin.from('clubs').update({ name: CLUB_NAME }).eq('id', clubId);
+      console.log(`  Renamed club ${LEGACY_CLUB_NAME} → ${CLUB_NAME}`);
+    } else {
+      const { data: club, error: clubError } = await admin
+        .from('clubs')
+        .insert({ name: CLUB_NAME })
+        .select('id')
+        .single();
+      if (clubError) throw clubError;
+      clubId = club.id;
+    }
   }
 
   const { error: clubMemberError } = await admin.from('club_members').upsert(
@@ -303,13 +324,32 @@ async function main(): Promise<void> {
       .update({ club_id: clubId, club_name: CLUB_NAME, status: 'active' })
       .eq('id', teamId);
   } else {
-    const { data: team, error: teamError } = await admin
+    const { data: legacyTeam } = await admin
       .from('teams')
-      .insert({ name: TEAM_NAME, club_name: CLUB_NAME, club_id: clubId, status: 'active' })
       .select('id')
-      .single();
-    if (teamError) throw teamError;
-    teamId = team.id;
+      .eq('name', LEGACY_TEAM_NAME)
+      .maybeSingle();
+    if (legacyTeam?.id) {
+      teamId = legacyTeam.id;
+      await admin
+        .from('teams')
+        .update({
+          name: TEAM_NAME,
+          club_id: clubId,
+          club_name: CLUB_NAME,
+          status: 'active',
+        })
+        .eq('id', teamId);
+      console.log(`  Renamed team ${LEGACY_TEAM_NAME} → ${TEAM_NAME}`);
+    } else {
+      const { data: team, error: teamError } = await admin
+        .from('teams')
+        .insert({ name: TEAM_NAME, club_name: CLUB_NAME, club_id: clubId, status: 'active' })
+        .select('id')
+        .single();
+      if (teamError) throw teamError;
+      teamId = team.id;
+    }
   }
 
   const memberships: { team_id: string; user_id: string; role: 'player' | 'trainer' }[] = [

@@ -13,6 +13,7 @@
     "test:e2e": "playwright test",
     "test:e2e:public": "playwright test --grep \"public smoke\"",
     "seed:eintracht": "tsx scripts/seed-eintracht-demo.ts",
+    "seed:demo": "tsx scripts/seed-eintracht-demo.ts",
     "pitch:setup-env": "node scripts/setup-pitch-env.mjs",
     "pitch:bundle-migrations": "node scripts/bundle-migrations.mjs",
     "pitch:smoke": "node scripts/smoke-pitch-demo.mjs",

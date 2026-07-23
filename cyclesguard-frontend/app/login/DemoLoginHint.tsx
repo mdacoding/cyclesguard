@@ -26,7 +26,9 @@ export default function DemoLoginHint() {
           </li>
         ))}
       </ul>
-      <p className="text-xs text-cream/40 mt-4">Demo-Ablauf: siehe docs/pitch/DEMO-SCRIPT.md</p>
+      <p className="text-xs text-cream/40 mt-4">
+        Team-Anzeigename nach `npm run seed:demo` · Ablauf: docs/pitch/DEMO-SCRIPT.md
+      </p>
     </div>
   );
 }

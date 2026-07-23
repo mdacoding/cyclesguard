@@ -42,7 +42,7 @@ export async function GET(request: Request) {
     if (clubIds.length === 0) {
       if (new URL(request.url).searchParams.get('format') === 'csv') {
         return new NextResponse(
-          'team,club,status,players,logged_today,logged_7d,still_7d,adherence_pct\n',
+          'team,club,status,players,logged_today,logged_7d,still_7d,adherence_pct,trainers,trainers_active_7d\n',
           {
             headers: {
               'Content-Type': 'text/csv; charset=utf-8',
@@ -67,18 +67,27 @@ export async function GET(request: Request) {
 
   const teamIds = (teams ?? []).map((t) => t.id);
   const playersByTeam = new Map<string, string[]>();
+  const trainersByTeam = new Map<string, string[]>();
+  const trainerLastSeen = new Map<string, string | null>();
 
   if (teamIds.length > 0) {
-    const { data: allPlayers } = await admin
+    const { data: allMembers } = await admin
       .from('team_members')
-      .select('team_id, user_id')
+      .select('team_id, user_id, role, last_seen_at')
       .in('team_id', teamIds)
-      .eq('role', 'player');
+      .in('role', ['player', 'trainer']);
 
-    for (const row of allPlayers ?? []) {
-      const list = playersByTeam.get(row.team_id) ?? [];
-      list.push(row.user_id);
-      playersByTeam.set(row.team_id, list);
+    for (const row of allMembers ?? []) {
+      if (row.role === 'player') {
+        const list = playersByTeam.get(row.team_id) ?? [];
+        list.push(row.user_id);
+        playersByTeam.set(row.team_id, list);
+      } else if (row.role === 'trainer') {
+        const list = trainersByTeam.get(row.team_id) ?? [];
+        list.push(row.user_id);
+        trainersByTeam.set(row.team_id, list);
+        trainerLastSeen.set(row.user_id, (row.last_seen_at as string | null) ?? null);
+      }
     }
   }
 
@@ -105,8 +114,13 @@ export async function GET(request: Request) {
   const result = [];
   for (const team of teams ?? []) {
     const playerIds = playersByTeam.get(team.id) ?? [];
+    const trainerIds = trainersByTeam.get(team.id) ?? [];
     const loggedLast7Days = playerIds.filter((id) => loggedUsers.has(id)).length;
     const loggedToday = playerIds.filter((id) => loggedTodayUsers.has(id)).length;
+    const trainersActive7d = trainerIds.filter((id) => {
+      const seen = trainerLastSeen.get(id);
+      return seen != null && seen >= sevenDaysAgo.toISOString();
+    }).length;
 
     result.push({
       id: team.id,
@@ -116,13 +130,15 @@ export async function GET(request: Request) {
       playerCount: playerIds.length,
       loggedLast7Days,
       loggedToday,
+      trainerCount: trainerIds.length,
+      trainersActive7d,
     });
   }
 
   if (new URL(request.url).searchParams.get('format') === 'csv') {
     const esc = (v: string) => `"${String(v).replaceAll('"', '""')}"`;
     const header =
-      'team,club,status,players,logged_today,logged_7d,still_7d,adherence_pct\n';
+      'team,club,status,players,logged_today,logged_7d,still_7d,adherence_pct,trainers,trainers_active_7d\n';
     const body = result
       .map((t) => {
         const adherence =
@@ -136,6 +152,8 @@ export async function GET(request: Request) {
           String(t.loggedLast7Days),
           String(Math.max(0, t.playerCount - t.loggedLast7Days)),
           adherence,
+          String(t.trainerCount),
+          String(t.trainersActive7d),
         ]
           .map(esc)
           .join(',');

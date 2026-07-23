@@ -29,6 +29,8 @@ interface TeamRow {
   playerCount: number;
   loggedLast7Days: number;
   loggedToday?: number;
+  trainerCount?: number;
+  trainersActive7d?: number;
 }
 
 interface MemberRow {
@@ -692,6 +694,8 @@ export default function AdminTeamsPage() {
   const teamsBelowTarget = teams.filter(
     (t) => t.playerCount > 0 && t.loggedLast7Days / t.playerCount < 0.7
   ).length;
+  const trainerCount = teams.reduce((sum, t) => sum + (t.trainerCount ?? 0), 0);
+  const trainersActive7d = teams.reduce((sum, t) => sum + (t.trainersActive7d ?? 0), 0);
 
   const selectedClub = clubs.find((c) => c.id === seasonClubId);
   const clubSeasons = seasons.filter((s) => s.clubId === seasonClubId);
@@ -1235,21 +1239,18 @@ export default function AdminTeamsPage() {
                   </p>
                 </div>
                 <div className="rounded-xl bg-white/5 border border-white/10 p-3">
-                  <p className="text-[11px] text-cream/45 mb-1">Feedback Ø Trainer</p>
-                  <p className="text-xl font-semibold">
-                    {feedbackAvgByRole.trainer != null
-                      ? `${feedbackAvgByRole.trainer}/5`
-                      : '—'}
+                  <p className="text-[11px] text-cream/45 mb-1">Trainer aktiv 7d</p>
+                  <p
+                    className={`text-xl font-semibold ${
+                      trainerCount > 0 && trainersActive7d >= 1 ? 'text-sage' : 'text-cream'
+                    }`}
+                  >
+                    {trainerCount === 0 ? '—' : `${trainersActive7d}/${trainerCount}`}
                   </p>
-                  <p className="text-[11px] text-cream/35">
-                    Spielerin{' '}
-                    {feedbackAvgByRole.player != null
-                      ? `${feedbackAvgByRole.player}/5`
-                      : '—'}
-                  </p>
+                  <p className="text-[11px] text-cream/35">Ziel ≥3×/Woche · Kabine</p>
                 </div>
                 <div className="rounded-xl bg-white/5 border border-white/10 p-3">
-                  <p className="text-[11px] text-cream/45 mb-1">Feedback Ø gesamt</p>
+                  <p className="text-[11px] text-cream/45 mb-1">Feedback Ø</p>
                   <p
                     className={`text-xl font-semibold ${
                       feedbackAvg != null && feedbackAvg >= 4 ? 'text-sage' : 'text-cream'
@@ -1258,7 +1259,11 @@ export default function AdminTeamsPage() {
                     {feedbackAvg != null ? `${feedbackAvg}/5` : '—'}
                   </p>
                   <p className="text-[11px] text-cream/35">
-                    {feedbackCount} · Ziel ≥4
+                    T{' '}
+                    {feedbackAvgByRole.trainer != null ? feedbackAvgByRole.trainer : '—'}
+                    {' · S '}
+                    {feedbackAvgByRole.player != null ? feedbackAvgByRole.player : '—'}
+                    {' · Ziel ≥4'}
                   </p>
                 </div>
               </div>
