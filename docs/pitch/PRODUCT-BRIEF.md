@@ -49,7 +49,8 @@ Dazu eine kurze Handlungsempfehlung (z. B. Plyometrie reduzieren). Keine Phasen,
 
 ## Angebot an den Club
 
-**8–12 Wochen Soft-Pilot kostenlos**, 5–10 freiwillige Spielerinnen, wöchentliches 20-Min-Feedback. Details: `PILOTANGEBOT.md`.
+**8–12 Wochen Soft-Pilot kostenlos**, 5–10 freiwillige Spielerinnen, wöchentliches 20-Min-Feedback.  
+Live: https://cyclesguard.vercel.app/pilot · Einwilligung: `/spielerinnen-info` · Details: `PILOTANGEBOT.md`.
 
 ---
 

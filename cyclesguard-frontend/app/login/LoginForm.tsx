@@ -369,6 +369,9 @@ export default function LoginForm() {
             <a href="/pilot" className="hover:text-rose-gold underline-offset-2 hover:underline">
               Soft-Pilot
             </a>
+            <a href="/spielerinnen-info" className="hover:text-rose-gold underline-offset-2 hover:underline">
+              Spielerinnen-Info
+            </a>
             <a href="/impressum" className="hover:text-rose-gold underline-offset-2 hover:underline">
               Impressum
             </a>
