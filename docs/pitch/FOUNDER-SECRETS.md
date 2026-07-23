@@ -38,7 +38,12 @@ cd C:\Users\AkbaS\Desktop\SaaS\Projekte\cyclesguard
 # Public Supabase (für rls-trainer-check CI-Job)
 & "$env:ProgramFiles\GitHub CLI\gh.exe" secret set NEXT_PUBLIC_SUPABASE_URL -b "<aus Vercel / .env.local>"
 & "$env:ProgramFiles\GitHub CLI\gh.exe" secret set NEXT_PUBLIC_SUPABASE_ANON_KEY -b "<aus Vercel / .env.local>"
+
+# Service role / secret key (für rls-privacy-check: Isolation-Team + Delete-Probe)
+& "$env:ProgramFiles\GitHub CLI\gh.exe" secret set SUPABASE_SERVICE_ROLE_KEY -b "<aus .env.local — sb_secret_… oder legacy JWT>"
 ```
+
+Manuell Trust-Suite: Actions → **CI E2E / RLS** → Run workflow (`rls-trainer-check` + `rls-privacy-check`).
 
 ---
 

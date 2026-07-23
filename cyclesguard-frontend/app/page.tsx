@@ -160,11 +160,11 @@ export default function Home() {
         <a href="/privacy" className="hover:text-cream/60">
           Datenschutz
         </a>
-        <a href="/datenschutz" className="hover:text-cream/60">
-          /datenschutz
-        </a>
         <a href="/pilot" className="hover:text-cream/60">
           Soft-Pilot
+        </a>
+        <a href="/spielerinnen-info" className="hover:text-cream/60">
+          Spielerinnen-Info
         </a>
         <a href="/impressum" className="hover:text-cream/60">
           Impressum
