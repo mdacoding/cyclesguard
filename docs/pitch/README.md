@@ -1,28 +1,26 @@
-# Eintracht Pitch — Materialien
+# CyclesGuard Pitch — Materialien (Multi-Club Launch)
 
-**Live:** https://cyclesguard.vercel.app · **Nächster Schritt:** Termin anfragen
+**Live:** https://cyclesguard.vercel.app  
+**Privacy:** https://cyclesguard.vercel.app/privacy  
+**Soft-Pilot:** https://cyclesguard.vercel.app/pilot  
+
+Produkt ist club-agnostisch launch-ready — Outreach parallel zu mehreren Vereinen möglich.
 
 | Datei | Zweck |
 |-------|--------|
-| **[TERMIN-BEREIT.md](./TERMIN-BEREIT.md)** | Checkliste — dann nur noch Outreach |
-| **[OUTREACH.md](./OUTREACH.md)** | An wen, Textvorlagen, andere Clubs |
-| **[PRODUCT-BRIEF.md](./PRODUCT-BRIEF.md)** | Was ist CyclesGuard + Arbeit nach dem Termin |
-| [DEMO-SCRIPT.md](./DEMO-SCRIPT.md) | 5-Min-Ablauf |
-| [DEMO-ACCOUNTS.md](./DEMO-ACCOUNTS.md) | Logins |
-| [DATENSCHUTZ-DOSB-1-PAGER.md](./DATENSCHUTZ-DOSB-1-PAGER.md) | 1-Pager (→ PDF drucken) |
-| [PILOTANGEBOT.md](./PILOTANGEBOT.md) | Angebot (→ PDF drucken) |
-| [TRAINER-ONBOARDING.md](./TRAINER-ONBOARDING.md) | Für Soft-Pilot |
-| [PILOT-FEEDBACK.md](./PILOT-FEEDBACK.md) | Für Soft-Pilot |
-| **[PILOT-RUNBOOK.md](./PILOT-RUNBOOK.md)** | Soft-Pilot Start in 48h |
-| [PUSH-LIVE.md](./PUSH-LIVE.md) | VAPID + Cron Live-Test |
-| **[GO-LIVE.md](./GO-LIVE.md)** | Trust / Push / Pre-Paid Sign-off |
-| [DEMO-MODE-OFF.md](./DEMO-MODE-OFF.md) | Secrets + Demo vs Prod vor echten Usern |
-| [INGESTION-DEPLOY.md](./INGESTION-DEPLOY.md) | GPS-Ingestion hosten (nach Tracker-Zusage) |
-| [SUPPORT.md](./SUPPORT.md) | Support Soft-Pilot / Paid |
-| **[FOUNDER-SECRETS.md](./FOUNDER-SECRETS.md)** | Letzte manuelle Secrets (Sentry + Actions Minutes) |
-| [SENTRY-LIVE.md](./SENTRY-LIVE.md) | Sentry DSN in Vercel |
-| [AVV-EMAIL-DRAFT.md](./AVV-EMAIL-DRAFT.md) | Versand-Copy an DSB |
-| [AVV-TOM-DRAFT.md](../privacy/AVV-TOM-DRAFT.md) | AVV/TOM-Entwurf |
-| [RLS-PENETRATION-CHECKLIST.md](../privacy/RLS-PENETRATION-CHECKLIST.md) | Privacy-Checks |
+| **[OUTREACH.md](./OUTREACH.md)** | Multi-Club Texte + Tracking |
+| **[DEMO-SCRIPT.md](./DEMO-SCRIPT.md)** | 5-Min Demo-Ablauf |
+| **[PILOTANGEBOT.md](./PILOTANGEBOT.md)** | Angebot (PDF / parallel zu `/pilot`) |
+| **[DATENSCHUTZ-DOSB-1-PAGER.md](./DATENSCHUTZ-DOSB-1-PAGER.md)** | 1-Pager (parallel zu `/privacy`) |
+| [DEMO-ACCOUNTS.md](./DEMO-ACCOUNTS.md) | Pitch-Logins (intern) |
+| [TRAINER-ONBOARDING.md](./TRAINER-ONBOARDING.md) | Athletik 1-Seite |
+| [PILOT-FEEDBACK.md](./PILOT-FEEDBACK.md) | Wochen-Call |
+| **[PILOT-RUNBOOK.md](./PILOT-RUNBOOK.md)** | Soft-Pilot Start in 48h nach Club-Ja |
+| **[GO-LIVE.md](./GO-LIVE.md)** | Trust Sign-off |
+| [TERMIN-BEREIT.md](./TERMIN-BEREIT.md) | Pre-Call Checkliste |
+| [PRODUCT-BRIEF.md](./PRODUCT-BRIEF.md) | Kurzbriefing |
+| [SUPPORT.md](./SUPPORT.md) | Support |
+| [AVV-EMAIL-DRAFT.md](./AVV-EMAIL-DRAFT.md) | AVV an DSB |
+| [FOUNDER-SECRETS.md](./FOUNDER-SECRETS.md) | Secrets |
 
 Roadmap: [`../sprints/00-ROADMAP.md`](../sprints/00-ROADMAP.md)

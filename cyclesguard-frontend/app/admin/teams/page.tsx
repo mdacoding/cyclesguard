@@ -89,6 +89,9 @@ export default function AdminTeamsPage() {
   const [members, setMembers] = useState<MemberRow[]>([]);
   const [name, setName] = useState('');
   const [clubName, setClubName] = useState('');
+  const [teamClubId, setTeamClubId] = useState('');
+  const [newClubName, setNewClubName] = useState('');
+  const [clubCreateBusy, setClubCreateBusy] = useState(false);
   const [loading, setLoading] = useState(true);
   const [membersLoading, setMembersLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -175,6 +178,7 @@ export default function AdminTeamsPage() {
             ? seasonClubId
             : clubData[0]?.id ?? '';
         if (clubData.length > 0 && !seasonClubId) setSeasonClubId(clubData[0].id);
+        if (clubData.length > 0 && !teamClubId) setTeamClubId(clubData[0].id);
         if (clubData.length > 0 && !platformClubId) setPlatformClubId(clubData[0].id);
         const active = clubData.find((c) => c.id === pickId) ?? clubData[0];
         if (active) {
@@ -261,7 +265,11 @@ export default function AdminTeamsPage() {
     const res = await fetch('/api/admin/teams', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, clubName: clubName || undefined }),
+      body: JSON.stringify({
+        name,
+        clubName: clubName || undefined,
+        clubId: teamClubId || undefined,
+      }),
     });
     if (!res.ok) {
       setMsg('Team konnte nicht angelegt werden.');
@@ -271,6 +279,37 @@ export default function AdminTeamsPage() {
     setClubName('');
     setMsg('Team angelegt.');
     await load();
+  };
+
+  const createClub = async () => {
+    if (!newClubName.trim()) return;
+    setClubCreateBusy(true);
+    setMsg(null);
+    try {
+      const res = await fetch('/api/admin/clubs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newClubName.trim() }),
+      });
+      const data = (await res.json()) as { id?: string; error?: string };
+      if (!res.ok) {
+        setMsg(
+          data.error === 'Forbidden'
+            ? 'Verein anlegen nur als Platform-Admin.'
+            : data.error ?? 'Verein konnte nicht angelegt werden.'
+        );
+        return;
+      }
+      setNewClubName('');
+      setMsg('Verein angelegt — jetzt Team zuordnen und einladen.');
+      if (data.id) {
+        setSeasonClubId(data.id);
+        setTeamClubId(data.id);
+      }
+      await load();
+    } finally {
+      setClubCreateBusy(false);
+    }
   };
 
   const removeMember = async (userId: string) => {
@@ -695,6 +734,22 @@ export default function AdminTeamsPage() {
     },
   ];
   const closingReady = closingChecks.every((c) => c.ok);
+
+  const softPilotStartChecks = [
+    { id: 'club', label: 'Verein verknüpft', ok: clubs.length > 0 },
+    {
+      id: 'team',
+      label: 'Aktives Team',
+      ok: teams.some((t) => t.status !== 'archived'),
+    },
+    { id: 'season', label: 'Saison angelegt', ok: seasons.length > 0 },
+    {
+      id: 'roster',
+      label: 'Spielerinnen im Roster',
+      ok: totalPlayers > 0,
+    },
+  ];
+  const softPilotStartReady = softPilotStartChecks.every((c) => c.ok);
 
   const buildOfferMailto = (s: SeasonRow) => {
     const club = clubs.find((c) => c.id === s.clubId);
@@ -1222,7 +1277,16 @@ export default function AdminTeamsPage() {
                 Ops-Status (L2/L3 Trust)
               </h2>
               <p className="text-xs text-cream/50">
-                Nur Booleans — keine Secret-Werte. Checkliste: docs/pitch/GO-LIVE.md
+                Nur Booleans — keine Secret-Werte. Öffentlich:{' '}
+                <a href="/privacy" className="text-cream/70 hover:text-rose-gold underline-offset-2 hover:underline">
+                  /privacy
+                </a>
+                {' · '}
+                <a href="/pilot" className="text-cream/70 hover:text-rose-gold underline-offset-2 hover:underline">
+                  /pilot
+                </a>
+                {' · '}
+                Checkliste: docs/pitch/GO-LIVE.md
               </p>
               {opsLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin text-rose-gold" />
@@ -1357,18 +1421,93 @@ export default function AdminTeamsPage() {
         {tab === 'roster' && (
           <div className="space-y-6">
             <section className="glass-card p-5 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h2 className="font-semibold">Soft-Pilot Start (First-Run)</h2>
+                <span
+                  className={`text-xs font-medium ${
+                    softPilotStartReady ? 'text-sage' : 'text-rose-gold'
+                  }`}
+                >
+                  {softPilotStartReady ? 'Startklar' : 'Noch offen'}
+                </span>
+              </div>
+              <p className="text-xs text-cream/50">
+                Verein → Team → Saison → Invites. Öffentliche Pitch-Seiten:{' '}
+                <a href="/privacy" className="text-cream/70 hover:text-rose-gold">
+                  /privacy
+                </a>
+                {' · '}
+                <a href="/pilot" className="text-cream/70 hover:text-rose-gold">
+                  /pilot
+                </a>
+              </p>
+              <ul className="grid sm:grid-cols-2 gap-2 text-sm">
+                {softPilotStartChecks.map((c) => (
+                  <li
+                    key={c.id}
+                    className="flex items-center justify-between gap-2 rounded-lg bg-white/5 border border-white/10 px-3 py-2"
+                  >
+                    <span className="text-cream/70">{c.label}</span>
+                    <span className={c.ok ? 'text-sage' : 'text-rose-gold'}>
+                      {c.ok ? 'OK' : 'offen'}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            {showPlatform && (
+              <section className="glass-card p-5 space-y-3">
+                <h2 className="font-semibold">Verein anlegen (Platform)</h2>
+                <p className="text-xs text-cream/50">
+                  Neuen Club für Soft-Pilot / zweiten Verein — danach Team mit Club-ID zuordnen.
+                </p>
+                <div className="grid md:grid-cols-3 gap-3">
+                  <input
+                    value={newClubName}
+                    onChange={(e) => setNewClubName(e.target.value)}
+                    placeholder="Vereinsname"
+                    className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12 md:col-span-2"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void createClub()}
+                    disabled={clubCreateBusy || !newClubName.trim()}
+                    className="rounded-xl bg-white/10 hover:bg-white/15 px-4 py-3 min-h-12 disabled:opacity-40 inline-flex items-center justify-center gap-2"
+                  >
+                    {clubCreateBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                    Verein anlegen
+                  </button>
+                </div>
+              </section>
+            )}
+
+            <section className="glass-card p-5 space-y-3">
               <h2 className="font-semibold">Neues Team</h2>
-              <div className="grid md:grid-cols-3 gap-3">
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Teamname"
                   className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
                 />
+                <select
+                  value={teamClubId}
+                  onChange={(e) => setTeamClubId(e.target.value)}
+                  className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+                  aria-label="Verein zuordnen"
+                >
+                  <option value="">Verein (optional)</option>
+                  {clubs.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
                 <input
                   value={clubName}
                   onChange={(e) => setClubName(e.target.value)}
-                  placeholder="Verein (optional)"
+                  placeholder="Anzeigename Verein (optional)"
                   className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
                 />
                 <button

@@ -1,8 +1,8 @@
-# Pilotangebot — CyclesGuard × Eintracht Frankfurt Frauen
+# Pilotangebot — CyclesGuard Soft-Pilot (club-agnostisch)
 
-**An:** Athletik / Sportmedizin / Performance — Eintracht Frankfurt Frauen  
-**Von:** CyclesGuard · https://cyclesguard.vercel.app  
-*(Absender-Name/E-Mail in der Outreach-Nachricht — siehe OUTREACH.md)*  
+**An:** Athletik / Sportmedizin / Performance — [VEREINSNAME]  
+**Von:** CyclesGuard · https://cyclesguard.vercel.app · hello@cyclesguard.de  
+**Live-Angebot:** https://cyclesguard.vercel.app/pilot  
 **Laufzeit:** 8–12 Wochen · **kostenlos**
 
 ---
@@ -13,27 +13,26 @@ Gemeinsam testen, ob die **Trainer-Ampel** im Alltag (Training, Reise, Spiel) di
 
 ---
 
-## Was Eintracht bekommt
+## Was der Verein bekommt
 
 | Leistung | Details |
 |----------|---------|
-| Gehostete App | Spielerinnen-PWA + Trainer-Dashboard (EU-Hosting) |
-| Onboarding | Kurz-Anleitung für Athletik + Spielerinnen (DE) |
-| Support | E-Mail / Chat, Reaktion innerhalb 24h (Werktage) |
-| Feedback-Rhythmus | Wöchentlicher 20-Min-Call mit Athletik |
-| Roadmap-Einfluss | Priorisierung aus eurem Feedback (GPS, Push, Admin) |
-| Datenschutz | Export/Löschung, DSGVO Art. 9 Flow, 1-Pager für euren DSB |
+| Gehostete App | Spielerinnen-PWA + Trainer-Dashboard + Club-Admin (EU-Hosting) |
+| Onboarding | Kurz-Anleitung Athletik + Spielerinnen (DE) |
+| Support | E-Mail, Reaktion werktags |
+| Feedback-Rhythmus | Wöchentlicher 20-Min-Call |
+| Roadmap-Einfluss | Priorisierung aus eurem Feedback |
+| Datenschutz | `/privacy` 1-Pager, Export/Löschung, Art. 9 Flow, AVV-Entwurf |
 
 ---
 
-## Was wir von Eintracht brauchen
+## Was wir brauchen
 
 | Erwartung | Details |
 |-----------|---------|
 | **5–10 freiwillige Spielerinnen** | Schriftliche Info + Einwilligung (Vorlage stellen wir) |
 | **1 feste Ansprechperson** | Athletik oder Sportmedizin |
 | **Ehrliches Feedback** | Was hilft / was stört — wöchentlich |
-| **Kein Echtdaten-Zwang** | Demo-Accounts für erste Tests möglich |
 
 ---
 
@@ -41,52 +40,30 @@ Gemeinsam testen, ob die **Trainer-Ampel** im Alltag (Training, Reise, Spiel) di
 
 - Abrechnung / Lizenzvertrag (erst nach erfolgreichem Pilot)
 - Live-GPS-Ingestion (optional Phase 2)
-- Multi-Club-Administration
 - Medizinische Diagnostik oder ACL-Risiko-ML
 
 ---
 
 ## Erfolgskriterien (gemeinsam definierbar)
 
-Beispiele nach 8 Wochen:
-
-- ≥70 % der Spielerinnen loggen ≥3× pro Woche
-- Athletiktrainer nutzt Ampel mindestens 3× pro Trainingswoche
+- ≥70 % der Spielerinnen loggen ≥1× / Woche
+- Athletik nutzt Ampel mindestens 3× / Trainingswoche
 - Kein Vorfall „Trainer hat Rohdaten gesehen“
-- Qualitative Bewertung: „würden wir weiterempfehlen“ ≥4/5
+- Weiterempfehlung ≥4/5
 
 ---
 
 ## Nach dem Pilot
 
-| Ergebnis | Nächster Schritt |
-|----------|------------------|
-| **Positiv** | Jahresvertrag / Saison-Lizenz verhandeln, GPS optional |
-| **Gemischt** | Feature-Anpassung, verlängerter Test |
-| **Negativ** | Daten löschen, Learnings dokumentieren |
+Gemeinsame Entscheidung: weiter (Paid Season, manueller Vertrag) · pausieren · beenden.  
+Kein automatisches Abo.
 
 ---
 
-## Kosten
+## Nächster Schritt
 
-**0 €** für die Pilotphase. Infrastruktur trägt CyclesGuard.
+1. Demo: https://cyclesguard.vercel.app  
+2. Datenschutz: https://cyclesguard.vercel.app/privacy  
+3. Termin / Soft-Pilot anfragen: hello@cyclesguard.de  
 
----
-
-## Start
-
-1. Kick-off-Termin (60 Min.) — Technik + Datenschutz  
-2. Spielerinnen-Einladung (E-Mail-Invite über App)  
-3. Woche 1: Begleitetes erstes Logging  
-4. Woche 2–8: Regelbetrieb + wöchentlicher Check-in  
-
-**Unterschrift / Zustimmung:**
-
-| | |
-|---|---|
-| Eintracht Frankfurt Frauen | _________________________ Datum |
-| CyclesGuard | _________________________ Datum |
-
----
-
-*Vor Versand: persönliche Kontaktdaten in der E-Mail/LinkedIn-Nachricht eintragen (OUTREACH.md).*
+*Vorlage · Club-Namen in Outreach ersetzen · siehe OUTREACH.md*

@@ -1,8 +1,8 @@
 # CyclesGuard — Datenschutz & DOSB (1-Pager)
 
-**Stand:** Pitch-Version · Eintracht Frankfurt Pilot-Gespräch  
-**Kontakt:** CyclesGuard · Demo https://cyclesguard.vercel.app · github.com/mdacoding/cyclesguard  
-*(Persönliche Absender-E-Mail in der Outreach-Nachricht angeben — siehe OUTREACH.md)*
+**Stand:** Soft-Pilot / Club-Pitch  
+**Live:** https://cyclesguard.vercel.app/privacy · hello@cyclesguard.de  
+**Repo:** github.com/mdacoding/cyclesguard
 
 ---
 
@@ -31,7 +31,7 @@ Eine **privacy-first** Web-App für Spielerinnen im Leistungssport: freiwillige 
 - **Art. 15 / 20:** Datenexport über Spielerinnen-Einstellungen
 - **Art. 17:** Account-Löschung inkl. Zykluslogs und verknüpfter Summaries
 - **Zweckbindung:** Readiness für Trainingssteuerung — kein Marketing, kein Weiterverkauf
-- **Hosting:** EU (Supabase Frankfurt, Vercel fra1) — Verarbeitung in der EU anvisiert
+- **Hosting:** EU (Supabase Frankfurt, Vercel fra1)
 - **Consent-Audit:** Zeitstempel + gehashte IP (Salt), keine Klartext-IPs in Logs
 
 ---
@@ -54,18 +54,19 @@ Eine **privacy-first** Web-App für Spielerinnen im Leistungssport: freiwillige 
 
 ---
 
-## Pilot mit Eintracht (Vorschlag)
+## Soft-Pilot mit eurem Verein
 
 - Freiwilligkeit, schriftliche Information an Spielerinnen
-- Gemeinsame Datenschutz-Folgenabschätzung bei Bedarf (DSB des Vereins)
-- Auftragsverarbeitung (AVV) vor produktivem Echtbetrieb — Demo ohne personenbezogene Echtdaten
+- Gemeinsame Abstimmung mit DSB bei Bedarf
+- Auftragsverarbeitung (AVV) vor produktivem Echtbetrieb — Demo ohne personenbezogene Echtdaten möglich
+- Angebot: https://cyclesguard.vercel.app/pilot
 
 ---
 
 ## Offene Punkte (ehrlich)
 
-- Formale AVV / TOM-Dokumentation für SaaS-Betrieb: **vor Echtpilot finalisieren**
-- GPS/Wearable-Anbindung: separates Consent, Löschkonzept definiert, im Pitch **nicht** aktiv
+- Formale AVV-Unterschrift: sobald Club-/DSB-Adresse vorliegt (Entwurf + Mailto fertig)
+- GPS/Wearable-Anbindung: separates Consent, nur auf Club-Nachfrage
 
 ---
 

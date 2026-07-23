@@ -65,4 +65,4 @@ Du kannst **keine** Logs für Spielerinnen erstellen oder einsehen.
 - Wöchentlicher 20-Min-Call mit CyclesGuard
 - Feedback: Was hilft im Training? Was fehlt?
 
-*Stand: Pilot-Version · Eintracht Frankfurt*
+*Stand: Soft-Pilot · CyclesGuard · https://cyclesguard.vercel.app*

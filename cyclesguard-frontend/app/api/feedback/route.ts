@@ -155,7 +155,7 @@ export async function GET(request: Request) {
     roleBuckets.set(role, prev);
   }
   const avgByRole: Record<string, number> = {};
-  for (const [role, b] of roleBuckets) {
+  for (const [role, b] of Array.from(roleBuckets.entries())) {
     avgByRole[role] = Math.round((b.sum / b.n) * 10) / 10;
   }
 

@@ -1,83 +1,86 @@
-# Outreach — Termin bei Eintracht (und optional anderen Clubs)
+# Outreach — Soft-Pilot an Vereine (Multi-Club)
 
-**Dein einziger Restschritt:** Nachricht senden + Termin vorschlagen.  
-**Demo-Link immer mitgeben:** https://cyclesguard.vercel.app
+**Live-Demo:** https://cyclesguard.vercel.app  
+**Datenschutz:** https://cyclesguard.vercel.app/privacy  
+**Angebot:** https://cyclesguard.vercel.app/pilot  
 
-Vor dem Absenden in den Vorlagen ersetzen:
-- `DEIN_NAME`
-- `DEINE_EMAIL`
-- `DEINE_TELEFON` (optional)
+Vor dem Absenden ersetzen: `DEIN_NAME` · `DEINE_EMAIL` · `DEINE_TELEFON` (optional) · `[VEREINSNAME]` / `[Nachname]`
 
 ---
 
-## a) An wen bei Eintracht Frankfurt Frauen?
+## Strategie (während wir auf Rückrufe warten)
 
-Quelle: [Trainer-/Funktionsteam](https://frauen.eintracht.de/2024-2025/kader/trainer-funktionsteam/) (Stand Kaderseite).
+| Phase | Was tun |
+|-------|---------|
+| **Jetzt** | Parallel 2–4 Clubs anschreiben (Athletik + Medizin). Eintracht bleibt Priorität, blockiert aber **nicht** andere. |
+| **Wenn ein Club „Ja“** | Kapazität auf Kick-off legen; weitere Outreach drosseln, nicht stoppen. |
+| **Wenn „später“ / keine Antwort** | Follow-up nach 7–10 Tagen, dann nächste 2 Clubs. |
 
-### Priorität 1 — fachlich am nächsten (Pitch-Kern Ampel)
+Produkt ist launch-ready club-agnostisch — Demo, Privacy-Seite und Soft-Pilot-Seite sind für **jeden** Verein nutzbar.
+
+---
+
+## a) Eintracht Frankfurt Frauen (Priorität 1 — lokal)
+
+Quelle: [Trainer-/Funktionsteam](https://frauen.eintracht.de/2024-2025/kader/trainer-funktionsteam/)
+
+### Priorität 1 — fachlich
 
 | Person | Rolle | Warum |
 |--------|-------|--------|
-| **Fabian Meier** | Athletiktrainer | Direkter Nutzen der Ampel im Training |
+| **Fabian Meier** | Athletiktrainer | Ampel im Training |
 | **Torsten Schröder** | Co-Trainer (Athletik) | Athletik-Steuerung |
-| **Shaline Deuchert** | Leitung medizinische Betreuung & Physiotherapie | Datenschutz / Art. 9 / DOSB-Vertrauen |
+| **Shaline Deuchert** | Leitung medizinische Betreuung & Physiotherapie | Datenschutz / Art. 9 |
 
-### Priorität 2 — Türöffner / Organisation
+### Priorität 2 — Türöffner
 
-| Person | Rolle | Warum |
-|--------|-------|--------|
-| **Marnie Orlob** | Teammanagerin | Termine, Weiterleitung intern |
-| **Katharina Kiel** | Technische Direktorin Frauenfußball | Strategische Freigabe |
-| **Niko Arnautis** | Sportlicher Leiter & Cheftrainer | Nur wenn Athletik/Medizin schon Interesse signalisieren |
+| Person | Rolle |
+|--------|-------|
+| **Marnie Orlob** | Teammanagerin |
+| **Katharina Kiel** | Technische Direktorin Frauenfußball |
+| **Niko Arnautis** | Sportlicher Leiter & Cheftrainer (nur nach Signal von Athletik/Medizin) |
 
-**Empfehlung:** Parallel **1× Athletik** (Meier oder Schröder) **und 1× Medizin** (Deuchert) per LinkedIn anschreiben. Teammanagerin als CC/Zweitkanal, wenn keine Antwort in 7–10 Tagen.
-
-Öffentliche E-Mail-Adressen der Personen sind meist **nicht** gelistet → **LinkedIn** ist der realistische Erstkontakt. Alternativ Club-Hauptkanäle (Presse/Allgemein) nur als Fallback, nicht als Pitch-Hauptweg.
+**Empfehlung:** Parallel 1× Athletik + 1× Medizin per LinkedIn.
 
 ---
 
-## b) Form & Textbeispiel
+## b) Textvorlagen (club-agnostisch)
 
-### Kanal
-1. **LinkedIn-Nachricht** (kurz, &lt;800 Zeichen) — primär  
-2. Optional Follow-up-Mail, falls sie eine Adresse teilen  
-3. Kein Kaltakquise-Anruf ohne Hinweis
-
-### LinkedIn — Kurzversion (kopieren)
+### LinkedIn — Kurzversion
 
 ```
 Hallo Frau/Herr [Nachname],
 
-ich entwickle CyclesGuard — eine privacy-first App für Spielerinnen-Readiness:
-Trainer:innen sehen nur eine Ampel (Einsatzbereit / angepasst / Regeneration), nie Zyklus-Rohdaten (DOSB/DSGVO Art. 9).
+ich entwickle CyclesGuard — privacy-first Readiness für Frauenfußball:
+Trainer:innen sehen nur eine Ampel, nie Zyklus-Rohdaten (DOSB/DSGVO Art. 9).
 
-Live-Demo (2 Min.): https://cyclesguard.vercel.app
-Wir bieten Eintracht Frauen 8–12 Wochen Soft-Pilot kostenlos (5–10 Freiwillige).
+Live-Demo: https://cyclesguard.vercel.app
+Datenschutz 1-Pager: https://cyclesguard.vercel.app/privacy
+Soft-Pilot (8–12 Wochen, kostenlos, 5–10 Freiwillige): https://cyclesguard.vercel.app/pilot
 
-Hätten Sie 20–30 Minuten für eine kurze Vorstellung — online oder vor Ort in Frankfurt?
+Hätten Sie 20–30 Minuten für eine kurze Vorstellung?
 
 Viele Grüße
 DEIN_NAME
 DEINE_EMAIL
 ```
 
-### E-Mail — etwas ausführlicher (kopieren)
+### E-Mail
 
-**Betreff:** CyclesGuard — Privacy-first Readiness-Ampel · Soft-Pilot Eintracht Frauen (kostenlos)
+**Betreff:** CyclesGuard — Privacy-first Readiness-Ampel · Soft-Pilot [VEREINSNAME] (kostenlos)
 
 ```
 Guten Tag Frau/Herr [Nachname],
 
-kurz zu mir: Ich baue CyclesGuard, ein Tool speziell für Frauenfußball.
-Spielerinnen loggen in unter 30 Sekunden — Athletik steuert Belastung über eine Ampel,
-ohne Einblick in Intimdaten (RLS + serverseitige Aggregation, Art. 9 DSGVO).
+ich baue CyclesGuard für Frauenfußball: Spielerinnen loggen privat —
+Athletik steuert Belastung über eine Ampel, ohne Einblick in Intimdaten.
 
-• Live-Demo: https://cyclesguard.vercel.app
-• Demo-Login (Pitch): siehe angehängte Kurzinfo / auf der Login-Seite
-• Angebot: 8–12 Wochen kostenloser Soft-Pilot, 5–10 Freiwillige, wöchentliches Feedback
+• Demo: https://cyclesguard.vercel.app
+• Datenschutz: https://cyclesguard.vercel.app/privacy
+• Angebot: https://cyclesguard.vercel.app/pilot
+• 8–12 Wochen Soft-Pilot kostenlos, 5–10 Freiwillige, wöchentliches Feedback
 
 Dürfte ich einen kurzen Termin (20–30 Min.) vorschlagen?
-Zwei Optionen: Online-Call oder vor Ort in Frankfurt.
 
 Mit freundlichen Grüßen
 DEIN_NAME
@@ -85,43 +88,31 @@ DEINE_EMAIL
 DEINE_TELEFON
 ```
 
-**Anhänge (optional):** PDF aus `DATENSCHUTZ-DOSB-1-PAGER.md` + `PILOTANGEBOT.md` (Browser → Drucken → PDF).
-
-### Nach 7–10 Tagen ohne Antwort — Follow-up (3 Zeilen)
+### Follow-up (7–10 Tage)
 
 ```
-Kurzer Nachfass zu CyclesGuard — Demo weiterhin unter https://cyclesguard.vercel.app.
+Kurzer Nachfass zu CyclesGuard — Demo: https://cyclesguard.vercel.app
 Falls Athletik/Medizin gerade keine Kapazität hat: Wer wäre intern die richtige Ansprechperson?
-Danke und sportliche Grüße, DEIN_NAME
+Sportliche Grüße, DEIN_NAME
 ```
 
 ---
 
-## c) Auch andere Bundesliga-Teams?
+## c) Weitere Clubs (jetzt parallel ok)
 
-**Ja — aber gestaffelt, nicht gleichzeitig Spam.**
+Priorisiere erkennbare Athletik-/Medizin-Struktur (LinkedIn):
 
-| Phase | Strategie |
-|-------|-----------|
-| **Jetzt** | Fokus Eintracht (Demo-Story ist lokal/Frankfurt, Hosting EU) |
-| **Wenn Eintracht „später“ / keine Antwort nach 2 Follow-ups** | 2–3 weitere Clubs parallel |
-| **Wenn Eintracht „Ja“** | Andere Clubs pausieren bis Pilot läuft (Kapazität) |
+- Frauen-Bundesliga: z. B. Bayern München Frauen, VfL Wolfsburg, Bayer 04, RB Leipzig, 1. FC Köln, SGS Essen, …
+- Parallel 2. Bundesliga / Regionalliga als schnellere Einstiege
 
-### Sinnvolle Zweitziele (Frauen-Bundesliga / ambitionierte Klubs)
-
-Priorisiere Clubs mit erkennbarer Athletik-/Medizin-Struktur (LinkedIn: „Athletiktrainerin Frauen“, „Sportphysiotherapie Frauen“):
-
-- Weitere **Google/DFB-Frauen-Bundesliga**-Klubs (z. B. Bayern München Frauen, VfL Wolfsburg Frauen, Bayer 04 Leverkusen Frauen, RB Leipzig Frauen, 1. FC Köln Frauen, SGS Essen, …) — konkrete Ansprechpersonen analog recherchieren  
-- Parallel **2. Bundesliga / Regionalliga** als schnellere Pilot-Einstiege, falls Erstliga-Kalender dicht ist
-
-Gleicher Textkern, Club-Namen austauschen. Demo-URL bleibt dieselbe.
+Gleicher Textkern, Club-Namen austauschen.
 
 ---
 
-## Tracking (für dich)
+## Tracking
 
-| Datum | An | Kanal | Antwort |
-|-------|-----|-------|---------|
-| | Fabian Meier | LinkedIn | |
-| | Shaline Deuchert | LinkedIn | |
-| | … | | |
+| Datum | Club | An | Kanal | Antwort |
+|-------|------|-----|-------|---------|
+| | Eintracht | Fabian Meier | LinkedIn | |
+| | Eintracht | Shaline Deuchert | LinkedIn | |
+| | | | | |

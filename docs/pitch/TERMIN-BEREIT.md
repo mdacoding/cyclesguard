@@ -1,9 +1,10 @@
 # Termin-bereit — Checkliste (nur noch anfragen)
 
 **Live:** https://cyclesguard.vercel.app  
-**Stand:** 21.07.2026
+**Privacy:** https://cyclesguard.vercel.app/privacy · **Soft-Pilot:** https://cyclesguard.vercel.app/pilot  
+**Stand:** 23.07.2026
 
-Wenn diese Liste abgehakt ist, bleibt nur noch **Outreach** (`OUTREACH.md`).
+Wenn diese Liste abgehakt ist, bleibt nur noch **Outreach** (`OUTREACH.md`) — parallel an mehrere Clubs ok.
 
 ---
 
@@ -12,8 +13,9 @@ Wenn diese Liste abgehakt ist, bleibt nur noch **Outreach** (`OUTREACH.md`).
 - [x] Vercel Production  
 - [x] Supabase + Migrationen + Seed  
 - [x] Login / Logout / Trainer-Ampel / Spielerinnen-UI  
-- [x] Pitch-Skript, Datenschutz-Doc, Pilotangebot, Product-Brief  
-- [x] Smoke-Test HTTP grün  
+- [x] Pitch-Skript, Datenschutz `/privacy`, Soft-Pilot `/pilot`  
+- [x] Smoke-Test / Trust-Suite lokal (`verify:go-live`)  
+- [x] Club-agnostisch (nicht nur Eintracht)  
 
 ---
 
@@ -38,9 +40,9 @@ In `DATENSCHUTZ-DOSB-1-PAGER.md` und `PILOTANGEBOT.md` steht jetzt **CyclesGuard
 
 ### 3. PDF für Meeting (optional, 2 Min.)
 
-1. Datei im Browser/Editor öffnen  
+1. https://cyclesguard.vercel.app/privacy bzw. `/pilot` öffnen  
 2. Drucken → **Als PDF speichern**  
-3. Mitnehmen / anhängen: Datenschutz-1-Pager + Pilotangebot  
+3. Alternativ Markdown: `DATENSCHUTZ-DOSB-1-PAGER.md` / `PILOTANGEBOT.md`  
 
 ### 4. Security (nach erstem Kontakt / vor echtem Pilot)
 

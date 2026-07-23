@@ -2,9 +2,9 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'CyclesGuard — Deine Gesundheit, Deine Stärke',
+  title: 'CyclesGuard — Privacy-first Readiness für Frauenfußball',
   description:
-    'Private, empowering app for female soccer players to log their menstrual cycle phases.',
+    'Spielerinnen loggen privat. Trainer sehen nur Ampel-Signale — nie Zyklus-Rohdaten. Soft-Pilot für Vereine.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,

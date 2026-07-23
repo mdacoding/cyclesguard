@@ -1,10 +1,29 @@
 import Link from 'next/link';
 import { Shield, Activity, Lock } from 'lucide-react';
 
+const PILOT_MAIL =
+  'mailto:hello@cyclesguard.de' +
+  '?subject=' +
+  encodeURIComponent('CyclesGuard Soft-Pilot anfragen') +
+  '&body=' +
+  encodeURIComponent(
+    [
+      'Hallo CyclesGuard-Team,',
+      '',
+      'wir interessieren uns für einen kostenlosen Soft-Pilot (ca. 8–12 Wochen, 5–10 Freiwillige).',
+      '',
+      'Wichtig für uns: Trainer sehen nur Ampel-Signale — keine Zyklus-/Gesundheits-Rohdaten.',
+      '',
+      'Nächster Schritt: kurzer Call / Demo.',
+      '',
+      'Verein / Liga / Rolle:',
+      'Name:',
+    ].join('\n')
+  );
+
 export default function Home() {
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Atmospheric field — full-bleed brand plane */}
       <div
         className="pointer-events-none absolute inset-0"
         aria-hidden
@@ -26,94 +45,111 @@ export default function Home() {
 
       <header className="relative z-10 flex items-center justify-between px-6 md:px-10 py-6 max-w-6xl mx-auto animate-fadeIn">
         <span className="font-display text-xl font-semibold text-gradient">CyclesGuard</span>
-        <nav className="flex items-center gap-3">
-          <Link
-            href="/login"
-            className="text-sm text-cream/70 hover:text-cream transition-colors min-h-11 px-3 inline-flex items-center"
-          >
-            Anmelden
-          </Link>
+        <nav className="flex items-center gap-2 sm:gap-3">
           <a
-            href="mailto:hello@cyclesguard.de?subject=CyclesGuard%20Soft-Pilot%20anfragen"
-            className="text-sm text-rose-gold/90 hover:text-rose-gold transition-colors min-h-11 px-3 inline-flex items-center"
+            href="/privacy"
+            className="text-sm text-cream/70 hover:text-cream transition-colors min-h-11 px-2 sm:px-3 inline-flex items-center"
+          >
+            Datenschutz
+          </a>
+          <a
+            href="/pilot"
+            className="text-sm text-cream/70 hover:text-cream transition-colors min-h-11 px-2 sm:px-3 inline-flex items-center"
           >
             Soft-Pilot
           </a>
+          <Link
+            href="/login"
+            className="text-sm text-rose-gold/90 hover:text-rose-gold transition-colors min-h-11 px-2 sm:px-3 inline-flex items-center"
+          >
+            Demo
+          </Link>
         </nav>
       </header>
 
-      <main className="relative z-10 flex flex-col justify-center min-h-[calc(100vh-5.5rem)] px-6 md:px-10 pb-16 max-w-6xl mx-auto">
-        <div className="max-w-2xl animate-slideUp">
-          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-semibold text-gradient leading-[1.05] mb-6">
-            CyclesGuard
-          </h1>
-          <p className="text-xl md:text-2xl text-cream/85 font-light leading-relaxed mb-4 max-w-xl">
-            Privacy-first Readiness für Frauenfußball.
-          </p>
-          <p className="text-base md:text-lg text-cream/55 leading-relaxed mb-10 max-w-lg">
-            Spielerinnen loggen privat. Trainer sehen nur Ampel — nie Rohdaten.
-          </p>
+      <main className="relative z-10 px-6 md:px-10 pb-16 max-w-6xl mx-auto">
+        <div className="flex flex-col justify-center min-h-[calc(100vh-5.5rem)]">
+          <div className="max-w-2xl animate-slideUp">
+            <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-semibold text-gradient leading-[1.05] mb-6">
+              CyclesGuard
+            </h1>
+            <p className="text-xl md:text-2xl text-cream/85 font-light leading-relaxed mb-4 max-w-xl">
+              Privacy-first Readiness für Frauenfußball.
+            </p>
+            <p className="text-base md:text-lg text-cream/55 leading-relaxed mb-10 max-w-lg">
+              Spielerinnen loggen privat. Trainer sehen nur Ampel — nie Rohdaten.
+            </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 mb-4">
-            <a
-              href={
-                'mailto:hello@cyclesguard.de' +
-                '?subject=' +
-                encodeURIComponent('CyclesGuard Soft-Pilot anfragen') +
-                '&body=' +
-                encodeURIComponent(
-                  [
-                    'Hallo CyclesGuard-Team,',
-                    '',
-                    'wir interessieren uns für einen kostenlosen Soft-Pilot (ca. 8–12 Wochen, 5–10 Freiwillige).',
-                    '',
-                    'Wichtig für uns: Trainer sehen nur Ampel-Signale — keine Zyklus-/Gesundheits-Rohdaten.',
-                    '',
-                    'Nächster Schritt: kurzer Call / Demo.',
-                    '',
-                    'Verein / Rolle:',
-                    'Name:',
-                  ].join('\n')
-                )
-              }
-              className="inline-flex items-center justify-center min-h-14 px-8 rounded-full bg-rose-gold text-navy font-semibold text-lg hover:bg-opacity-90 transition-all duration-300 hover:scale-[1.02] active:scale-95"
-            >
-              Soft-Pilot anfragen
-            </a>
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center min-h-14 px-8 rounded-full border border-cream/20 text-cream/90 font-medium text-lg hover:bg-white/5 transition-colors"
-            >
-              Bereits Zugang?
-            </Link>
+            <div className="flex flex-col sm:flex-row gap-3 mb-4">
+              <a
+                href={PILOT_MAIL}
+                className="inline-flex items-center justify-center min-h-14 px-8 rounded-full bg-rose-gold text-navy font-semibold text-lg hover:bg-opacity-90 transition-all duration-300 hover:scale-[1.02] active:scale-95"
+              >
+                Soft-Pilot anfragen
+              </a>
+              <Link
+                href="/login"
+                className="inline-flex items-center justify-center min-h-14 px-8 rounded-full border border-cream/20 text-cream/90 font-medium text-lg hover:bg-white/5 transition-colors"
+              >
+                Live-Demo öffnen
+              </Link>
+            </div>
+            <p className="text-sm text-cream/45 mb-16 max-w-md">
+              Kostenloser Soft-Pilot für jeden Verein · Art. 9 by Design · Antwort = nächster Schritt
+            </p>
           </div>
-          <p className="text-sm text-cream/45 mb-16 max-w-md">
-            Kostenloser Soft-Pilot · keine Rohdaten für Trainer · Antwort = nächster Schritt
-          </p>
+
+          <section className="grid sm:grid-cols-3 gap-6 md:gap-8 border-t border-white/10 pt-10 animate-fadeIn">
+            <div className="space-y-2">
+              <Lock className="w-5 h-5 text-sage mb-3" />
+              <h2 className="font-display text-lg font-semibold text-cream">Art. 9 by Design</h2>
+              <p className="text-sm text-cream/50 leading-relaxed">
+                RLS &amp; serverseitige Maskierung — Trainer sehen FIT / MODIFIED / REST, nichts Intimes.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Activity className="w-5 h-5 text-rose-gold mb-3" />
+              <h2 className="font-display text-lg font-semibold text-cream">Ampel für die Kabine</h2>
+              <p className="text-sm text-cream/50 leading-relaxed">
+                Belastungssteuerung ohne medizinische Sprache — klar, schnell, DOSB-konform gedacht.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Shield className="w-5 h-5 text-cream/70 mb-3" />
+              <h2 className="font-display text-lg font-semibold text-cream">Club-ready PWA</h2>
+              <p className="text-sm text-cream/50 leading-relaxed">
+                Offline-Logging, Push-Erinnerungen, Export &amp; Löschen — für den Alltag im Frauenfußball.
+              </p>
+            </div>
+          </section>
         </div>
 
-        <section className="grid sm:grid-cols-3 gap-6 md:gap-8 border-t border-white/10 pt-10 animate-fadeIn">
-          <div className="space-y-2">
-            <Lock className="w-5 h-5 text-sage mb-3" />
-            <h2 className="font-display text-lg font-semibold text-cream">Art. 9 by Design</h2>
-            <p className="text-sm text-cream/50 leading-relaxed">
-              RLS & serverseitige Maskierung — Trainer sehen FIT / MODIFIED / REST, nichts Intimes.
-            </p>
-          </div>
-          <div className="space-y-2">
-            <Activity className="w-5 h-5 text-rose-gold mb-3" />
-            <h2 className="font-display text-lg font-semibold text-cream">Ampel für die Kabine</h2>
-            <p className="text-sm text-cream/50 leading-relaxed">
-              Belastungssteuerung ohne medizinische Sprache — klar, schnell, DOSB-konform gedacht.
-            </p>
-          </div>
-          <div className="space-y-2">
-            <Shield className="w-5 h-5 text-cream/70 mb-3" />
-            <h2 className="font-display text-lg font-semibold text-cream">Club-ready PWA</h2>
-            <p className="text-sm text-cream/50 leading-relaxed">
-              Offline-Logging, Push-Erinnerungen, Export & Löschen — für den Alltag im Frauenfußball.
-            </p>
-          </div>
+        <section className="mt-20 md:mt-28 border-t border-white/10 pt-14 max-w-2xl space-y-6 animate-fadeIn">
+          <h2 className="font-display text-3xl font-semibold text-gradient">Für Vereine</h2>
+          <p className="text-cream/65 leading-relaxed">
+            Soft-Pilot in 48h startklar: Roster einladen, Ampel in der Kabine, Adherence &amp; Feedback
+            für den Wochen-Call — ohne Stripe, ohne GPS-Zwang.
+          </p>
+          <ul className="space-y-3 text-sm text-cream/55">
+            <li>
+              <a href="/pilot" className="text-cream/85 hover:text-rose-gold underline-offset-2 hover:underline">
+                Soft-Pilot Angebot
+              </a>
+              {' — '}8–12 Wochen, 5–10 Freiwillige
+            </li>
+            <li>
+              <a href="/privacy" className="text-cream/85 hover:text-rose-gold underline-offset-2 hover:underline">
+                Datenschutz 1-Pager
+              </a>
+              {' — '}für Athletik, Medizin und DSB (druckbar)
+            </li>
+            <li>
+              <Link href="/login" className="text-cream/85 hover:text-rose-gold underline-offset-2 hover:underline">
+                Live-Demo
+              </Link>
+              {' — '}Trainer-Ampel &amp; Spielerinnen-Log in unter 5 Minuten
+            </li>
+          </ul>
         </section>
       </main>
     </div>

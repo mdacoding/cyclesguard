@@ -15,7 +15,7 @@ export default function DemoLoginHint() {
     <div className="glass-card p-5 mb-6 border border-rose-gold/20 bg-rose-gold/5">
       <p className="text-xs uppercase tracking-wider text-rose-gold/80 mb-2">Pitch-Demo</p>
       <p className="text-sm text-cream/70 mb-3">
-        Passwort für alle Demo-Accounts:{' '}
+        Seed-Accounts (intern). Passwort für alle:{' '}
         <code className="text-cream/90 bg-white/5 px-1.5 py-0.5 rounded">{DEMO_PASSWORD}</code>
       </p>
       <ul className="space-y-2 text-sm">
