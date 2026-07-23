@@ -59,6 +59,7 @@ Dashboard → Authentication → URL Configuration:
 
 - Site URL = Vercel-URL  
 - Redirect: `https://<vercel>/auth/callback`
+- Optional Wildcard: `https://<vercel>/**` (Invite-Passwort)
 
 #### 5. Smoke
 

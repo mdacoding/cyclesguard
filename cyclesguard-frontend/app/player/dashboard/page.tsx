@@ -6,8 +6,9 @@ import PushPromptBanner from './components/PushPromptBanner';
 import SessionSummaryCard from './components/SessionSummaryCard';
 import { mapDbCycleLog } from '@/lib/cycle-log-mapper';
 import { isSameBerlinDay } from '@/lib/date';
+import { computeLoggingStreak } from '@/lib/player-insights';
 import { redirect } from 'next/navigation';
-import { CalendarDays, Settings, Sparkles } from 'lucide-react';
+import { CalendarDays, Settings, Sparkles, Flame, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import LogoutButton from '@/components/LogoutButton';
 import PilotFeedbackCapture from '@/components/PilotFeedbackCapture';
@@ -39,6 +40,7 @@ export default async function DashboardPage() {
   const todayLog = logs.find((log) => isSameBerlinDay(log.loggedAt)) ?? null;
   const isFirstRun = logs.length === 0;
   const bannerLog = todayLog ?? lastLog;
+  const streak = computeLoggingStreak(logs);
 
   const { data: sessionRow } = await supabase
     .from('session_summaries')
@@ -60,6 +62,24 @@ export default async function DashboardPage() {
               Hallo{user.email ? `, ${user.email.split('@')[0]}` : ''}!
               {todayLog ? ' Du kannst deinen heutigen Eintrag anpassen.' : ' Zeichne heute deine Readiness auf.'}
             </p>
+            {!isFirstRun && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                <span className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-cream/70">
+                  {todayLog ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-sage" aria-hidden />
+                  ) : (
+                    <CalendarDays className="w-3.5 h-3.5 text-rose-gold" aria-hidden />
+                  )}
+                  {todayLog ? 'Heute erledigt' : 'Heute noch offen'}
+                </span>
+                {streak > 0 && (
+                  <span className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-rose-gold/10 border border-rose-gold/20 text-rose-gold/90">
+                    <Flame className="w-3.5 h-3.5" aria-hidden />
+                    Streak {streak} {streak === 1 ? 'Tag' : 'Tage'}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
           <div className="flex gap-2 self-start md:self-auto">
             <Link

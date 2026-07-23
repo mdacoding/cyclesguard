@@ -81,7 +81,7 @@ const DEMO_PLAYERS: DemoPlayer[] = [
     fullName: 'Lisa Weber',
     phase: 'menstrual',
     energyLevel: 1,
-    symptoms: ['Krämpfe', 'Müdigkeit'],
+    symptoms: ['cramps', 'fatigue'],
     logHoursAgo: 1,
   },
   {

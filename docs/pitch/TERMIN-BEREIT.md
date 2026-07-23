@@ -28,6 +28,7 @@ Dashboard → Project `jgtqtuwtrulwehrtcydf` → **Authentication → URL Config
 | Site URL | `https://cyclesguard.vercel.app` |
 | Redirect URLs | `https://cyclesguard.vercel.app/auth/callback` |
 | | `http://localhost:3000/auth/callback` |
+| | Optional: `https://cyclesguard.vercel.app/**` (Invite → Passwort setzen) |
 
 Speichern. Danach einmal Login + Logout auf der Live-URL testen (bereits von dir ok — nach URL-Änderung kurz wiederholen).
 

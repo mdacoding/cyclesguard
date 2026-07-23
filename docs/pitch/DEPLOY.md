@@ -53,6 +53,7 @@ Dashboard → Authentication → URL Configuration:
 - **Redirect URLs:**
   - `https://<eure-vercel-domain>/auth/callback`
   - `http://localhost:3000/auth/callback`
+  - Optional: `https://<eure-vercel-domain>/**` (Invite → `/auth/set-password`)
 
 Dann auf Vercel `NEXT_PUBLIC_SITE_URL` aktualisieren → Redeploy.
 

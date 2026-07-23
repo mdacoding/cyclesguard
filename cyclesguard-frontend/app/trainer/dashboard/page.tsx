@@ -51,6 +51,7 @@ export default function TrainerDashboardPage() {
   const [inviteMsg, setInviteMsg] = useState<string | null>(null);
   const [inviteError, setInviteError] = useState<string | null>(null);
   const [resendId, setResendId] = useState<string | null>(null);
+  const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterMode>('all');
   const [showOnboardHint, setShowOnboardHint] = useState(false);
   const [shareMsg, setShareMsg] = useState<string | null>(null);
@@ -164,6 +165,33 @@ export default function TrainerDashboardPage() {
     }
   };
 
+  const removePlayer = async (playerId: string) => {
+    if (!selectedTeamId) return;
+    if (pendingRemoveId !== playerId) {
+      setPendingRemoveId(playerId);
+      setInviteMsg(null);
+      setInviteError(null);
+      return;
+    }
+    setPendingRemoveId(null);
+    try {
+      const response = await fetch('/api/trainer/members', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teamId: selectedTeamId, userId: playerId }),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setInviteError(typeof body.error === 'string' ? body.error : 'Entfernen fehlgeschlagen.');
+        return;
+      }
+      setInviteMsg('Spielerin aus dem Roster entfernt.');
+      await loadTeamStatus(selectedTeamId);
+    } catch {
+      setInviteError('Netzwerkfehler — bitte erneut versuchen.');
+    }
+  };
+
   const statusCounts = team.reduce(
     (acc, member) => {
       acc[member.status] = (acc[member.status] ?? 0) + 1;
@@ -194,9 +222,9 @@ export default function TrainerDashboardPage() {
     const teamName = teams.find((t) => t.id === selectedTeamId)?.name ?? 'Team';
     const lines = filtered.map(
       (m) =>
-        `${m.name}: ${getStatusLabel(m.status)} · ${getLoadLabel(m.loadFlag)}${
-          m.loggedToday ? '' : ' · heute fehlend'
-        }`
+        `${m.name}: ${getStatusLabel(m.status)}${
+          m.loadFlag !== 'UNKNOWN' ? ` · ${getLoadLabel(m.loadFlag)}` : ''
+        }${m.loggedToday ? '' : ' · heute fehlend'}`
     );
     const text = [
       `CyclesGuard · ${teamName}`,
@@ -494,7 +522,10 @@ export default function TrainerDashboardPage() {
                     <div className="min-w-0">
                       <h2 className="font-semibold text-lg truncate">{member.name}</h2>
                       <p className="text-sm text-cream/60">
-                        {getStatusLabel(member.status)} · {getLoadLabel(member.loadFlag)}
+                        {getStatusLabel(member.status)}
+                        {member.loadFlag !== 'UNKNOWN'
+                          ? ` · ${getLoadLabel(member.loadFlag)}`
+                          : ''}
                         {member.loggedToday ? ' · heute geloggt' : ' · heute fehlend'}
                         {member.invitePending ? ' · Einladung offen' : ''}
                       </p>
@@ -504,16 +535,34 @@ export default function TrainerDashboardPage() {
                     <p className="text-sm text-cream/80 md:text-right md:max-w-sm">
                       {member.recommendation}
                     </p>
-                    {member.invitePending && (
+                    <div className="flex flex-wrap gap-2 print:hidden shrink-0">
+                      {member.invitePending && (
+                        <button
+                          type="button"
+                          onClick={() => void resendInvite(member.playerId)}
+                          disabled={resendId === member.playerId}
+                          className="min-h-11 px-3 rounded-lg bg-white/10 text-xs sm:text-sm text-cream/80 hover:bg-white/15 disabled:opacity-50"
+                        >
+                          {resendId === member.playerId ? 'Sende…' : 'Einladung erneut'}
+                        </button>
+                      )}
+                      {pendingRemoveId === member.playerId && (
+                        <button
+                          type="button"
+                          onClick={() => setPendingRemoveId(null)}
+                          className="min-h-11 px-3 rounded-lg bg-white/10 text-xs sm:text-sm"
+                        >
+                          Abbrechen
+                        </button>
+                      )}
                       <button
                         type="button"
-                        onClick={() => void resendInvite(member.playerId)}
-                        disabled={resendId === member.playerId}
-                        className="min-h-11 px-3 rounded-lg bg-white/10 text-xs sm:text-sm text-cream/80 hover:bg-white/15 disabled:opacity-50 print:hidden shrink-0"
+                        onClick={() => void removePlayer(member.playerId)}
+                        className="min-h-11 px-3 rounded-lg bg-menstrual/15 text-menstrual text-xs sm:text-sm disabled:opacity-50"
                       >
-                        {resendId === member.playerId ? 'Sende…' : 'Einladung erneut'}
+                        {pendingRemoveId === member.playerId ? 'Endgültig entfernen' : 'Entfernen'}
                       </button>
-                    )}
+                    </div>
                   </div>
                 </article>
               );

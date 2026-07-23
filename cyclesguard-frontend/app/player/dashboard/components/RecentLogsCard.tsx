@@ -1,14 +1,41 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { CycleLog } from '@/lib/types';
 import { PHASE_DEFINITIONS } from '@/lib/cycle-phases';
 import { SYMPTOM_OPTIONS } from '@/lib/symptoms';
+import { listPending, type PendingCycleLog } from '@/lib/offline/outbox';
 
 function symptomLabel(key: string): string {
   return SYMPTOM_OPTIONS.find((s) => s.key === key)?.labelDE ?? key;
 }
 
 export default function RecentLogsCard({ logs }: { logs: CycleLog[] }) {
-  if (!logs || logs.length === 0) {
+  const [pending, setPending] = useState<PendingCycleLog[]>([]);
+
+  useEffect(() => {
+    const refresh = () => {
+      void listPending().then(setPending).catch(() => setPending([]));
+    };
+    refresh();
+    const onVis = () => {
+      if (document.visibilityState === 'visible') refresh();
+    };
+    window.addEventListener('online', refresh);
+    document.addEventListener('visibilitychange', onVis);
+    const onSw = (event: MessageEvent) => {
+      if (event.data?.type === 'OUTBOX_FLUSHED') refresh();
+    };
+    navigator.serviceWorker?.addEventListener('message', onSw);
+    return () => {
+      window.removeEventListener('online', refresh);
+      document.removeEventListener('visibilitychange', onVis);
+      navigator.serviceWorker?.removeEventListener('message', onSw);
+    };
+  }, []);
+
+  if ((!logs || logs.length === 0) && pending.length === 0) {
     return (
       <div className="text-center py-8 space-y-4">
         <h2 className="font-display text-xl font-semibold">Verlauf</h2>
@@ -29,6 +56,22 @@ export default function RecentLogsCard({ logs }: { logs: CycleLog[] }) {
           Kalender
         </Link>
       </h2>
+
+      {pending.length > 0 && (
+        <div className="rounded-xl border border-ovulation/30 bg-ovulation/10 p-3 space-y-2">
+          <p className="text-xs font-medium text-cream/80">
+            Offline ausstehend ({pending.length}) — Sync bei Netz
+          </p>
+          <ul className="space-y-1.5">
+            {pending.slice(0, 3).map((entry) => (
+              <li key={entry.clientLogId} className="text-xs text-cream/60">
+                {PHASE_DEFINITIONS[entry.phase].labelDE}
+                {entry.energyLevel != null ? ` · Energie ${entry.energyLevel}` : ''}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="relative pl-4 space-y-6 before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-white/10">
         {logs.map((log) => {

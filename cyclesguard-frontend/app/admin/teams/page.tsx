@@ -623,6 +623,15 @@ export default function AdminTeamsPage() {
             <LogoutButton />
           </div>
         </header>
+        <p className="text-xs text-cream/35 -mt-2">
+          Support:{' '}
+          <a
+            href="mailto:hello@cyclesguard.de?subject=CyclesGuard%20Admin%20Support"
+            className="text-cream/50 hover:text-rose-gold underline-offset-2 hover:underline"
+          >
+            hello@cyclesguard.de
+          </a>
+        </p>
 
         {!loading && teams.length > 0 && (
           <section className="grid grid-cols-2 md:grid-cols-5 gap-3">

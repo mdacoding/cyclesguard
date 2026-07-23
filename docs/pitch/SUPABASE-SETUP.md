@@ -36,9 +36,10 @@ Dann: **Vercel Deploy** → `docs/pitch/DEPLOY.md`.
 **Authentication → URL Configuration:**
 
 - Site URL: `https://<eure-vercel-domain>` (lokal: `http://localhost:3000`)
-- Redirect URLs:  
-  - `http://localhost:3000/auth/callback`  
+- Redirect URLs:
+  - `http://localhost:3000/auth/callback`
   - `https://<eure-vercel-domain>/auth/callback`
+  - Optional Wildcard: `https://<eure-vercel-domain>/**` (deckt `/auth/set-password` ab)
 
 Email confirm für Demo: deaktiviert oder Seed mit `email_confirm: true` (bereits im Seed).
 

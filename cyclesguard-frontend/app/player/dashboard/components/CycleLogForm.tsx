@@ -53,9 +53,17 @@ export default function CycleLogForm({ todayLog = null }: CycleLogFormProps) {
       });
     };
     const onOffline = () => setOffline(true);
+    const onVisible = () => {
+      if (document.visibilityState !== 'visible') return;
+      void flushOutbox().then(() => {
+        void refreshPending();
+        router.refresh();
+      });
+    };
 
     window.addEventListener('online', onOnline);
     window.addEventListener('offline', onOffline);
+    document.addEventListener('visibilitychange', onVisible);
     void flushOutbox().then(() => refreshPending());
 
     const onSwMessage = (event: MessageEvent) => {
@@ -69,6 +77,7 @@ export default function CycleLogForm({ todayLog = null }: CycleLogFormProps) {
     return () => {
       window.removeEventListener('online', onOnline);
       window.removeEventListener('offline', onOffline);
+      document.removeEventListener('visibilitychange', onVisible);
       navigator.serviceWorker?.removeEventListener('message', onSwMessage);
     };
   }, [router]);

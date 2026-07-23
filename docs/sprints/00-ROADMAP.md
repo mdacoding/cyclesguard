@@ -44,6 +44,7 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 | 23.07. | Trust live + Demo off + CI-Secrets/Lean-CI + Push-Payload-Tests + **Sentry EU DSN Prod** (`sentry:ok`) + AVV-Mail-Entwurf |
 | 23.07. | Soft-Pilot UX: Passwort setzen nach Invite, Forgot-Password, Invite-only Login (Demo off), PWA-Install-Banner, Landing Soft-Pilot-CTA first |
 | 23.07. | Soft-Pilot Day-1: Trainer Empty/Resend-Invite, Consent/Delete Inline-Errors, Welcome Install + #log, Admin Empty-Roster CTA + Inline-Confirms |
+| 23.07. | Kabine ohne GPS-Rauschen · Player Streak-Chip · Offline-Pending sichtbar · Trainer Roster-Entfernen · Seed-Symptom-Keys · Auth-Redirect Docs |
 
 ---
 

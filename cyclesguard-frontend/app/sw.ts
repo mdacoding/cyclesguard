@@ -69,7 +69,7 @@ self.addEventListener('notificationclick', (event) => {
           return client.focus();
         }
       }
-      return self.clients.openWindow('/player/dashboard');
+      return self.clients.openWindow('/player/dashboard#log');
     })
   );
 });
