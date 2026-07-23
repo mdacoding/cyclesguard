@@ -39,7 +39,20 @@ export async function GET(request: Request) {
   const clubIds = (clubMemberships ?? []).map((c) => c.club_id);
   let teamsQuery = admin.from('teams').select('id, name, club_name, club_id, status');
   if (user.app_metadata?.role !== 'platform_admin') {
-    if (clubIds.length === 0) return NextResponse.json([]);
+    if (clubIds.length === 0) {
+      if (new URL(request.url).searchParams.get('format') === 'csv') {
+        return new NextResponse(
+          'team,club,status,players,logged_today,logged_7d,still_7d,adherence_pct\n',
+          {
+            headers: {
+              'Content-Type': 'text/csv; charset=utf-8',
+              'Content-Disposition': 'attachment; filename="cyclesguard-adherence.csv"',
+            },
+          }
+        );
+      }
+      return NextResponse.json([]);
+    }
     teamsQuery = teamsQuery.in('club_id', clubIds);
   }
   if (!includeArchived) {
@@ -103,6 +116,36 @@ export async function GET(request: Request) {
       playerCount: playerIds.length,
       loggedLast7Days,
       loggedToday,
+    });
+  }
+
+  if (new URL(request.url).searchParams.get('format') === 'csv') {
+    const esc = (v: string) => `"${String(v).replaceAll('"', '""')}"`;
+    const header =
+      'team,club,status,players,logged_today,logged_7d,still_7d,adherence_pct\n';
+    const body = result
+      .map((t) => {
+        const adherence =
+          t.playerCount === 0 ? '' : String(Math.round((t.loggedLast7Days / t.playerCount) * 100));
+        return [
+          t.name,
+          t.clubName ?? '',
+          t.status,
+          String(t.playerCount),
+          String(t.loggedToday),
+          String(t.loggedLast7Days),
+          String(Math.max(0, t.playerCount - t.loggedLast7Days)),
+          adherence,
+        ]
+          .map(esc)
+          .join(',');
+      })
+      .join('\n');
+    return new NextResponse(header + body, {
+      headers: {
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': 'attachment; filename="cyclesguard-adherence.csv"',
+      },
     });
   }
 

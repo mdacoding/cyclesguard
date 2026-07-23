@@ -123,7 +123,12 @@ export async function GET(request: Request) {
           },
         });
       }
-      return NextResponse.json({ avgScore: null, count: 0, items: [] });
+      return NextResponse.json({
+        avgScore: null,
+        count: 0,
+        avgByRole: {},
+        items: [],
+      });
     }
     query = query.in('club_id', clubIds);
   }
@@ -140,6 +145,19 @@ export async function GET(request: Request) {
     rows.length === 0
       ? null
       : Math.round((rows.reduce((s, r) => s + (r.score as number), 0) / rows.length) * 10) / 10;
+
+  const roleBuckets = new Map<string, { sum: number; n: number }>();
+  for (const r of rows) {
+    const role = String(r.role ?? 'other');
+    const prev = roleBuckets.get(role) ?? { sum: 0, n: 0 };
+    prev.sum += r.score as number;
+    prev.n += 1;
+    roleBuckets.set(role, prev);
+  }
+  const avgByRole: Record<string, number> = {};
+  for (const [role, b] of roleBuckets) {
+    avgByRole[role] = Math.round((b.sum / b.n) * 10) / 10;
+  }
 
   if (new URL(request.url).searchParams.get('format') === 'csv') {
     const esc = (v: string) => `"${v.replaceAll('"', '""')}"`;
@@ -168,6 +186,7 @@ export async function GET(request: Request) {
   return NextResponse.json({
     avgScore: avg,
     count: rows.length,
+    avgByRole,
     items: rows.map((r) => ({
       id: r.id,
       role: r.role,

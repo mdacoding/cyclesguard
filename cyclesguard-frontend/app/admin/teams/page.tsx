@@ -136,6 +136,7 @@ export default function AdminTeamsPage() {
 
   const [feedbackAvg, setFeedbackAvg] = useState<number | null>(null);
   const [feedbackCount, setFeedbackCount] = useState(0);
+  const [feedbackAvgByRole, setFeedbackAvgByRole] = useState<Record<string, number>>({});
   const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([]);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
 
@@ -212,10 +213,12 @@ export default function AdminTeamsPage() {
       const data = (await res.json()) as {
         avgScore: number | null;
         count: number;
+        avgByRole?: Record<string, number>;
         items: FeedbackItem[];
       };
       setFeedbackAvg(data.avgScore);
       setFeedbackCount(data.count);
+      setFeedbackAvgByRole(data.avgByRole ?? {});
       setFeedbackItems(data.items);
     } finally {
       setFeedbackLoading(false);
@@ -745,6 +748,13 @@ export default function AdminTeamsPage() {
               <Download className="w-4 h-4" />
               Feedback CSV
             </a>
+            <a
+              href="/api/admin/teams?format=csv"
+              className="inline-flex items-center gap-2 min-h-11 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-sm"
+            >
+              <Download className="w-4 h-4" />
+              Adherence CSV
+            </a>
             <LogoutButton />
           </div>
         </header>
@@ -1157,17 +1167,34 @@ export default function AdminTeamsPage() {
                   <p className="text-[11px] text-cream/35">Ziel ≥70%</p>
                 </div>
                 <div className="rounded-xl bg-white/5 border border-white/10 p-3">
-                  <p className="text-[11px] text-cream/45 mb-1">Heute geloggt</p>
+                  <p className="text-[11px] text-cream/45 mb-1">Keine Daten heute</p>
                   <p className="text-xl font-semibold">
-                    {loggedTodayPlayers}/{totalPlayers || '—'}
+                    {totalPlayers === 0
+                      ? '—'
+                      : `${Math.round(
+                          ((totalPlayers - loggedTodayPlayers) / totalPlayers) * 100
+                        )}%`}
+                  </p>
+                  <p className="text-[11px] text-cream/35">
+                    {totalPlayers - loggedTodayPlayers}/{totalPlayers || 0} ohne Log
                   </p>
                 </div>
                 <div className="rounded-xl bg-white/5 border border-white/10 p-3">
-                  <p className="text-[11px] text-cream/45 mb-1">Teams &lt;70%</p>
-                  <p className="text-xl font-semibold">{teamsBelowTarget}</p>
+                  <p className="text-[11px] text-cream/45 mb-1">Feedback Ø Trainer</p>
+                  <p className="text-xl font-semibold">
+                    {feedbackAvgByRole.trainer != null
+                      ? `${feedbackAvgByRole.trainer}/5`
+                      : '—'}
+                  </p>
+                  <p className="text-[11px] text-cream/35">
+                    Spielerin{' '}
+                    {feedbackAvgByRole.player != null
+                      ? `${feedbackAvgByRole.player}/5`
+                      : '—'}
+                  </p>
                 </div>
                 <div className="rounded-xl bg-white/5 border border-white/10 p-3">
-                  <p className="text-[11px] text-cream/45 mb-1">Feedback Ø</p>
+                  <p className="text-[11px] text-cream/45 mb-1">Feedback Ø gesamt</p>
                   <p
                     className={`text-xl font-semibold ${
                       feedbackAvg != null && feedbackAvg >= 4 ? 'text-sage' : 'text-cream'
@@ -1180,6 +1207,13 @@ export default function AdminTeamsPage() {
                   </p>
                 </div>
               </div>
+              <a
+                href="/api/admin/teams?format=csv"
+                className="inline-flex items-center gap-2 text-xs text-cream/50 hover:text-rose-gold w-fit"
+              >
+                <Download className="w-3.5 h-3.5" />
+                Adherence CSV für Wochen-Call
+              </a>
             </section>
 
             <section className="glass-card p-5 space-y-3">

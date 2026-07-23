@@ -48,6 +48,7 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 | 23.07. | Soft-Pilot KPI: Adherence-Ziel klar · Roster aktiv/still 7d · Trainer Tage-seit-Log · Manual-Contract Guard/Churn · Season Dry-Run · Trust-Docs sync |
 | 23.07. | Club-Product: Feedback-CSV · Closing-Checkliste D1–D2 · Ended-Confirm · Pilot-Scorecard Compliance · GO-LIVE Outreach klar |
 | 23.07. | Kabine Ampel-Trend 7d · Angebot-Mailto · Season/Feedback Dry-Run Exports |
+| 23.07. | Adherence CSV · Scorecard NO_DATA%/Ø-by-Role für Pilot-Wochen-Call |
 
 ---
 

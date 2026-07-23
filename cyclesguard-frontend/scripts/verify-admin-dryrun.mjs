@@ -338,6 +338,16 @@ if (teamId) {
   }
 }
 
+{
+  const adh = await api('/api/admin/teams?format=csv', { cookie });
+  if (!adh.res.ok || !String(adh.text).includes('adherence_pct')) {
+    console.error(`✗ GET /api/admin/teams?format=csv — ${adh.res.status}`);
+    failed++;
+  } else {
+    console.log('✓ Adherence CSV downloadable');
+  }
+}
+
 await supabase.auth.signOut();
 
 console.log('');

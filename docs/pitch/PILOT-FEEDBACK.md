@@ -49,8 +49,8 @@
 ## In-App Capture (Launch L2)
 
 Spielerinnen und Trainer sehen nach erster Nutzung ein **Pilot-Feedback** (1–5 + optional Text).  
-Admin: Tab **Compliance** → Scorecard (Adherence / Feedback Ø) + Scores ohne E-Mails / ohne Gesundheitsdaten.  
-Export: `/api/feedback?format=csv` (neben Audit CSV) für den Wochen-Call.  
+Admin: Tab **Compliance** → Scorecard (Adherence / Keine-Daten-heute / Feedback Ø Trainer vs Spielerin) + Scores ohne E-Mails.  
+Export: `/api/feedback?format=csv` · `/api/admin/teams?format=csv` (Adherence) neben Audit CSV.  
 API: `POST/GET /api/feedback` · Tabelle `pilot_feedback`.
 
 Wöchentlicher Call bleibt — In-App ergänzt die Scorecard zwischen den Calls.
