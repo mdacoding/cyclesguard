@@ -134,6 +134,10 @@ export default function PrivacyPage() {
             <a href="/pilot" className="text-rose-gold hover:underline underline-offset-2">
               Soft-Pilot Angebot
             </a>
+            · Einwilligungs-Vorlage:{' '}
+            <a href="/spielerinnen-info" className="text-rose-gold hover:underline underline-offset-2">
+              /spielerinnen-info
+            </a>
             .
           </p>
         </section>
@@ -148,6 +152,12 @@ export default function PrivacyPage() {
             className="inline-flex items-center justify-center min-h-12 px-6 rounded-full bg-rose-gold text-navy font-semibold"
           >
             Soft-Pilot ansehen
+          </a>
+          <a
+            href="/spielerinnen-info"
+            className="inline-flex items-center justify-center min-h-12 px-6 rounded-full border border-cream/20 text-cream/90"
+          >
+            Spielerinnen-Vorlage
           </a>
           <a
             href="mailto:hello@cyclesguard.de?subject=CyclesGuard%20Datenschutz%20/%20DSB"

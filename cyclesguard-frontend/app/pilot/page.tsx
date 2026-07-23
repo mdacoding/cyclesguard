@@ -82,6 +82,12 @@ export default function PilotOfferPage() {
           <h2 className="font-display text-2xl font-semibold">Was wir brauchen</h2>
           <ul className="space-y-2 text-sm text-cream/70 leading-relaxed list-disc pl-5">
             <li>5–10 freiwillige Spielerinnen</li>
+            <li>
+              Schriftliche Info + Einwilligung — Vorlage:{' '}
+              <a href="/spielerinnen-info" className="text-rose-gold hover:underline">
+                /spielerinnen-info
+              </a>
+            </li>
             <li>1 feste Ansprechperson (Athletik oder Medizin)</li>
             <li>Ehrliches Feedback — was hilft / was stört</li>
           </ul>

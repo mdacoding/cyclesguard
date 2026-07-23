@@ -67,3 +67,27 @@ jobs:
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           E2E_TRAINER_EMAIL: ${{ secrets.E2E_TRAINER_EMAIL }}
           E2E_TRAINER_PASSWORD: ${{ secrets.E2E_TRAINER_PASSWORD }}
+
+  rls-privacy-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cyclesguard-frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: cyclesguard-frontend/package-lock.json
+      - run: npm ci
+      - run: npm run verify:rls-privacy -- https://cyclesguard.vercel.app
+        env:
+          DEMO_ALLOW: '1'
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          E2E_TRAINER_EMAIL: ${{ secrets.E2E_TRAINER_EMAIL }}
+          E2E_TRAINER_PASSWORD: ${{ secrets.E2E_TRAINER_PASSWORD }}
+          E2E_PLAYER_EMAIL: ${{ secrets.E2E_PLAYER_EMAIL }}
+          E2E_PLAYER_PASSWORD: ${{ secrets.E2E_PLAYER_PASSWORD }}

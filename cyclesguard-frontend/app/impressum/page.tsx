@@ -7,9 +7,9 @@ export const metadata: Metadata = {
 };
 
 const OPERATOR_NAME = process.env.NEXT_PUBLIC_IMPRESSUM_NAME || 'M. Daud Abdulle';
-const OPERATOR_STREET =
-  process.env.NEXT_PUBLIC_IMPRESSUM_STREET || 'Anschrift auf Anfrage / vor Soft-Pilot-Echtdaten ergänzen';
-const OPERATOR_CITY = process.env.NEXT_PUBLIC_IMPRESSUM_CITY || 'Deutschland';
+const OPERATOR_STREET = process.env.NEXT_PUBLIC_IMPRESSUM_STREET?.trim() || '';
+const OPERATOR_CITY = process.env.NEXT_PUBLIC_IMPRESSUM_CITY?.trim() || 'Deutschland';
+const hasStreet = OPERATOR_STREET.length > 0;
 
 export default function ImpressumPage() {
   return (
@@ -47,10 +47,24 @@ export default function ImpressumPage() {
             CyclesGuard
             <br />
             {OPERATOR_NAME}
-            <br />
-            {OPERATOR_STREET}
-            <br />
-            {OPERATOR_CITY}
+            {hasStreet ? (
+              <>
+                <br />
+                {OPERATOR_STREET}
+                <br />
+                {OPERATOR_CITY}
+              </>
+            ) : (
+              <>
+                <br />
+                Postanschrift auf Anfrage unter{' '}
+                <a href="mailto:hello@cyclesguard.de" className="text-rose-gold hover:underline">
+                  hello@cyclesguard.de
+                </a>
+                <br />
+                {OPERATOR_CITY}
+              </>
+            )}
           </p>
         </section>
 
@@ -72,7 +86,8 @@ export default function ImpressumPage() {
         <section className="space-y-2 text-sm text-cream/75 leading-relaxed">
           <h2 className="font-semibold text-cream text-base">Verantwortlich für den Inhalt</h2>
           <p>
-            {OPERATOR_NAME}, Anschrift wie oben
+            {OPERATOR_NAME}
+            {hasStreet ? ', Anschrift wie oben' : ' · Kontakt wie oben'}
           </p>
         </section>
 
@@ -91,11 +106,13 @@ export default function ImpressumPage() {
           </p>
         </section>
 
-        <p className="text-xs text-cream/35">
-          Postanschrift finalisieren über Vercel Env:{' '}
-          <code className="text-cream/45">NEXT_PUBLIC_IMPRESSUM_STREET</code> /{' '}
-          <code className="text-cream/45">NEXT_PUBLIC_IMPRESSUM_CITY</code>.
-        </p>
+        {!hasStreet && process.env.NODE_ENV === 'development' ? (
+          <p className="text-xs text-cream/35">
+            Dev: Postanschrift via{' '}
+            <code className="text-cream/45">NEXT_PUBLIC_IMPRESSUM_STREET</code> /{' '}
+            <code className="text-cream/45">NEXT_PUBLIC_IMPRESSUM_CITY</code>.
+          </p>
+        ) : null}
       </article>
     </div>
   );

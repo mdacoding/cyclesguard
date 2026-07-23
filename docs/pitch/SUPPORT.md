@@ -32,7 +32,7 @@
 ## Vor Paid Go-Live
 
 - [ ] AVV unterschrieben  
-- [ ] `NEXT_PUBLIC_DEMO_MODE=false`  
-- [ ] Secrets rotiert (`PILOT-RUNBOOK.md`)  
-- [ ] Sentry DSN aktiv  
+- [x] `NEXT_PUBLIC_DEMO_MODE=false` (Prod, GO-LIVE C1)  
+- [ ] Secrets rotiert nach Club-Ja (`PILOT-RUNBOOK.md`)  
+- [x] Sentry DSN aktiv (GO-LIVE A1 · Strip unit-getestet)  
 - [ ] Season `commercial_status` = `signed` oder `active_paid`  

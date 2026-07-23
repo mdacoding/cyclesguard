@@ -34,15 +34,17 @@ Production (+ Preview empfohlen) — Werte aus lokalem `cyclesguard-frontend/.en
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ja | Publishable / anon |
 | `SUPABASE_SERVICE_ROLE_KEY` | **ja** | Secret — **ohne Ampel = leer/500** |
 | `NEXT_PUBLIC_SITE_URL` | ja | nach erstem Deploy auf echte URL setzen |
-| `NEXT_PUBLIC_DEMO_MODE` | Pitch: `true` | Login-Hinweise; nach Pitch auf `false` |
+| `NEXT_PUBLIC_DEMO_MODE` | Soft-Pilot Prod: `false` | Pitch-Demo lokal ggf. `true` |
 | `CRON_SECRET` | ja | aus `.env.local` |
 | `CONSENT_IP_SALT` | ja | aus `.env.local` |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | empfohlen | Push |
 | `VAPID_PRIVATE_KEY` | empfohlen | Push |
+| `NEXT_PUBLIC_SENTRY_DSN` / `SENTRY_DSN` | empfohlen | Observability |
+| `NEXT_PUBLIC_IMPRESSUM_STREET` / `_CITY` | empfohlen | §5 TMG Postanschrift |
 
-`INGESTION_*` für Pitch **nicht** setzen.
+`INGESTION_*` für Soft-Pilot **nicht** setzen, bis Club GPS fordert.
 
-Deploy → Production URL notieren (z. B. `https://cyclesguard-….vercel.app`).
+Deploy → Production URL notieren (z. B. `https://cyclesguard.vercel.app`).
 
 ---
 
@@ -54,7 +56,7 @@ Dashboard → Authentication → URL Configuration:
 - **Redirect URLs:**
   - `https://<eure-vercel-domain>/auth/callback`
   - `http://localhost:3000/auth/callback`
-  - Optional: `https://<eure-vercel-domain>/**` (Invite → `/auth/set-password`)
+  - `https://<eure-vercel-domain>/auth/set-password` oder `https://<eure-vercel-domain>/**`
 
 Dann auf Vercel `NEXT_PUBLIC_SITE_URL` aktualisieren → Redeploy.
 
@@ -65,15 +67,17 @@ Dann auf Vercel `NEXT_PUBLIC_SITE_URL` aktualisieren → Redeploy.
 ```bash
 cd cyclesguard-frontend
 npm run pitch:smoke -- https://<eure-vercel-domain>
+npm run verify:go-live -- https://<eure-vercel-domain>
 ```
 
 Manuell:
 
-- [ ] `/login` zeigt Demo-Hinweise (`DEMO_MODE=true`)
+- [ ] `/login` (Demo-Hinweise nur wenn `DEMO_MODE=true`)
 - [ ] `lisa.weber@eintracht-demo.de` → Dashboard
 - [ ] `trainer@eintracht-demo.de` → Ampel (REST/FIT/MODIFIED/NO_DATA)
 - [ ] Trainer sieht **keine** Phasen/Symptome
 - [ ] Settings: Export / Löschen sichtbar
+- [ ] `/spielerinnen-info` · `/impressum` erreichbar
 
 Accounts: [DEMO-ACCOUNTS.md](./DEMO-ACCOUNTS.md) · Ablauf: [DEMO-SCRIPT.md](./DEMO-SCRIPT.md)
 

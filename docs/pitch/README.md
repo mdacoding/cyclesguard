@@ -14,6 +14,7 @@ Produkt ist club-agnostisch launch-ready — Outreach parallel zu mehreren Verei
 | **[PILOTANGEBOT.md](./PILOTANGEBOT.md)** | Angebot (PDF / parallel zu `/pilot`) |
 | **[DATENSCHUTZ-DOSB-1-PAGER.md](./DATENSCHUTZ-DOSB-1-PAGER.md)** | 1-Pager (parallel zu `/privacy`) |
 | **[SPIELERINNEN-INFO.md](./SPIELERINNEN-INFO.md)** | Info + Einwilligungs-Vorlage |
+| Live: `/spielerinnen-info` | Druckbare Vorlage (Ctrl/Cmd+P → PDF) |
 | [DEMO-ACCOUNTS.md](./DEMO-ACCOUNTS.md) | Pitch-Logins (intern) |
 | [TRAINER-ONBOARDING.md](./TRAINER-ONBOARDING.md) | Athletik 1-Seite |
 | [PILOT-FEEDBACK.md](./PILOT-FEEDBACK.md) | Wochen-Call |

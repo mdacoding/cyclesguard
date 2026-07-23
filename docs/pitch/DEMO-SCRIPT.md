@@ -2,7 +2,7 @@
 
 **Ziel:** Vertrauen + greifbares Produkt für Athletik **und** DSB.  
 **Live:** https://cyclesguard.vercel.app  
-**Privacy:** `/privacy` (= `/datenschutz`) · **Angebot:** `/pilot` · **Impressum:** `/impressum`
+**Privacy:** `/privacy` (= `/datenschutz`) · **Angebot:** `/pilot` · **Impressum:** `/impressum` · **Spielerinnen:** `/spielerinnen-info`
 
 **Vorbereitung:** Demo-URL · zweites Browser-Profil/Inkognito · optional Admin-Login bereit.
 

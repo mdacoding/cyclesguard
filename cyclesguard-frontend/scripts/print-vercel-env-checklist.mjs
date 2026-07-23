@@ -24,6 +24,10 @@ const optional = [
   'NEXT_PUBLIC_SENTRY_DSN',
   'SENTRY_DSN',
   'SENTRY_AUTH_TOKEN',
+  'NEXT_PUBLIC_IMPRESSUM_NAME',
+  'NEXT_PUBLIC_IMPRESSUM_STREET',
+  'NEXT_PUBLIC_IMPRESSUM_CITY',
+  'SUPABASE_SECRET_KEY',
 ];
 
 const envPath = join(process.cwd(), '.env.local');
@@ -70,7 +74,7 @@ for (const key of required) {
   console.log(`✓ ${key}=${showValue(key, val)}`);
 }
 
-console.log('\n=== Optional (GPS bridge / monitoring) ===\n');
+console.log('\n=== Optional (GPS / monitoring / Impressum) ===\n');
 for (const key of optional) {
   const val = map[key];
   if (isPlaceholder(val)) {
@@ -82,14 +86,16 @@ for (const key of optional) {
 
 console.log('\n=== Mode hints ===');
 console.log('  Pitch demo:     NEXT_PUBLIC_DEMO_MODE=true');
-console.log('  Soft-Pilot:     NEXT_PUBLIC_DEMO_MODE=false');
+console.log('  Soft-Pilot:     NEXT_PUBLIC_DEMO_MODE=false  (Prod aktuell)');
 console.log('  Site URL prod:  NEXT_PUBLIC_SITE_URL=https://cyclesguard.vercel.app');
+console.log('  Impressum:      NEXT_PUBLIC_IMPRESSUM_STREET + _CITY für §5 TMG');
 
 console.log('\nAfter deploy:');
-console.log('  1. Supabase Auth Site URL + Redirect …/auth/callback');
-console.log('  2. npm run pitch:smoke -- https://cyclesguard.vercel.app');
+console.log('  1. Supabase Auth Site URL + Redirect …/auth/callback (+ set-password / **)');
+console.log('  2. npm run verify:go-live -- https://cyclesguard.vercel.app');
 console.log('  3. Push: docs/pitch/PUSH-LIVE.md');
 console.log('  4. Pilot: docs/pitch/PILOT-RUNBOOK.md');
+console.log('  5. Spielerinnen-Vorlage: /spielerinnen-info');
 
 if (missing > 0) {
   console.log(`\n${missing} required variable(s) missing.`);

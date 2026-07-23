@@ -5,6 +5,7 @@
 **Keine Rechtsberatung.** Bei Bedarf Vereins-DSB / Rechtsberatung einbinden.
 
 Live-Datenschutz: https://cyclesguard.vercel.app/privacy  
+Druckbare Vorlage: https://cyclesguard.vercel.app/spielerinnen-info  
 AVV/TOM-Entwurf: [`../privacy/AVV-TOM-DRAFT.md`](../privacy/AVV-TOM-DRAFT.md)
 
 ---
