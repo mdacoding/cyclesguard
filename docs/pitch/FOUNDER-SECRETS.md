@@ -8,11 +8,12 @@
 ## 1. Sentry DSN (GO-LIVE A1) — 5 Minuten
 
 ```powershell
-# Browser: https://sentry.io → Create Project → Next.js → DSN kopieren
+# Browser: https://sentry.io → EU storage → Next.js Project → DSN kopieren
 cd cyclesguard-frontend
-$env:SENTRY_DSN="https://....@....ingest.sentry.io/...."
-node scripts/set-vercel-env.mjs NEXT_PUBLIC_SENTRY_DSN $env:SENTRY_DSN
-node scripts/set-vercel-env.mjs SENTRY_DSN $env:SENTRY_DSN
+$env:SENTRY_DSN="https://....@....ingest.de.sentry.io/...."   # EU-DSN
+npm run apply:sentry-dsn
+# vom Monorepo-Root:
+cd ..
 npx vercel --prod --yes
 ```
 
@@ -49,7 +50,8 @@ Seit ~22.07. starten viele Runs **ohne Jobs** (`total_count: 0`) — typisch **A
 2. Spending Limit > 0 setzen **oder** Payment Method  
 3. Danach: neues Push auf `main` oder `gh run rerun <id> --failed`
 
-CI-Fix (Test-Glob + Node 22) ist im Repo — braucht nur wieder Minutes.
+Push-CI ist jetzt lean (nur `frontend` + `ingestion`). E2E/RLS nur manuell:
+`gh workflow run ci.yml -f run_e2e=true`
 
 E2E/RLS Secrets sind gesetzt (23.07.).
 

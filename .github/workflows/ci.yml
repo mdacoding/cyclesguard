@@ -4,8 +4,15 @@ on:
   push:
     branches: [main, master]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      run_e2e:
+        description: 'Run Playwright E2E + RLS jobs (burns Actions minutes)'
+        type: boolean
+        default: false
 
 jobs:
+  # Default push CI stays lean — private-repo Actions minutes are limited.
   frontend:
     runs-on: ubuntu-latest
     defaults:
@@ -36,6 +43,7 @@ jobs:
   e2e-public:
     runs-on: ubuntu-latest
     needs: frontend
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_e2e }}
     defaults:
       run:
         working-directory: cyclesguard-frontend
@@ -55,8 +63,7 @@ jobs:
   e2e-credentialed:
     runs-on: ubuntu-latest
     needs: frontend
-    # Enable by setting repo secrets E2E_TRAINER_EMAIL + E2E_TRAINER_PASSWORD (and optionally player/admin).
-    if: ${{ secrets.E2E_TRAINER_EMAIL != '' && secrets.E2E_TRAINER_PASSWORD != '' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_e2e && secrets.E2E_TRAINER_EMAIL != '' && secrets.E2E_TRAINER_PASSWORD != '' }}
     defaults:
       run:
         working-directory: cyclesguard-frontend
@@ -82,9 +89,7 @@ jobs:
   rls-trainer-check:
     runs-on: ubuntu-latest
     needs: frontend
-    # Enable by setting repo secrets E2E_TRAINER_EMAIL + E2E_TRAINER_PASSWORD.
-    # Exercises RLS as a real trainer JWT (not service_role) against live Supabase.
-    if: ${{ secrets.E2E_TRAINER_EMAIL != '' && secrets.E2E_TRAINER_PASSWORD != '' && secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_e2e && secrets.E2E_TRAINER_EMAIL != '' && secrets.E2E_TRAINER_PASSWORD != '' && secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}
     defaults:
       run:
         working-directory: cyclesguard-frontend

@@ -22,7 +22,8 @@
     "verify:admin-dryrun": "node scripts/verify-admin-dryrun.mjs",
     "sync:vercel-env": "node scripts/sync-vercel-env.mjs",
     "set:vercel-env": "node scripts/set-vercel-env.mjs",
-    "set:github-ci-secrets": "node scripts/set-github-ci-secrets.mjs"
+    "set:github-ci-secrets": "node scripts/set-github-ci-secrets.mjs",
+    "apply:sentry-dsn": "node scripts/apply-sentry-dsn.mjs"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.67.0",
