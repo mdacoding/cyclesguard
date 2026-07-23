@@ -1,6 +1,6 @@
 # CyclesGuard — Implementation Plan
 
-**Stand:** 22.07.2026  
+**Stand:** 23.07.2026  
 **Nordstern:** [`LAUNCH-PLAN.md`](../product/LAUNCH-PLAN.md) — bestmögliches Feature-Set für maximalen Launch-Erfolg  
 **Zeitachsen:** [`FINISH-PLAN.md`](../product/FINISH-PLAN.md)  
 **Live:** https://cyclesguard.vercel.app  
@@ -31,9 +31,17 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 | L1 Kabine / KPIs / Trainer-Onboarding | ✅ |
 | L2 Tabs / Feedback / Welcome / Ops-Status | ✅ |
 | L3 Paid UX / Club Billing / Demo-off Docs | ✅ |
-| Founder Sign-off (Sentry, Push Keys, AVV) | ⬜ [`GO-LIVE.md`](../pitch/GO-LIVE.md) |
+| Trust-Checks automatisiert (RLS Trainer-JWT, Cron) | ✅ 23.07. — `verify:rls-trainer`, `verify:cron`, CI-Job |
+| Founder Sign-off (Sentry DSN, Push Keys, AVV) | ⬜ [`GO-LIVE.md`](../pitch/GO-LIVE.md) |
 
-**Als Nächstes:** Founder GTM + GO-LIVE abhaken. Kein weiteres Feature-Bloat ohne Club-Nachfrage.
+**Als Nächstes:** Founder GTM + GO-LIVE abhaken (jetzt nur noch Secrets setzen + Scripts laufen lassen). Kein weiteres Feature-Bloat ohne Club-Nachfrage — Engineering-Tagesfokus verschiebt sich auf Trust-Automatisierung und Pilot-Härtung.
+
+**Daily-Ship-Log (jeden Tag ein Fortschritt):**
+
+| Datum | Was |
+|-------|-----|
+| 22.07. | L1–L3 Feature-Set + Audit-Fixes (Club-Scope Feedback, Heute-KPI) |
+| 23.07. | RLS Trainer-JWT Dry-Run + Cron-Check automatisiert (Script + CI) |
 
 ---
 

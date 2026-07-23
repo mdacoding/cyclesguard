@@ -9,11 +9,14 @@
 
 - [x] Unit-Tests: Empfehlungstexte ohne Menstru-/Zyklus-Wörter (`lib/trainer-status.test.ts`)
 - [x] Playwright Smoke (mit Demo-Credentials): Trainer-Response ohne `phase`/`symptoms` (`e2e/smoke.spec.ts` + CI `e2e-credentialed`)
-- [x] Fixture-Hinweise: `docs/privacy/rls-trainer-expected.sql`
+- [x] **Echter Trainer-JWT Dry-Run** — `npm run verify:rls-trainer` (`scripts/rls-trainer-check.mjs`) meldet sich als Trainer per Passwort an (Anon-Key, kein Service-Role) und fragt `cycle_logs`, `player_consents`, `push_subscriptions`, `session_summaries` direkt per PostgREST ab. Erwartung: 0 Zeilen / Denial. Positive Control: `team_members` liefert Roster. CI-Job `rls-trainer-check` (gated auf `E2E_TRAINER_EMAIL/PASSWORD` Secrets).
+- [x] Fixture-Hinweise: `docs/privacy/rls-trainer-expected.sql` (jetzt per Script statt manuellem SQL-Editor)
 
 ---
 
 ## B. Manuell — Supabase SQL Editor (als authentifizierter Trainer-JWT)
+
+**Ersetzt durch Abschnitt A (Script).** Nur als Fallback, falls kein Script-Zugriff möglich ist.
 
 Voraussetzung: Session eines Trainer-Users (nicht Service Role).
 
@@ -74,10 +77,11 @@ Erwartung: deny / leer.
 | Check | Datum | OK |
 |-------|-------|----|
 | SQL DENY cycle_logs | 2026-07-22 | Policies live: `trainer_deny_all` + own-row CRUD (MCP verify) |
+| Trainer-JWT Dry-Run (live) | 2026-07-23 | Automatisiert: `npm run verify:rls-trainer` — auszuführen sobald `E2E_TRAINER_*` Secrets gesetzt sind |
 | team-status maskiert | 2026-07-22 | E2E credentialed + unit contract |
 | Cross-Team 403 | | ⬜ manuell / erweitertes E2E |
 | Export/Delete | | ⬜ manuell |
 | `pilot_feedback` own-only + club scope | 2026-07-22 | insert/select own; admin GET `club_id` scoped (014) |
 
-**Hinweis Tech (22.07.2026):** Live-DB Policies für `cycle_logs`, `player_consents`, `pilot_feedback`, `admin_audit_log` per `pg_policies` bestätigt. **Trainer-JWT Dry-Run (Abschnitt B) weiterhin manuell** im SQL Editor mit Trainer-Session — höchstes verbleibendes Trust-Item vor Soft-Pilot.
+**Hinweis Tech (23.07.2026):** Live-DB Policies für `cycle_logs`, `player_consents`, `pilot_feedback`, `admin_audit_log` per `pg_policies` bestätigt. Trainer-JWT Dry-Run ist jetzt **Script + CI-Job**, kein manueller SQL-Editor-Schritt mehr. Verbleibend: einmalig Repo-Secrets setzen und Job grün sehen (Founder/Tech, kein Code).
 Unterschrift Founder / Tech: _______________

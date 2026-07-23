@@ -16,7 +16,9 @@
     "pitch:setup-env": "node scripts/setup-pitch-env.mjs",
     "pitch:bundle-migrations": "node scripts/bundle-migrations.mjs",
     "pitch:smoke": "node scripts/smoke-pitch-demo.mjs",
-    "pitch:env-checklist": "node scripts/print-vercel-env-checklist.mjs"
+    "pitch:env-checklist": "node scripts/print-vercel-env-checklist.mjs",
+    "verify:rls-trainer": "node scripts/rls-trainer-check.mjs",
+    "verify:cron": "node scripts/verify-cron.mjs"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.67.0",

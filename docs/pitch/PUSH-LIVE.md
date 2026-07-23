@@ -32,7 +32,14 @@ In `vercel.json`:
 
 Vercel sendet `Authorization: Bearer <CRON_SECRET>`.
 
-Manuell testen:
+Testen (automatisiert — prüft alle 3 Cron-Routen + 401-ohne-Auth):
+
+```bash
+cd cyclesguard-frontend
+CRON_SECRET=*** npm run verify:cron -- https://cyclesguard.vercel.app
+```
+
+Manuell (Fallback):
 
 ```bash
 curl -sS -H "Authorization: Bearer $CRON_SECRET" \
@@ -76,8 +83,9 @@ Retention-Cron entfernt Subscriptions älter als 180 Tage.
 
 | Check | Done |
 |-------|------|
-| B1–B3 aus [`GO-LIVE.md`](./GO-LIVE.md) | ☐ |
-| Notification-Text ohne Zyklus-/Menstruationswort | ☐ |
-| Skip-Wochenende Preferenzen (Settings) | ☐ |
+| B1 VAPID/CRON_SECRET in Vercel Production | ☐ Founder |
+| B2 Cron erreichbar + korrekt | ✅ Script `npm run verify:cron` — einmal gegen Prod ausführen |
+| B3 Gerätetest ohne Zyklus-/Menstruationswort | ☐ Tech (manuell, Gerät nötig) |
+| Skip-Wochenende Preferenzen (Settings) | ☐ Tech |
 
 **Verifiziert von:** _____________ **Datum:** _______
