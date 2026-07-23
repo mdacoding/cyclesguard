@@ -12,7 +12,7 @@ Nicht Code — **Checkliste**. Jede Zeile braucht Owner + Datum.
 
 | # | Check | Owner | Done |
 |---|-------|-------|------|
-| A1 | Sentry DSN in Vercel Production (`SENTRY-LIVE.md`) | Founder | ☐ einmalig — Anleitung [`FOUNDER-SECRETS.md`](./FOUNDER-SECRETS.md) |
+| A1 | Sentry DSN in Vercel Production (`SENTRY-LIVE.md`) | Founder | ✅ 23.07. EU DSN in Prod + Redeploy |
 | A2 | RLS-Pen-Test / `RLS-PENETRATION-CHECKLIST.md` | Tech | ✅ 23.07. live grün (`verify:rls-trainer`) + Migration `015` (RLS-Rekursion behoben) |
 | A3 | Trainer-JWT sieht keine Art.-9-Rohdaten (live) | Tech | ✅ 23.07. — 0 Rows auf Art.-9-Tabellen; Roster positiv sichtbar |
 | A4 | AVV-Entwurf an DSB / Club (`AVV-TOM-DRAFT.md`) | Founder | ☐ Versand — Text fertig in [`AVV-EMAIL-DRAFT.md`](./AVV-EMAIL-DRAFT.md) |

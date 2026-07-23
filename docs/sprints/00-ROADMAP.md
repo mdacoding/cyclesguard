@@ -32,16 +32,16 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 | L2 Tabs / Feedback / Welcome / Ops-Status | ✅ |
 | L3 Paid UX / Club Billing / Demo-off Docs | ✅ |
 | Trust-Checks automatisiert + live verifiziert | ✅ 23.07. — Cron/RLS/Admin-Dry-Run gegen Prod grün |
-| Founder Sign-off (Sentry DSN, Demo-Mode off, AVV) | ◐ Demo-Mode off ✅ · Sentry/AVV Versand Founder — [`FOUNDER-SECRETS.md`](../pitch/FOUNDER-SECRETS.md) |
+| Founder Sign-off (Sentry DSN, Demo-Mode off, AVV) | ◐ Sentry ✅ · Demo-Mode off ✅ · AVV-Versand Founder — [`FOUNDER-SECRETS.md`](../pitch/FOUNDER-SECRETS.md) |
 
-**Als Nächstes:** Sentry DSN (Founder-Login) · AVV-Mail senden · Actions Minutes freischalten. Kein Feature-Bloat ohne Club-Nachfrage.
+**Als Nächstes:** AVV-Mail senden · Actions Minutes freischalten · Gerätetest Push. Kein Feature-Bloat ohne Club-Nachfrage.
 
 **Daily-Ship-Log (jeden Tag ein Fortschritt):**
 
 | Datum | Was |
 |-------|-----|
 | 22.07. | L1–L3 Feature-Set + Audit-Fixes (Club-Scope Feedback, Heute-KPI) |
-| 23.07. | Trust live: Cron/RLS/Admin-Dry-Run; RLS-Rekursion-Fix; Demo-Mode=false Prod; GitHub CI-Secrets; Push-Payload-Tests; CI-Glob-Fix + AVV-Mail-Entwurf |
+| 23.07. | Trust live + Demo off + CI-Secrets/Lean-CI + Push-Payload-Tests + **Sentry EU DSN Prod** (`sentry:ok`) + AVV-Mail-Entwurf |
 
 ---
 

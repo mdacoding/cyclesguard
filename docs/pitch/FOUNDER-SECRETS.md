@@ -63,6 +63,7 @@ E2E/RLS Secrets sind gesetzt (23.07.).
 |------|--------|
 | VAPID + CRON_SECRET in Vercel | ✅ |
 | `NEXT_PUBLIC_DEMO_MODE=false` Production | ✅ 23.07. |
+| Sentry DSN (EU) Production | ✅ 23.07. `NEXT_PUBLIC_SENTRY_DSN` + `SENTRY_DSN` |
 | GitHub E2E + Supabase CI Secrets | ✅ 23.07. |
 | Accidental Vercel-Projekt entfernt | ✅ |
 | Cron / RLS / Admin Dry-Run live | ✅ |
