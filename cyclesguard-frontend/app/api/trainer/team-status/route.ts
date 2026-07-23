@@ -4,10 +4,11 @@ import { createAdminClient, isTrainer } from '@/lib/supabase/admin';
 import { getTrainerTeamIds, getTeamPlayerIds } from '@/lib/teams';
 import {
   mapCycleToStatus,
-  getRecommendation,
   buildTrainerInsight,
+  computeReadinessTrend7d,
   ReadinessStatus,
   LoadFlag,
+  ReadinessTrend7d,
 } from '@/lib/trainer-status';
 import { CyclePhase } from '@/lib/types';
 import { berlinCalendarDaysBetween, isSameBerlinDay } from '@/lib/date';
@@ -24,6 +25,12 @@ export interface TeamStatusEntry {
   daysSinceLog: number | null;
   /** Coach-safe: never completed first login — invite/setup mail may be resent. */
   invitePending: boolean;
+}
+
+export interface TeamStatusResponse {
+  players: TeamStatusEntry[];
+  /** Coach-safe 7d histogram of player-days (no health fields). */
+  trend7d: ReadinessTrend7d;
 }
 
 export async function GET(request: Request) {
@@ -45,7 +52,10 @@ export async function GET(request: Request) {
 
   const trainerTeamIds = await getTrainerTeamIds(user.id);
   if (trainerTeamIds.length === 0) {
-    return NextResponse.json([]);
+    return NextResponse.json({
+      players: [],
+      trend7d: { FIT: 0, MODIFIED_TRAINING: 0, REST: 0, NO_DATA: 0, playerDays: 0 },
+    } satisfies TeamStatusResponse);
   }
 
   const teamIds =
@@ -55,7 +65,10 @@ export async function GET(request: Request) {
 
   const playerIds = await getTeamPlayerIds(teamIds);
   if (playerIds.length === 0) {
-    return NextResponse.json([]);
+    return NextResponse.json({
+      players: [],
+      trend7d: { FIT: 0, MODIFIED_TRAINING: 0, REST: 0, NO_DATA: 0, playerDays: 0 },
+    } satisfies TeamStatusResponse);
   }
 
   const admin = createAdminClient();
@@ -163,5 +176,7 @@ export async function GET(request: Request) {
     return a.name.localeCompare(b.name, 'de');
   });
 
-  return NextResponse.json(result);
+  const trend7d = computeReadinessTrend7d(playerIds, logs ?? []);
+
+  return NextResponse.json({ players: result, trend7d } satisfies TeamStatusResponse);
 }

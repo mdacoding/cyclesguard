@@ -34,7 +34,7 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 | Trust-Checks automatisiert + live verifiziert | ✅ 23.07. — Cron/RLS/Admin-Dry-Run gegen Prod grün |
 | Founder Sign-off (Sentry DSN, Demo-Mode off, AVV) | ◐ Sentry ✅ · Demo-Mode off ✅ · AVV-Versand Founder — [`FOUNDER-SECRETS.md`](../pitch/FOUNDER-SECRETS.md) |
 
-**Als Nächstes:** Soft-Pilot KPI/Contract Polish ✅ · AVV-Mail sobald Club-Adresse da · Outreach. Kein Feature-Bloat ohne Club-Nachfrage.
+**Als Nächstes:** Free Club-Product Polish ✅ · AVV-Mail sobald Club-Adresse da · Outreach. Kein Feature-Bloat ohne Club-Nachfrage.
 
 **Daily-Ship-Log (jeden Tag ein Fortschritt):**
 
@@ -46,6 +46,8 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 | 23.07. | Soft-Pilot Day-1: Trainer Empty/Resend-Invite, Consent/Delete Inline-Errors, Welcome Install + #log, Admin Empty-Roster CTA + Inline-Confirms |
 | 23.07. | Kabine ohne GPS-Rauschen · Player Streak-Chip · Offline-Pending sichtbar · Trainer Roster-Entfernen · Seed-Symptom-Keys · Auth-Redirect Docs |
 | 23.07. | Soft-Pilot KPI: Adherence-Ziel klar · Roster aktiv/still 7d · Trainer Tage-seit-Log · Manual-Contract Guard/Churn · Season Dry-Run · Trust-Docs sync |
+| 23.07. | Club-Product: Feedback-CSV · Closing-Checkliste D1–D2 · Ended-Confirm · Pilot-Scorecard Compliance · GO-LIVE Outreach klar |
+| 23.07. | Kabine Ampel-Trend 7d · Angebot-Mailto · Season/Feedback Dry-Run Exports |
 
 ---
 

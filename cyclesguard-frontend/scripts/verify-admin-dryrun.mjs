@@ -328,6 +328,16 @@ if (teamId) {
   }
 }
 
+{
+  const fb = await api('/api/feedback?format=csv', { cookie });
+  if (!fb.res.ok || !String(fb.text).includes('created_at,role,score')) {
+    console.error(`✗ GET /api/feedback?format=csv — ${fb.res.status}`);
+    failed++;
+  } else {
+    console.log('✓ Feedback CSV downloadable');
+  }
+}
+
 await supabase.auth.signOut();
 
 console.log('');

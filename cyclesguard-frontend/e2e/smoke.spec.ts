@@ -47,9 +47,13 @@ test.describe('trainer flow', () => {
     await page.reload();
     const response = await responsePromise;
     const body = await response.json();
-
-    expect(Array.isArray(body)).toBeTruthy();
-    for (const entry of body) {
+    const entries = Array.isArray(body) ? body : body.players;
+    expect(Array.isArray(entries)).toBeTruthy();
+    if (!Array.isArray(body)) {
+      expect(body).toHaveProperty('trend7d');
+      expect(body.trend7d).toHaveProperty('NO_DATA');
+    }
+    for (const entry of entries) {
       expect(entry).toHaveProperty('status');
       expect(entry).toHaveProperty('recommendation');
       expect(entry).toHaveProperty('loggedToday');

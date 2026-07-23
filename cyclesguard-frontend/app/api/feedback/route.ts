@@ -92,7 +92,7 @@ export async function POST(request: Request) {
 }
 
 /** Club admins: recent feedback scores scoped to their clubs (no emails). */
-export async function GET() {
+export async function GET(request: Request) {
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -115,6 +115,14 @@ export async function GET() {
 
   if (clubIds !== 'all') {
     if (clubIds.length === 0) {
+      if (new URL(request.url).searchParams.get('format') === 'csv') {
+        return new NextResponse('created_at,role,score,context,message\n', {
+          headers: {
+            'Content-Type': 'text/csv; charset=utf-8',
+            'Content-Disposition': 'attachment; filename="cyclesguard-feedback.csv"',
+          },
+        });
+      }
       return NextResponse.json({ avgScore: null, count: 0, items: [] });
     }
     query = query.in('club_id', clubIds);
@@ -132,6 +140,30 @@ export async function GET() {
     rows.length === 0
       ? null
       : Math.round((rows.reduce((s, r) => s + (r.score as number), 0) / rows.length) * 10) / 10;
+
+  if (new URL(request.url).searchParams.get('format') === 'csv') {
+    const esc = (v: string) => `"${v.replaceAll('"', '""')}"`;
+    const header = 'created_at,role,score,context,message\n';
+    const body = rows
+      .map((r) =>
+        [
+          r.created_at ?? '',
+          r.role ?? '',
+          String(r.score ?? ''),
+          (r.context as string | null) ?? '',
+          (r.message as string | null) ?? '',
+        ]
+          .map((c) => esc(String(c)))
+          .join(',')
+      )
+      .join('\n');
+    return new NextResponse(header + body, {
+      headers: {
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': 'attachment; filename="cyclesguard-feedback.csv"',
+      },
+    });
+  }
 
   return NextResponse.json({
     avgScore: avg,

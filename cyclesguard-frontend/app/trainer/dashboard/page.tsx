@@ -19,6 +19,7 @@ import {
   getLoadLabel,
   ReadinessStatus,
   LoadFlag,
+  ReadinessTrend7d,
 } from '@/lib/trainer-status';
 
 interface TeamMember {
@@ -47,8 +48,17 @@ function logAgeLabel(m: Pick<TeamMember, 'loggedToday' | 'daysSinceLog'>): strin
   return `vor ${m.daysSinceLog} Tagen`;
 }
 
+const EMPTY_TREND: ReadinessTrend7d = {
+  FIT: 0,
+  MODIFIED_TRAINING: 0,
+  REST: 0,
+  NO_DATA: 0,
+  playerDays: 0,
+};
+
 export default function TrainerDashboardPage() {
   const [team, setTeam] = useState<TeamMember[]>([]);
+  const [trend7d, setTrend7d] = useState<ReadinessTrend7d>(EMPTY_TREND);
   const [teams, setTeams] = useState<TeamOption[]>([]);
   const [selectedTeamId, setSelectedTeamId] = useState<string>('');
   const [inviteEmail, setInviteEmail] = useState('');
@@ -81,7 +91,15 @@ export default function TrainerDashboardPage() {
       const qs = teamId ? `?teamId=${teamId}` : '';
       const response = await fetch(`/api/trainer/team-status${qs}`);
       if (!response.ok) throw new Error('Failed to load team status');
-      setTeam((await response.json()) as TeamMember[]);
+      const body = await response.json();
+      if (Array.isArray(body)) {
+        setTeam(body as TeamMember[]);
+        setTrend7d(EMPTY_TREND);
+      } else {
+        const data = body as { players?: TeamMember[]; trend7d?: ReadinessTrend7d };
+        setTeam(data.players ?? []);
+        setTrend7d(data.trend7d ?? EMPTY_TREND);
+      }
     } catch {
       setError('Team-Status konnte nicht geladen werden.');
     } finally {
@@ -455,6 +473,27 @@ export default function TrainerDashboardPage() {
                 );
               })}
             </div>
+
+            {trend7d.playerDays > 0 && (
+              <div className="glass-card p-4 border border-white/10 space-y-2">
+                <p className="text-xs text-cream/50">
+                  Ampel 7 Tage · Spielerinnen-Tage (ohne Gesundheitsrohdaten)
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                  {(['FIT', 'MODIFIED_TRAINING', 'REST', 'NO_DATA'] as ReadinessStatus[]).map(
+                    (status) => (
+                      <div key={status} className="flex justify-between gap-2 rounded-lg bg-white/5 px-3 py-2">
+                        <span className="text-cream/55 truncate">{getStatusLabel(status)}</span>
+                        <span className="font-medium tabular-nums">{trend7d[status]}</span>
+                      </div>
+                    )
+                  )}
+                </div>
+                <p className="text-[11px] text-cream/35">
+                  {trend7d.NO_DATA} von {trend7d.playerDays} Tage ohne Log
+                </p>
+              </div>
+            )}
 
             <div className="flex flex-wrap gap-2 print:hidden">
               {(

@@ -4,6 +4,7 @@ import {
   mapCycleToStatus,
   getRecommendation,
   buildTrainerInsight,
+  computeReadinessTrend7d,
 } from './trainer-status';
 
 describe('mapCycleToStatus', () => {
@@ -60,5 +61,41 @@ describe('buildTrainerInsight', () => {
     assert.equal(insight.stale, false);
     assert.match(insight.recommendation, /Hohe Last/);
     assert.doesNotMatch(insight.recommendation, /menstru|zyklus|eisprung/i);
+  });
+});
+
+describe('computeReadinessTrend7d', () => {
+  it('counts player-days and missing logs as NO_DATA', () => {
+    const days = [
+      '2026-07-23',
+      '2026-07-22',
+      '2026-07-21',
+      '2026-07-20',
+      '2026-07-19',
+      '2026-07-18',
+      '2026-07-17',
+    ];
+    const trend = computeReadinessTrend7d(
+      ['p1', 'p2'],
+      [
+        {
+          user_id: 'p1',
+          phase: 'follicular',
+          energy_level: 4,
+          logged_at: '2026-07-23T10:00:00.000Z',
+        },
+        {
+          user_id: 'p1',
+          phase: 'menstrual',
+          energy_level: 1,
+          logged_at: '2026-07-22T10:00:00.000Z',
+        },
+      ],
+      days
+    );
+    assert.equal(trend.playerDays, 14);
+    assert.equal(trend.FIT, 1);
+    assert.equal(trend.REST, 1);
+    assert.equal(trend.NO_DATA, 12);
   });
 });

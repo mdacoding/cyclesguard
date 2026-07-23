@@ -115,3 +115,67 @@ export function getStatusColor(status: ReadinessStatus): {
       return { bg: 'bg-white/5', border: 'border-white/10', dot: 'bg-cream/30' };
   }
 }
+
+/** Last N unique Berlin calendar days, newest first (includes today). */
+export function lastBerlinDays(n: number, from: Date = new Date()): string[] {
+  const out: string[] = [];
+  let t = from.getTime();
+  while (out.length < n) {
+    const day = new Date(t).toLocaleDateString('en-CA', { timeZone: 'Europe/Berlin' });
+    if (!out.includes(day)) out.push(day);
+    t -= 60 * 60 * 1000;
+  }
+  return out;
+}
+
+export type ReadinessTrend7d = Record<ReadinessStatus, number> & { playerDays: number };
+
+/**
+ * Coach-safe 7d readiness histogram: one status per player per Berlin day.
+ * Missing log that day → NO_DATA. No phases/symptoms exposed.
+ */
+export function computeReadinessTrend7d(
+  playerIds: string[],
+  logs: Array<{
+    user_id: string;
+    phase: CyclePhase | string;
+    energy_level: number | null;
+    logged_at: string;
+  }>,
+  days: string[] = lastBerlinDays(7)
+): ReadinessTrend7d {
+  const byUserDay = new Map<string, { phase: CyclePhase; energy: number | null }>();
+  for (const log of logs) {
+    const day = new Date(log.logged_at).toLocaleDateString('en-CA', {
+      timeZone: 'Europe/Berlin',
+    });
+    if (!days.includes(day)) continue;
+    const key = `${log.user_id}|${day}`;
+    if (byUserDay.has(key)) continue; // logs expected newest-first
+    byUserDay.set(key, {
+      phase: log.phase as CyclePhase,
+      energy: log.energy_level,
+    });
+  }
+
+  const counts: ReadinessTrend7d = {
+    FIT: 0,
+    MODIFIED_TRAINING: 0,
+    REST: 0,
+    NO_DATA: 0,
+    playerDays: playerIds.length * days.length,
+  };
+
+  for (const playerId of playerIds) {
+    for (const day of days) {
+      const row = byUserDay.get(`${playerId}|${day}`);
+      if (!row) {
+        counts.NO_DATA += 1;
+        continue;
+      }
+      counts[mapCycleToStatus(row.phase, row.energy)] += 1;
+    }
+  }
+
+  return counts;
+}

@@ -60,7 +60,8 @@ Vollständige Steps: [`PUSH-LIVE.md`](./PUSH-LIVE.md)
 
 - **Soft-Pilot start:** A1–A5 + B1–B3 + C1–C4  
   - A4 bleibt ◐ bis erste Club-/DSB-Adresse aus Outreach vorliegt (Paket + Mailto fertig).  
+  - Outreach darf **jetzt** laufen — Trust-Code ist grün; AVV-Versand wartet nur auf Empfängeradresse.  
   - Trust-Suite lokal: `npm run verify:go-live -- https://cyclesguard.vercel.app` (CI-Minutes ggf. erschöpft).
-- **Paid Season ohne Stripe:** + D1–D3  
+- **Paid Season ohne Stripe:** + D1–D3 (Admin → Saison: Closing-Checkliste)  
 
 Sign-off: _________________ Datum: _______

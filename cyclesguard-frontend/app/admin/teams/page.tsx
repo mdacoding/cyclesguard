@@ -125,7 +125,10 @@ export default function AdminTeamsPage() {
   const [editSignedBy, setEditSignedBy] = useState('');
   const [editNotes, setEditNotes] = useState('');
   const [contractBusy, setContractBusy] = useState(false);
-  const [pendingChurnId, setPendingChurnId] = useState<string | null>(null);
+  const [pendingCommercial, setPendingCommercial] = useState<{
+    id: string;
+    status: 'churned' | 'ended';
+  } | null>(null);
 
   const [clubLegalName, setClubLegalName] = useState('');
   const [clubBillingEmail, setClubBillingEmail] = useState('');
@@ -461,15 +464,23 @@ export default function AdminTeamsPage() {
   };
 
   const setSeasonCommercial = async (id: string, commercialStatus: string) => {
-    if (commercialStatus === 'churned') {
-      if (pendingChurnId !== id) {
-        setPendingChurnId(id);
-        setMsg('Nochmal „Churned“ wählen zum Bestätigen — Season als verloren markieren.');
+    if (commercialStatus === 'churned' || commercialStatus === 'ended') {
+      if (
+        !pendingCommercial ||
+        pendingCommercial.id !== id ||
+        pendingCommercial.status !== commercialStatus
+      ) {
+        setPendingCommercial({ id, status: commercialStatus });
+        setMsg(
+          commercialStatus === 'churned'
+            ? 'Nochmal „Churned“ wählen zum Bestätigen — Season als verloren markieren.'
+            : 'Nochmal „Beendet“ wählen zum Bestätigen — Season abschließen.'
+        );
         return;
       }
-      setPendingChurnId(null);
-    } else if (pendingChurnId === id) {
-      setPendingChurnId(null);
+      setPendingCommercial(null);
+    } else if (pendingCommercial?.id === id) {
+      setPendingCommercial(null);
     }
 
     if (commercialStatus === 'signed' || commercialStatus === 'active_paid') {
@@ -640,6 +651,71 @@ export default function AdminTeamsPage() {
     (t) => t.playerCount > 0 && t.loggedLast7Days / t.playerCount < 0.7
   ).length;
 
+  const selectedClub = clubs.find((c) => c.id === seasonClubId);
+  const clubSeasons = seasons.filter((s) => s.clubId === seasonClubId);
+  const primarySeason =
+    clubSeasons.find((s) => s.status === 'active') ??
+    clubSeasons.find((s) => s.commercialStatus === 'quoted' || s.commercialStatus === 'signed') ??
+    clubSeasons[0];
+  const closingChecks = [
+    {
+      id: 'billing',
+      label: 'Billing-E-Mail',
+      ok: Boolean(selectedClub?.billingEmail?.trim() || clubBillingEmail.trim()),
+    },
+    {
+      id: 'legal',
+      label: 'Legal Name',
+      ok: Boolean(selectedClub?.legalName?.trim() || clubLegalName.trim()),
+    },
+    {
+      id: 'fee',
+      label: 'Fee',
+      ok: primarySeason?.feeCents != null,
+    },
+    {
+      id: 'ref',
+      label: 'Contract-Ref',
+      ok: Boolean(primarySeason?.contractRef),
+    },
+    {
+      id: 'signedBy',
+      label: 'Signed-by',
+      ok: Boolean(primarySeason?.signedByEmail),
+    },
+    {
+      id: 'commercial',
+      label: 'Status signed/paid',
+      ok:
+        primarySeason?.commercialStatus === 'signed' ||
+        primarySeason?.commercialStatus === 'active_paid',
+    },
+  ];
+  const closingReady = closingChecks.every((c) => c.ok);
+
+  const buildOfferMailto = (s: SeasonRow) => {
+    const club = clubs.find((c) => c.id === s.clubId);
+    const to = encodeURIComponent(club?.billingEmail || 'hello@cyclesguard.de');
+    const fee =
+      s.feeCents != null
+        ? `${(s.feeCents / 100).toLocaleString('de-DE')} ${s.currency ?? 'EUR'}`
+        : 'nach Absprache';
+    const subject = encodeURIComponent(`CyclesGuard Angebot — ${s.name}`);
+    const body = encodeURIComponent(
+      [
+        `Verein: ${club?.legalName || club?.name || '—'}`,
+        `Saison: ${s.name}`,
+        `Zeitraum: ${s.startsOn} – ${s.endsOn}`,
+        `Fee: ${fee}`,
+        `Contract-Ref: ${s.contractRef || '—'}`,
+        '',
+        'Manueller Season-Vertrag (ohne Stripe).',
+        'Support: hello@cyclesguard.de',
+      ].join('\n')
+    );
+    return `mailto:${to}?subject=${subject}&body=${body}`;
+  };
+
   return (
     <div className="min-h-screen py-10 px-4 animate-fadeIn">
       <div className="max-w-5xl mx-auto space-y-8">
@@ -661,6 +737,13 @@ export default function AdminTeamsPage() {
             >
               <Download className="w-4 h-4" />
               Audit CSV
+            </a>
+            <a
+              href="/api/feedback?format=csv"
+              className="inline-flex items-center gap-2 min-h-11 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-sm"
+            >
+              <Download className="w-4 h-4" />
+              Feedback CSV
             </a>
             <LogoutButton />
           </div>
@@ -843,6 +926,36 @@ export default function AdminTeamsPage() {
               </section>
             )}
 
+            {clubs.length > 0 && (
+              <section className="glass-card p-5 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="font-semibold">Closing-Checkliste (GO-LIVE D1–D2)</h2>
+                  <span
+                    className={`text-xs font-medium ${closingReady ? 'text-sage' : 'text-rose-gold'}`}
+                  >
+                    {closingReady ? 'Ready für Paid' : 'Noch offen'}
+                  </span>
+                </div>
+                <p className="text-xs text-cream/50">
+                  Manueller Vertrag ohne Stripe — für den gewählten Verein
+                  {primarySeason ? ` · Saison „${primarySeason.name}“` : ' · noch keine Saison'}.
+                </p>
+                <ul className="grid sm:grid-cols-2 gap-2 text-sm">
+                  {closingChecks.map((c) => (
+                    <li
+                      key={c.id}
+                      className="flex items-center justify-between gap-2 rounded-lg bg-white/5 border border-white/10 px-3 py-2"
+                    >
+                      <span className="text-cream/70">{c.label}</span>
+                      <span className={c.ok ? 'text-sage' : 'text-rose-gold'}>
+                        {c.ok ? 'OK' : 'offen'}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
             <section className="glass-card p-5 space-y-4">
               <div>
                 <h2 className="font-semibold mb-1">Vertragspfad (manuell, ohne Stripe)</h2>
@@ -897,9 +1010,16 @@ export default function AdminTeamsPage() {
                             <option value="quoted">Angebot</option>
                             <option value="signed">Unterschrieben</option>
                             <option value="active_paid">Aktiv bezahlt</option>
-                            <option value="ended">Beendet</option>
+                            <option value="ended">
+                              {pendingCommercial?.id === s.id && pendingCommercial.status === 'ended'
+                                ? 'Beendet (nochmal tippen)'
+                                : 'Beendet'}
+                            </option>
                             <option value="churned">
-                              {pendingChurnId === s.id ? 'Churned (nochmal tippen)' : 'Churned'}
+                              {pendingCommercial?.id === s.id &&
+                              pendingCommercial.status === 'churned'
+                                ? 'Churned (nochmal tippen)'
+                                : 'Churned'}
                             </option>
                           </select>
                           <button
@@ -910,6 +1030,16 @@ export default function AdminTeamsPage() {
                             <Pencil className="w-4 h-4" />
                             Details
                           </button>
+                          {(s.commercialStatus === 'quoted' ||
+                            s.commercialStatus === 'signed') && (
+                            <a
+                              href={buildOfferMailto(s)}
+                              className="inline-flex items-center gap-2 min-h-11 px-3 rounded-lg bg-white/10 text-sm"
+                            >
+                              <Mail className="w-4 h-4" />
+                              Angebot mailen
+                            </a>
+                          )}
                         </div>
                       </div>
 
@@ -1008,6 +1138,52 @@ export default function AdminTeamsPage() {
           <div className="space-y-6">
             <section className="glass-card p-5 space-y-3">
               <h2 className="font-semibold inline-flex items-center gap-2">
+                <ClipboardList className="w-4 h-4 text-rose-gold" />
+                Pilot-Scorecard (Wochen-Call)
+              </h2>
+              <p className="text-xs text-cream/50">
+                Kurz für PILOT-FEEDBACK.md — ohne Gesundheitsrohdaten.
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                  <p className="text-[11px] text-cream/45 mb-1">Adherence 7d</p>
+                  <p
+                    className={`text-xl font-semibold ${
+                      adherencePct >= 70 ? 'text-sage' : 'text-rose-gold'
+                    }`}
+                  >
+                    {adherencePct}%
+                  </p>
+                  <p className="text-[11px] text-cream/35">Ziel ≥70%</p>
+                </div>
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                  <p className="text-[11px] text-cream/45 mb-1">Heute geloggt</p>
+                  <p className="text-xl font-semibold">
+                    {loggedTodayPlayers}/{totalPlayers || '—'}
+                  </p>
+                </div>
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                  <p className="text-[11px] text-cream/45 mb-1">Teams &lt;70%</p>
+                  <p className="text-xl font-semibold">{teamsBelowTarget}</p>
+                </div>
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                  <p className="text-[11px] text-cream/45 mb-1">Feedback Ø</p>
+                  <p
+                    className={`text-xl font-semibold ${
+                      feedbackAvg != null && feedbackAvg >= 4 ? 'text-sage' : 'text-cream'
+                    }`}
+                  >
+                    {feedbackAvg != null ? `${feedbackAvg}/5` : '—'}
+                  </p>
+                  <p className="text-[11px] text-cream/35">
+                    {feedbackCount} · Ziel ≥4
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <section className="glass-card p-5 space-y-3">
+              <h2 className="font-semibold inline-flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-sage" />
                 Ops-Status (L2/L3 Trust)
               </h2>
@@ -1070,26 +1246,44 @@ export default function AdminTeamsPage() {
                 Audit-Log ohne Gesundheits-Rohdaten. Go-Live-Checkliste:{' '}
                 <code className="text-cream/80">docs/pitch/GO-LIVE.md</code>
               </p>
-              <a
-                href="/api/admin/audit?format=csv"
-                className="inline-flex items-center gap-2 min-h-11 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-sm w-fit"
-              >
-                <Download className="w-4 h-4" />
-                Audit CSV herunterladen
-              </a>
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href="/api/admin/audit?format=csv"
+                  className="inline-flex items-center gap-2 min-h-11 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-sm w-fit"
+                >
+                  <Download className="w-4 h-4" />
+                  Audit CSV herunterladen
+                </a>
+                <a
+                  href="/api/feedback?format=csv"
+                  className="inline-flex items-center gap-2 min-h-11 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-sm w-fit"
+                >
+                  <Download className="w-4 h-4" />
+                  Feedback CSV herunterladen
+                </a>
+              </div>
             </section>
 
             <section className="glass-card p-5 space-y-4">
-              <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
                 <h2 className="font-semibold inline-flex items-center gap-2">
                   <MessageSquareHeart className="w-4 h-4 text-sage" />
                   Pilot-Feedback
                 </h2>
-                {feedbackAvg != null && (
-                  <p className="text-sm text-cream/60">
-                    Ø {feedbackAvg}/5 · {feedbackCount} Einträge
-                  </p>
-                )}
+                <div className="flex items-center gap-3">
+                  {feedbackAvg != null && (
+                    <p className="text-sm text-cream/60">
+                      Ø {feedbackAvg}/5 · {feedbackCount} Einträge
+                    </p>
+                  )}
+                  <a
+                    href="/api/feedback?format=csv"
+                    className="inline-flex items-center gap-1.5 text-xs text-cream/50 hover:text-rose-gold"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    CSV
+                  </a>
+                </div>
               </div>
               <p className="text-xs text-cream/50">
                 Nur Produkt-Scores & Freitext — keine Zyklusdaten, keine E-Mails.
