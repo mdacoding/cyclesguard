@@ -28,21 +28,22 @@ Dazu eine kurze Handlungsempfehlung (z. B. Plyometrie reduzieren). Keine Phasen,
 | Verein / Medizin | DOSB-/Art.-9-Story, keine Rohdaten-Weitergabe an Trainer |
 | Club-Admin | Roster & Adherence-Quote (keine Gesundheits-Rohdaten) |
 
-**ICP:** Frauen-Bundesliga / 2. Liga — Startziel Eintracht Frankfurt Frauen.
+**ICP:** Frauen-Bundesliga / 2. Liga / ambitionierte Klubs — Multi-Club Outreach parallel; Seed-Demo historisch „Eintracht“.
 
 ---
 
 ## Was die Demo heute kann
 
 - Gehostete App (Vercel EU + Supabase Frankfurt)
-- Seed-Team „Eintracht Frankfurt Frauen“ mit 7 Spielerinnen + Trainer
+- Live-Seiten: `/privacy` · `/datenschutz` · `/pilot` · `/impressum`
+- Seed-Demo-Team (interne Accounts) mit Spielerinnen + Trainer
 - Same-day Log, Symptome, 28-Tage-Historie
-- Trainer-Dashboard mit Sortierung Rot → Gelb → Grau → Grün
-- Logout / Rollenwechsel
+- Trainer-Kabine: Ampel, Filter, Teilen, 7d-Trend
+- Club-Admin: Adherence/Scorecard, Saison, First-Run
 - Consent-Onboarding, Datenexport, Account-Löschung
-- PWA / Offline-Seite (Kabinen-Story)
+- PWA / Offline (Kabinen-Story)
 
-**Bewusst nicht in der Pitch-Demo:** Live-GPS, Billing, Multi-Club-Scale, medizinische Diagnostik.
+**Bewusst nicht in der Pitch-Demo:** Live-GPS, Stripe-Billing, medizinische Diagnostik.
 
 ---
 

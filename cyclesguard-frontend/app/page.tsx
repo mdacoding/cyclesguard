@@ -141,7 +141,10 @@ export default function Home() {
               <a href="/privacy" className="text-cream/85 hover:text-rose-gold underline-offset-2 hover:underline">
                 Datenschutz 1-Pager
               </a>
-              {' — '}für Athletik, Medizin und DSB (druckbar)
+              {' — '}auch unter{' '}
+              <a href="/datenschutz" className="text-cream/70 hover:text-rose-gold underline-offset-2 hover:underline">
+                /datenschutz
+              </a>
             </li>
             <li>
               <Link href="/login" className="text-cream/85 hover:text-rose-gold underline-offset-2 hover:underline">
@@ -152,6 +155,24 @@ export default function Home() {
           </ul>
         </section>
       </main>
+
+      <footer className="relative z-10 border-t border-white/10 px-6 md:px-10 py-8 max-w-6xl mx-auto flex flex-wrap gap-4 text-xs text-cream/35">
+        <a href="/privacy" className="hover:text-cream/60">
+          Datenschutz
+        </a>
+        <a href="/datenschutz" className="hover:text-cream/60">
+          /datenschutz
+        </a>
+        <a href="/pilot" className="hover:text-cream/60">
+          Soft-Pilot
+        </a>
+        <a href="/impressum" className="hover:text-cream/60">
+          Impressum
+        </a>
+        <a href="mailto:hello@cyclesguard.de" className="hover:text-cream/60">
+          hello@cyclesguard.de
+        </a>
+      </footer>
     </div>
   );
 }

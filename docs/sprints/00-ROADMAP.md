@@ -50,6 +50,7 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 | 23.07. | Kabine Ampel-Trend 7d · Angebot-Mailto · Season/Feedback Dry-Run Exports |
 | 23.07. | Adherence CSV · Scorecard NO_DATA%/Ø-by-Role für Pilot-Wochen-Call |
 | 23.07. | Multi-Club Launch: `/privacy` · `/pilot` · Landing Für-Vereine · Outreach parallel · Admin First-Run + Verein anlegen |
+| 23.07. | Trust-URLs: `/datenschutz` · `/impressum` · Login-Footer · 15-Min DEMO-SCRIPT |
 
 ---
 

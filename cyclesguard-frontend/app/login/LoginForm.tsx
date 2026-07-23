@@ -362,10 +362,24 @@ export default function LoginForm() {
             <br />
             Kein Zugriff durch Trainer oder Vereinspersonal.
           </p>
+          <p className="text-center text-xs text-cream/35 mt-4 flex flex-wrap justify-center gap-x-3 gap-y-1">
+            <a href="/privacy" className="hover:text-rose-gold underline-offset-2 hover:underline">
+              Datenschutz
+            </a>
+            <a href="/pilot" className="hover:text-rose-gold underline-offset-2 hover:underline">
+              Soft-Pilot
+            </a>
+            <a href="/impressum" className="hover:text-rose-gold underline-offset-2 hover:underline">
+              Impressum
+            </a>
+          </p>
         </div>
 
         <p className="text-center text-xs text-cream/20 mt-8">
-          © {new Date().getFullYear()} CyclesGuard · Medizindatenschutz nach DSGVO
+          © {new Date().getFullYear()} CyclesGuard · EU-Hosting ·{' '}
+          <a href="/datenschutz" className="hover:text-cream/40">
+            /datenschutz
+          </a>
         </p>
       </div>
     </div>

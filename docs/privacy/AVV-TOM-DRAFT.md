@@ -9,7 +9,7 @@
 
 | Rolle | Partei |
 |-------|--------|
-| Verantwortlicher | [Verein / Eintracht Frankfurt Frauenfußball — Rechtsträger] |
+| Verantwortlicher | [Verein — Rechtsträger einsetzen] |
 | Auftragsverarbeiter | CyclesGuard / [Betreiber-Rechtsträger] |
 | Subprozessoren | Supabase (EU), Vercel (Region `fra1` / EU-Edge) |
 
