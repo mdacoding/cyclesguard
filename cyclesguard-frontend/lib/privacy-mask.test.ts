@@ -28,6 +28,7 @@ describe('team-status response contract (shape)', () => {
       'loadFlag',
       'recommendation',
       'loggedToday',
+      'invitePending',
     ]);
     const sample = {
       playerId: 'x',
@@ -36,6 +37,7 @@ describe('team-status response contract (shape)', () => {
       loadFlag: 'UNKNOWN',
       recommendation: 'Volle Belastung möglich',
       loggedToday: true,
+      invitePending: false,
     };
     for (const key of Object.keys(sample)) {
       assert.ok(allowed.has(key), `unexpected key ${key}`);

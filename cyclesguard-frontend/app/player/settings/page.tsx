@@ -29,6 +29,8 @@ export default function SettingsPage() {
   const [pushError, setPushError] = useState<string | null>(null);
   const [skipWeekends, setSkipWeekends] = useState(false);
   const [prefsLoading, setPrefsLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -56,13 +58,14 @@ export default function SettingsPage() {
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(
-      'Möchtest du dein Konto und alle deine Gesundheitsdaten WIRKLICH unwiderruflich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.'
-    );
-
-    if (!confirmed) return;
+    if (!confirmDelete) {
+      setConfirmDelete(true);
+      setDeleteError(null);
+      return;
+    }
 
     setIsDeleting(true);
+    setDeleteError(null);
     try {
       const response = await fetch('/api/player/delete-account', {
         method: 'DELETE',
@@ -73,10 +76,12 @@ export default function SettingsPage() {
         await supabase.auth.signOut();
         router.push('/login');
       } else {
-        alert('Fehler beim Löschen des Kontos.');
+        setDeleteError('Konto konnte nicht gelöscht werden. Bitte erneut versuchen.');
+        setConfirmDelete(false);
       }
     } catch {
-      alert('Netzwerkfehler.');
+      setDeleteError('Netzwerkfehler — bitte Verbindung prüfen.');
+      setConfirmDelete(false);
     } finally {
       setIsDeleting(false);
     }
@@ -155,8 +160,8 @@ export default function SettingsPage() {
             <h2 className="text-xl font-semibold">Sitzung</h2>
           </div>
           <p className="text-sm text-cream/60 mb-4">
-            Melde dich ab, um dich mit einem anderen Account anzumelden (z.&nbsp;B. Trainer /
-            Spielerin in der Demo).
+            Melde dich ab, um die Sitzung zu beenden oder dich mit einem anderen Konto
+            anzumelden.
           </p>
           <LogoutButton className="bg-rose-gold/10 border-rose-gold/30 text-rose-gold hover:bg-rose-gold/20" />
         </section>
@@ -242,26 +247,50 @@ export default function SettingsPage() {
               </button>
             </div>
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-xl bg-[#C67B7B]/10 border border-[#C67B7B]/20">
-              <div>
-                <h3 className="font-medium text-[#C67B7B] mb-1">Konto löschen (Art. 17)</h3>
-                <p className="text-sm text-cream/60">
-                  Löscht dein Konto und <strong>alle</strong> deine Gesundheitsdaten unwiderruflich
-                  von den Servern.
-                </p>
+            <div className="flex flex-col gap-4 p-5 rounded-xl bg-[#C67B7B]/10 border border-[#C67B7B]/20">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h3 className="font-medium text-[#C67B7B] mb-1">Konto löschen (Art. 17)</h3>
+                  <p className="text-sm text-cream/60">
+                    Löscht dein Konto und <strong>alle</strong> deine Gesundheitsdaten unwiderruflich
+                    von den Servern.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2 shrink-0">
+                  {confirmDelete && (
+                    <button
+                      type="button"
+                      onClick={() => setConfirmDelete(false)}
+                      disabled={isDeleting}
+                      className="px-4 py-2.5 rounded-lg bg-white/10 text-sm font-medium disabled:opacity-50"
+                    >
+                      Abbrechen
+                    </button>
+                  )}
+                  <button
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#C67B7B] hover:bg-[#C67B7B]/90 text-navy transition-colors text-sm font-medium disabled:opacity-50"
+                  >
+                    {isDeleting ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="w-4 h-4" />
+                    )}
+                    <span>{confirmDelete ? 'Endgültig löschen' : 'Konto löschen'}</span>
+                  </button>
+                </div>
               </div>
-              <button
-                onClick={handleDelete}
-                disabled={isDeleting}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[#C67B7B] hover:bg-[#C67B7B]/90 text-navy transition-colors text-sm font-medium disabled:opacity-50 shrink-0"
-              >
-                {isDeleting ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Trash2 className="w-4 h-4" />
-                )}
-                <span>Konto löschen</span>
-              </button>
+              {confirmDelete && (
+                <p className="text-sm text-[#C67B7B]/90" role="status">
+                  Wirklich unwiderruflich löschen? Ein zweiter Klick bestätigt.
+                </p>
+              )}
+              {deleteError && (
+                <p className="text-sm text-[#C67B7B]" role="alert">
+                  {deleteError}
+                </p>
+              )}
             </div>
           </div>
         </section>

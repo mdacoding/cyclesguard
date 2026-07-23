@@ -95,6 +95,8 @@ export default function AdminTeamsPage() {
   const [inviteName, setInviteName] = useState('');
   const [inviteRole, setInviteRole] = useState<'player' | 'trainer'>('player');
   const [inviteBusy, setInviteBusy] = useState(false);
+  const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
+  const [pendingArchive, setPendingArchive] = useState(false);
 
   const [linkUserId, setLinkUserId] = useState('');
   const [linkProvider, setLinkProvider] = useState('catapult');
@@ -262,15 +264,24 @@ export default function AdminTeamsPage() {
 
   const removeMember = async (userId: string) => {
     if (!selectedTeamId) return;
-    if (!window.confirm('Mitglied wirklich aus dem Roster entfernen?')) return;
+    if (pendingRemoveId !== userId) {
+      setPendingRemoveId(userId);
+      setPendingArchive(false);
+      setMsg(null);
+      return;
+    }
+    setPendingRemoveId(null);
     const res = await fetch('/api/admin/members', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ teamId: selectedTeamId, userId }),
     });
     if (res.ok) {
+      setMsg('Mitglied entfernt.');
       await loadMembers(selectedTeamId);
       await load();
+    } else {
+      setMsg('Entfernen fehlgeschlagen.');
     }
   };
 
@@ -402,12 +413,13 @@ export default function AdminTeamsPage() {
     if (!selectedTeamId) return;
     const team = teams.find((t) => t.id === selectedTeamId);
     const nextStatus = team?.status === 'archived' ? 'active' : 'archived';
-    if (
-      nextStatus === 'archived' &&
-      !window.confirm('Team archivieren? Es verschwindet aus der aktiven Liste.')
-    ) {
+    if (nextStatus === 'archived' && !pendingArchive) {
+      setPendingArchive(true);
+      setPendingRemoveId(null);
+      setMsg('Nochmal tippen zum Archivieren — Team verschwindet aus der aktiven Liste.');
       return;
     }
+    setPendingArchive(false);
     const res = await fetch('/api/admin/teams', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -642,7 +654,16 @@ export default function AdminTeamsPage() {
           ))}
         </nav>
 
-        {msg && <p className="text-sm text-cream/60">{msg}</p>}
+        {msg && (
+          <p
+            className={`text-sm ${
+              /fehlgeschlagen|Fehler|ungültig|prüfen/i.test(msg) ? 'text-menstrual' : 'text-sage'
+            }`}
+            role="status"
+          >
+            {msg}
+          </p>
+        )}
         {error && (
           <div className="glass-card p-4 border border-menstrual/30 bg-menstrual/10 text-menstrual text-sm">
             {error}
@@ -1065,9 +1086,13 @@ export default function AdminTeamsPage() {
                 <Loader2 className="w-8 h-8 animate-spin text-rose-gold" />
               </div>
             ) : teams.length === 0 ? (
-              <div className="glass-card p-12 text-center text-cream/60">
-                <Users className="w-10 h-10 mx-auto mb-3 text-cream/30" />
-                Noch keine Teams.
+              <div className="glass-card p-12 text-center text-cream/60 space-y-3">
+                <Users className="w-10 h-10 mx-auto text-cream/30" />
+                <p className="font-medium text-cream/80">Noch keine Teams</p>
+                <p className="text-sm text-cream/50 max-w-md mx-auto leading-relaxed">
+                  Lege oben ein Team an, dann Trainer und Spielerinnen per E-Mail einladen.
+                  Soft-Pilot: ein aktives Team reicht zum Start.
+                </p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -1110,16 +1135,29 @@ export default function AdminTeamsPage() {
               <section className="glass-card p-5 space-y-5">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <h2 className="font-semibold text-lg">Roster & Team</h2>
-                  <button
-                    type="button"
-                    onClick={archiveTeam}
-                    className="inline-flex items-center gap-2 min-h-11 px-3 rounded-lg bg-white/10 text-sm text-cream/70 hover:bg-white/15"
-                  >
-                    <Archive className="w-4 h-4" />
-                    {teams.find((t) => t.id === selectedTeamId)?.status === 'archived'
-                      ? 'Reaktivieren'
-                      : 'Archivieren'}
-                  </button>
+                  <div className="flex flex-wrap gap-2">
+                    {pendingArchive && (
+                      <button
+                        type="button"
+                        onClick={() => setPendingArchive(false)}
+                        className="inline-flex items-center min-h-11 px-3 rounded-lg bg-white/10 text-sm"
+                      >
+                        Abbrechen
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={archiveTeam}
+                      className="inline-flex items-center gap-2 min-h-11 px-3 rounded-lg bg-white/10 text-sm text-cream/70 hover:bg-white/15"
+                    >
+                      <Archive className="w-4 h-4" />
+                      {teams.find((t) => t.id === selectedTeamId)?.status === 'archived'
+                        ? 'Reaktivieren'
+                        : pendingArchive
+                          ? 'Endgültig archivieren'
+                          : 'Archivieren'}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-3">
@@ -1142,7 +1180,13 @@ export default function AdminTeamsPage() {
                 {membersLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin text-rose-gold" />
                 ) : members.length === 0 ? (
-                  <p className="text-sm text-cream/50">Keine Mitglieder in diesem Team.</p>
+                  <div className="rounded-xl bg-white/5 border border-white/10 p-5 space-y-2">
+                    <p className="text-sm text-cream/70 font-medium">Noch keine Mitglieder</p>
+                    <p className="text-sm text-cream/45 leading-relaxed">
+                      Lade Spielerinnen oder Trainer per E-Mail ein (unten) oder importiere eine CSV.
+                      Soft-Pilot: 5–10 Freiwillige reichen zum Start.
+                    </p>
+                  </div>
                 ) : (
                   <div className="space-y-2">
                     {members.map((m) => (
@@ -1158,13 +1202,24 @@ export default function AdminTeamsPage() {
                           </p>
                           <p className="text-[11px] text-cream/30 mt-1 font-mono">{m.userId}</p>
                         </div>
-                        <button
-                          onClick={() => removeMember(m.userId)}
-                          className="inline-flex items-center gap-2 min-h-11 px-3 py-2 rounded-lg bg-menstrual/15 text-menstrual text-sm"
-                        >
-                          <UserMinus className="w-4 h-4" />
-                          Entfernen
-                        </button>
+                        <div className="flex flex-wrap gap-2">
+                          {pendingRemoveId === m.userId && (
+                            <button
+                              type="button"
+                              onClick={() => setPendingRemoveId(null)}
+                              className="inline-flex items-center min-h-11 px-3 py-2 rounded-lg bg-white/10 text-sm"
+                            >
+                              Abbrechen
+                            </button>
+                          )}
+                          <button
+                            onClick={() => removeMember(m.userId)}
+                            className="inline-flex items-center gap-2 min-h-11 px-3 py-2 rounded-lg bg-menstrual/15 text-menstrual text-sm"
+                          >
+                            <UserMinus className="w-4 h-4" />
+                            {pendingRemoveId === m.userId ? 'Endgültig entfernen' : 'Entfernen'}
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1206,6 +1261,18 @@ export default function AdminTeamsPage() {
                       Einladen
                     </button>
                   </div>
+                  {msg && /einlad|roster|csv|mitglied|zugewiesen/i.test(msg) && (
+                    <p
+                      className={`text-sm ${
+                        /fehlgeschlagen|Fehler|ungültig|prüfen/i.test(msg)
+                          ? 'text-menstrual'
+                          : 'text-sage'
+                      }`}
+                      role="status"
+                    >
+                      {msg}
+                    </p>
+                  )}
                 </div>
 
                 <div className="border-t border-white/10 pt-4 space-y-3">

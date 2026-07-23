@@ -7,10 +7,12 @@ import { createClient } from '@/lib/supabase/client';
 export default function OnboardingPage() {
   const [agreed, setAgreed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleConsent = async () => {
     if (!agreed) return;
     setIsLoading(true);
+    setError(null);
 
     try {
       const response = await fetch('/api/player/consent', {
@@ -22,11 +24,11 @@ export default function OnboardingPage() {
         await supabase.auth.refreshSession();
         window.location.assign('/player/welcome');
       } else {
-        alert('Ein Fehler ist aufgetreten. Bitte versuche es erneut.');
+        setError('Zustimmung konnte nicht gespeichert werden. Bitte erneut versuchen.');
       }
     } catch (e) {
       console.error(e);
-      alert('Netzwerkfehler.');
+      setError('Netzwerkfehler — bitte Verbindung prüfen und erneut versuchen.');
     } finally {
       setIsLoading(false);
     }
@@ -81,6 +83,15 @@ export default function OnboardingPage() {
               diese Einwilligung jederzeit durch Löschung des Kontos widerrufen kann.
             </span>
           </label>
+
+          {error && (
+            <div
+              role="alert"
+              className="mb-4 bg-[#C67B7B]/10 border border-[#C67B7B]/30 rounded-xl p-4"
+            >
+              <p className="text-sm text-[#C67B7B]/90">{error}</p>
+            </div>
+          )}
 
           <button
             onClick={handleConsent}

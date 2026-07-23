@@ -18,7 +18,7 @@ const STEPS = [
   {
     icon: Users,
     title: 'Roster per E-Mail',
-    body: 'Lade Spielerinnen ein. Bestehende Konten werden dem Team hinzugefügt — ohne Doppel-Invite.',
+    body: 'Lade Spielerinnen ein. Passwort per Link; „Einladung erneut“ bei offenen Invites. Passwort vergessen: /login → Passwort vergessen.',
   },
 ];
 

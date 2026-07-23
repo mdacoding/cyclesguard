@@ -28,6 +28,7 @@ interface TeamMember {
   loadFlag: LoadFlag;
   recommendation: string;
   loggedToday: boolean;
+  invitePending: boolean;
 }
 
 interface TeamOption {
@@ -49,6 +50,7 @@ export default function TrainerDashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [inviteMsg, setInviteMsg] = useState<string | null>(null);
   const [inviteError, setInviteError] = useState<string | null>(null);
+  const [resendId, setResendId] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterMode>('all');
   const [showOnboardHint, setShowOnboardHint] = useState(false);
   const [shareMsg, setShareMsg] = useState<string | null>(null);
@@ -122,9 +124,11 @@ export default function TrainerDashboardPage() {
       }
       const label = inviteName.trim() || inviteEmail;
       setInviteMsg(
-        body.mode === 'roster_add'
-          ? `${label} war bereits registriert und wurde dem Roster hinzugefügt.`
-          : `${label} wurde eingeladen (E-Mail) und dem Roster hinzugefügt.`
+        typeof body.message === 'string'
+          ? body.message
+          : body.mode === 'roster_add'
+            ? `${label} war bereits registriert und wurde dem Roster hinzugefügt.`
+            : `${label} wurde eingeladen (E-Mail) und dem Roster hinzugefügt.`
       );
       setInviteEmail('');
       setInviteName('');
@@ -133,6 +137,30 @@ export default function TrainerDashboardPage() {
       setInviteError('Netzwerkfehler — bitte erneut versuchen.');
     } finally {
       setInviteLoading(false);
+    }
+  };
+
+  const resendInvite = async (playerId: string) => {
+    if (!selectedTeamId) return;
+    setResendId(playerId);
+    setInviteMsg(null);
+    setInviteError(null);
+    try {
+      const response = await fetch('/api/trainer/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teamId: selectedTeamId, playerId, resend: true }),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setInviteError(typeof body.error === 'string' ? body.error : 'Erneutes Senden fehlgeschlagen.');
+        return;
+      }
+      setInviteMsg(typeof body.message === 'string' ? body.message : 'Einladung erneut gesendet.');
+    } catch {
+      setInviteError('Netzwerkfehler — bitte erneut versuchen.');
+    } finally {
+      setResendId(null);
     }
   };
 
@@ -284,8 +312,19 @@ export default function TrainerDashboardPage() {
         )}
 
         {teams.length === 0 && !isLoading && (
-          <div className="glass-card p-6 border border-ovulation/30 bg-ovulation/10 text-sm text-cream/80 print:hidden">
-            Kein Team zugeordnet. Bitte Club-Admin um Zuweisung bitten.
+          <div className="glass-card p-8 border border-ovulation/30 bg-ovulation/10 print:hidden text-center space-y-3">
+            <Users className="w-10 h-10 text-cream/40 mx-auto" />
+            <p className="text-cream/85 font-medium">Noch kein Team zugeordnet</p>
+            <p className="text-sm text-cream/60 max-w-md mx-auto leading-relaxed">
+              Bitte deine Club-Admin um Zuweisung zu einem aktiven Team. Danach kannst du
+              Spielerinnen per E-Mail einladen.
+            </p>
+            <a
+              href="/trainer/onboarding"
+              className="inline-flex items-center justify-center min-h-11 px-4 rounded-lg bg-white/10 text-sm hover:bg-white/15"
+            >
+              Onboarding lesen
+            </a>
           </div>
         )}
 
@@ -310,37 +349,43 @@ export default function TrainerDashboardPage() {
           </div>
         )}
 
-        <section className="glass-card p-5 space-y-4 print:hidden">
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <UserPlus className="w-4 h-4 text-rose-gold" />
-            Spielerin einladen
-          </div>
-          <div className="grid md:grid-cols-3 gap-3">
-            <input
-              type="text"
-              value={inviteName}
-              onChange={(e) => setInviteName(e.target.value)}
-              placeholder="Name (optional)"
-              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
-            />
-            <input
-              type="email"
-              value={inviteEmail}
-              onChange={(e) => setInviteEmail(e.target.value)}
-              placeholder="spielerin@verein.de"
-              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
-            />
-            <button
-              onClick={handleInvite}
-              disabled={inviteLoading || !inviteEmail || !selectedTeamId}
-              className="min-h-12 px-5 py-3 rounded-xl bg-rose-gold text-navy font-medium disabled:opacity-40"
-            >
-              {inviteLoading ? 'Sende…' : 'Einladen'}
-            </button>
-          </div>
-          {inviteMsg && <p className="text-sm text-sage">{inviteMsg}</p>}
-          {inviteError && <p className="text-sm text-menstrual">{inviteError}</p>}
-        </section>
+        {teams.length > 0 && (
+          <section className="glass-card p-5 space-y-4 print:hidden">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <UserPlus className="w-4 h-4 text-rose-gold" />
+              Spielerin einladen
+            </div>
+            <p className="text-xs text-cream/45 leading-relaxed">
+              Neue Konten erhalten eine E-Mail zum Passwort setzen. Noch nicht eingeloggte
+              Einladungen bekommen beim erneuten Invite wieder einen Setup-Link.
+            </p>
+            <div className="grid md:grid-cols-3 gap-3">
+              <input
+                type="text"
+                value={inviteName}
+                onChange={(e) => setInviteName(e.target.value)}
+                placeholder="Name (optional)"
+                className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+              />
+              <input
+                type="email"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                placeholder="spielerin@verein.de"
+                className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+              />
+              <button
+                onClick={handleInvite}
+                disabled={inviteLoading || !inviteEmail || !selectedTeamId}
+                className="min-h-12 px-5 py-3 rounded-xl bg-rose-gold text-navy font-medium disabled:opacity-40"
+              >
+                {inviteLoading ? 'Sende…' : 'Einladen'}
+              </button>
+            </div>
+            {inviteMsg && <p className="text-sm text-sage">{inviteMsg}</p>}
+            {inviteError && <p className="text-sm text-menstrual">{inviteError}</p>}
+          </section>
+        )}
 
         {!isLoading && team.length > 0 && (
           <>
@@ -414,8 +459,19 @@ export default function TrainerDashboardPage() {
         ) : team.length === 0 ? (
           <div className="glass-card p-12 text-center print:hidden">
             <Users className="w-10 h-10 text-cream/30 mx-auto mb-4" />
-            <p className="text-cream/60 mb-2">Keine Spielerinnen im Team.</p>
-            <p className="text-sm text-cream/40">Lade Spielerinnen oben per E-Mail ein.</p>
+            {teams.length === 0 ? (
+              <>
+                <p className="text-cream/60 mb-2">Ampel erscheint nach Team-Zuweisung.</p>
+                <p className="text-sm text-cream/40">Club-Admin legt das Team an und weist dich zu.</p>
+              </>
+            ) : (
+              <>
+                <p className="text-cream/60 mb-2">Keine Spielerinnen im Team.</p>
+                <p className="text-sm text-cream/40">
+                  Nutze „Spielerin einladen“ oben — sie setzt danach ihr Passwort und stimmt zu.
+                </p>
+              </>
+            )}
           </div>
         ) : filtered.length === 0 ? (
           <div className="glass-card p-8 text-center text-cream/60 text-sm">
@@ -440,12 +496,25 @@ export default function TrainerDashboardPage() {
                       <p className="text-sm text-cream/60">
                         {getStatusLabel(member.status)} · {getLoadLabel(member.loadFlag)}
                         {member.loggedToday ? ' · heute geloggt' : ' · heute fehlend'}
+                        {member.invitePending ? ' · Einladung offen' : ''}
                       </p>
                     </div>
                   </div>
-                  <p className="text-sm text-cream/80 md:text-right md:max-w-sm">
-                    {member.recommendation}
-                  </p>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 md:gap-4">
+                    <p className="text-sm text-cream/80 md:text-right md:max-w-sm">
+                      {member.recommendation}
+                    </p>
+                    {member.invitePending && (
+                      <button
+                        type="button"
+                        onClick={() => void resendInvite(member.playerId)}
+                        disabled={resendId === member.playerId}
+                        className="min-h-11 px-3 rounded-lg bg-white/10 text-xs sm:text-sm text-cream/80 hover:bg-white/15 disabled:opacity-50 print:hidden shrink-0"
+                      >
+                        {resendId === member.playerId ? 'Sende…' : 'Einladung erneut'}
+                      </button>
+                    )}
+                  </div>
                 </article>
               );
             })}

@@ -11,11 +11,18 @@ import {
 } from '@/lib/invite-membership';
 import { inviteCallbackRedirect, sendPasswordSetupEmail } from '@/lib/auth-password-email';
 
-const InviteSchema = z.object({
-  email: z.string().email(),
-  teamId: z.string().uuid(),
-  fullName: z.string().min(1).max(100).optional(),
-});
+const InviteSchema = z.union([
+  z.object({
+    email: z.string().email(),
+    teamId: z.string().uuid(),
+    fullName: z.string().min(1).max(100).optional(),
+  }),
+  z.object({
+    teamId: z.string().uuid(),
+    playerId: z.string().uuid(),
+    resend: z.literal(true),
+  }),
+]);
 
 async function auditInvite(
   admin: ReturnType<typeof createAdminClient>,
@@ -23,11 +30,16 @@ async function auditInvite(
   targetUserId: string,
   teamId: string,
   email: string,
-  mode: 'invite' | 'roster_add'
+  mode: 'invite' | 'roster_add' | 'invite_resend'
 ) {
   const { error } = await admin.from('admin_audit_log').insert({
     actor_id: actorId,
-    action: mode === 'invite' ? 'invite_player' : 'roster_add_existing',
+    action:
+      mode === 'invite'
+        ? 'invite_player'
+        : mode === 'invite_resend'
+          ? 'invite_resend'
+          : 'roster_add_existing',
     target_user_id: targetUserId,
     metadata: { team_id: teamId, email, mode },
   });
@@ -55,13 +67,49 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid payload', details: parsed.error.format() }, { status: 400 });
   }
 
-  const { email, teamId, fullName } = parsed.data;
+  const { teamId } = parsed.data;
   const trainerTeams = await getTrainerTeamIds(user.id);
   if (!trainerTeams.includes(teamId)) {
     return NextResponse.json({ error: 'Team not in your scope' }, { status: 403 });
   }
 
   const admin = createAdminClient();
+
+  if ('resend' in parsed.data) {
+    const { playerId } = parsed.data;
+    const { data: membership } = await admin
+      .from('team_members')
+      .select('id')
+      .eq('team_id', teamId)
+      .eq('user_id', playerId)
+      .eq('role', 'player')
+      .maybeSingle();
+    if (!membership) {
+      return NextResponse.json({ error: 'Spielerin nicht in diesem Team.' }, { status: 404 });
+    }
+
+    const { data: target, error: userError } = await admin.auth.admin.getUserById(playerId);
+    if (userError || !target.user?.email) {
+      return NextResponse.json({ error: 'Nutzerin nicht gefunden.' }, { status: 404 });
+    }
+
+    const mail = await sendPasswordSetupEmail(target.user.email);
+    if (!mail.ok) {
+      return NextResponse.json(
+        { error: mail.error ?? 'Setup-Mail konnte nicht gesendet werden.' },
+        { status: 500 }
+      );
+    }
+
+    await auditInvite(admin, user.id, playerId, teamId, target.user.email, 'invite_resend');
+    return NextResponse.json({
+      success: true,
+      mode: 'invite_resend',
+      message: 'Passwort-/Einladungs-Mail erneut gesendet.',
+    });
+  }
+
+  const { email, fullName } = parsed.data;
   const existing = await findAuthUserByEmail(admin, email);
 
   // Pilot path: already registered → add to roster (no second invite email)

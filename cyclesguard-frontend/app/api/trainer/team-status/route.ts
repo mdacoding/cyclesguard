@@ -20,6 +20,8 @@ export interface TeamStatusEntry {
   recommendation: string;
   /** Coach-safe: logged on Berlin calendar day — no phase/symptoms. */
   loggedToday: boolean;
+  /** Coach-safe: never completed first login — invite/setup mail may be resent. */
+  invitePending: boolean;
 }
 
 export async function GET(request: Request) {
@@ -139,6 +141,7 @@ export async function GET(request: Request) {
       loadFlag: insight.loadFlag,
       recommendation: insight.recommendation,
       loggedToday: log ? isSameBerlinDay(log.logged_at) : false,
+      invitePending: !player.last_sign_in_at,
     });
   }
 

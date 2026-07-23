@@ -31,10 +31,11 @@ Status älter als **48 Stunden** → automatisch „Keine Daten“ (veraltet).
 
 ## Spielerin einladen
 
-1. Dashboard → **Spielerin einladen**
+1. Dashboard → **Spielerin einladen** (nur sichtbar, wenn dir ein Team zugewiesen ist)
 2. E-Mail + optional Name eingeben
-3. Spielerin erhält Zugang, loggt selbst (Onboarding + Einwilligung)
-4. Nach erstem Log erscheint sie in der Ampel
+3. Spielerin erhält E-Mail → **Passwort festlegen** → Consent → erster Log
+4. Bei „Einladung offen“: Button **Einladung erneut** (Setup-Mail nochmal)
+5. Nach erstem Log erscheint sie in der Ampel (vorher: Keine Daten)
 
 Du kannst **keine** Logs für Spielerinnen erstellen oder einsehen.
 
@@ -44,9 +45,10 @@ Du kannst **keine** Logs für Spielerinnen erstellen oder einsehen.
 
 | Problem | Lösung |
 |---------|--------|
-| Leere Liste | Noch keine Spielerinnen im Team — Invite senden |
+| Kein Team / Invite ausgeblendet | Club-Admin um Team-Zuweisung bitten |
+| Leere Liste | Noch keine Spielerinnen — Invite senden |
 | Immer „Keine Daten“ | Spielerin hat nicht geloggt oder Log >48h alt |
-| Login geht nicht | IT/Ansprechpartner CyclesGuard — nicht selbst Passwort zurücksetzen für Spielerinnen |
+| Login / Passwort | Spielerin: `/login` → „Passwort vergessen?“ · oder Trainer: **Einladung erneut** |
 
 ---
 

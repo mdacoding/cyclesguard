@@ -33,6 +33,12 @@ export default function Home() {
           >
             Anmelden
           </Link>
+          <a
+            href="mailto:hello@cyclesguard.de?subject=CyclesGuard%20Soft-Pilot%20anfragen"
+            className="text-sm text-rose-gold/90 hover:text-rose-gold transition-colors min-h-11 px-3 inline-flex items-center"
+          >
+            Soft-Pilot
+          </a>
         </nav>
       </header>
 

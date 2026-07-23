@@ -106,7 +106,7 @@ export default async function DashboardPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2 space-y-6">
-            <section className="glass-card p-6 md:p-8 animate-slideUp" style={{ animationDelay: '0.1s' }}>
+            <section id="log" className="glass-card p-6 md:p-8 animate-slideUp scroll-mt-8" style={{ animationDelay: '0.1s' }}>
               <h2 className="font-display text-2xl font-semibold mb-6">
                 {todayLog ? 'Heutigen Eintrag anpassen' : 'Wie fühlst du dich heute?'}
               </h2>

@@ -34,7 +34,7 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 | Trust-Checks automatisiert + live verifiziert | ✅ 23.07. — Cron/RLS/Admin-Dry-Run gegen Prod grün |
 | Founder Sign-off (Sentry DSN, Demo-Mode off, AVV) | ◐ Sentry ✅ · Demo-Mode off ✅ · AVV-Versand Founder — [`FOUNDER-SECRETS.md`](../pitch/FOUNDER-SECRETS.md) |
 
-**Als Nächstes:** Soft-Pilot Polish (Invite-Passwort / PWA Install / Invite-only Login) · AVV-Mail senden sobald Club-Adresse da · Outreach. Kein Feature-Bloat ohne Club-Nachfrage.
+**Als Nächstes:** Soft-Pilot Polish Day-1 ✅ · AVV-Mail sobald Club-Adresse da · Outreach. Kein Feature-Bloat ohne Club-Nachfrage.
 
 **Daily-Ship-Log (jeden Tag ein Fortschritt):**
 
@@ -43,6 +43,7 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 | 22.07. | L1–L3 Feature-Set + Audit-Fixes (Club-Scope Feedback, Heute-KPI) |
 | 23.07. | Trust live + Demo off + CI-Secrets/Lean-CI + Push-Payload-Tests + **Sentry EU DSN Prod** (`sentry:ok`) + AVV-Mail-Entwurf |
 | 23.07. | Soft-Pilot UX: Passwort setzen nach Invite, Forgot-Password, Invite-only Login (Demo off), PWA-Install-Banner, Landing Soft-Pilot-CTA first |
+| 23.07. | Soft-Pilot Day-1: Trainer Empty/Resend-Invite, Consent/Delete Inline-Errors, Welcome Install + #log, Admin Empty-Roster CTA + Inline-Confirms |
 
 ---
 
