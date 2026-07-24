@@ -14,6 +14,7 @@ import Link from 'next/link';
 import LogoutButton from '@/components/LogoutButton';
 import PilotFeedbackCapture from '@/components/PilotFeedbackCapture';
 import InstallAppBanner from '@/components/InstallAppBanner';
+import TrustPreviewCard from './components/TrustPreviewCard';
 
 export default async function DashboardPage() {
   const supabase = await createServerSupabaseClient();
@@ -153,6 +154,14 @@ export default async function DashboardPage() {
           <section className="animate-slideUp">
             <FeedbackBanner phase={bannerLog.phase} isToday={!!todayLog} />
           </section>
+        )}
+
+        {todayLog && (
+          <TrustPreviewCard
+            phase={todayLog.phase}
+            energyLevel={todayLog.energyLevel}
+            loggedAt={todayLog.loggedAt}
+          />
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

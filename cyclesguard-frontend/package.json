@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "generate-icons": "node scripts/generate-icons.mjs",
-    "test": "tsx --test lib/admin-invite.test.ts lib/auth-password-email.test.ts lib/cron-auth.test.ts lib/date.test.ts lib/invite-membership.test.ts lib/offline/outbox.test.ts lib/player-insights.test.ts lib/privacy-mask.test.ts lib/rate-limit.test.ts lib/sentry-strip.test.ts lib/trainer-status.test.ts lib/push/payload.test.ts lib/adherence.test.ts lib/kabine-pack.test.ts lib/pilot-scorecard.test.ts",
+    "test": "tsx --test lib/admin-invite.test.ts lib/auth-password-email.test.ts lib/cron-auth.test.ts lib/date.test.ts lib/invite-membership.test.ts lib/offline/outbox.test.ts lib/player-insights.test.ts lib/privacy-mask.test.ts lib/rate-limit.test.ts lib/sentry-strip.test.ts lib/trainer-status.test.ts lib/push/payload.test.ts lib/adherence.test.ts lib/kabine-pack.test.ts lib/pilot-scorecard.test.ts lib/session-window.test.ts lib/trust-preview.test.ts",
     "test:trainer-status": "npm test",
     "test:e2e": "playwright test",
     "test:e2e:public": "playwright test --grep \"public smoke\"",

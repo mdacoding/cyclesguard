@@ -1,4 +1,4 @@
-import { getStatusLabel, getLoadLabel, ReadinessStatus, LoadFlag } from '@/lib/trainer-status';
+import { getStatusLabel, getLoadLabel, getRecommendation, ReadinessStatus, LoadFlag } from '@/lib/trainer-status';
 
 export interface KabineShareMember {
   name: string;
@@ -6,6 +6,7 @@ export interface KabineShareMember {
   loadFlag: LoadFlag;
   loggedToday: boolean;
   daysSinceLog: number | null;
+  recommendation?: string;
 }
 
 function logAgeLabel(m: Pick<KabineShareMember, 'loggedToday' | 'daysSinceLog'>): string {
@@ -16,6 +17,14 @@ function logAgeLabel(m: Pick<KabineShareMember, 'loggedToday' | 'daysSinceLog'>)
 }
 
 const STATUS_ORDER: ReadinessStatus[] = ['REST', 'MODIFIED_TRAINING', 'NO_DATA', 'FIT'];
+
+/** Station headers for Kabine Einheitsblatt (training artifact). */
+export const STATION_HEADERS: Record<ReadinessStatus, string> = {
+  REST: 'Station Regeneration',
+  MODIFIED_TRAINING: 'Station Angepasst',
+  NO_DATA: 'Station Nachfassen',
+  FIT: 'Station Volllast',
+};
 
 /** Coach-safe Kabine pack: Ampel groups for share / clipboard / print prep. */
 export function buildGroupedAmpelShareText(opts: {
@@ -56,6 +65,54 @@ export function buildGroupedAmpelShareText(opts: {
     '',
     ...blocks,
     'Nur Ampel-Signale — keine Gesundheitsrohdaten.',
+  ].join('\n');
+}
+
+/**
+ * Kabine Einheitsblatt / Stationsplan — paste into WhatsApp or print before kick-off.
+ * Coach-safe: names + Ampel station + load + recommendation cue only.
+ */
+export function buildSessionStationsText(opts: {
+  teamName: string;
+  members: KabineShareMember[];
+  sessionMode?: boolean;
+  when?: Date;
+}): string {
+  const when = opts.when ?? new Date();
+  const byStatus = new Map<ReadinessStatus, KabineShareMember[]>();
+  for (const status of STATUS_ORDER) byStatus.set(status, []);
+  for (const m of opts.members) {
+    const list = byStatus.get(m.status) ?? [];
+    list.push(m);
+    byStatus.set(m.status, list);
+  }
+
+  const blocks: string[] = [];
+  for (const status of STATUS_ORDER) {
+    const list = byStatus.get(status) ?? [];
+    if (list.length === 0) continue;
+    blocks.push(`${STATION_HEADERS[status]} (${list.length})`);
+    blocks.push(`Hinweis: ${getRecommendation(status)}`);
+    for (const m of list) {
+      const cue =
+        m.recommendation && m.recommendation !== getRecommendation(status)
+          ? m.recommendation
+          : null;
+      blocks.push(
+        `· ${m.name}${
+          m.loadFlag !== 'UNKNOWN' ? ` · ${getLoadLabel(m.loadFlag)}` : ''
+        }${cue ? ` — ${cue}` : ''}`
+      );
+    }
+    blocks.push('');
+  }
+
+  return [
+    `CyclesGuard Einheitsblatt · ${opts.teamName}${opts.sessionMode ? ' · Session-Freeze' : ''}`,
+    when.toLocaleString('de-DE'),
+    '',
+    ...blocks,
+    'Nur Ampel-Stationen — keine Gesundheitsrohdaten.',
   ].join('\n');
 }
 

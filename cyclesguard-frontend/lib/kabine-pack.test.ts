@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildGroupedAmpelShareText } from '@/lib/kabine-pack';
+import { buildGroupedAmpelShareText, buildSessionStationsText } from '@/lib/kabine-pack';
 
 test('grouped Ampel share has status headers and no medical terms', () => {
   const text = buildGroupedAmpelShareText({
@@ -40,4 +40,22 @@ test('grouped Ampel share has status headers and no medical terms', () => {
   assert.doesNotMatch(text, /menstru|zyklus|eisprung|ovulation|phase/i);
   // FIT group after REST
   assert.ok(text.indexOf('Anna') < text.indexOf('Bella'));
+});
+
+test('Einheitsblatt has station headers', () => {
+  const text = buildSessionStationsText({
+    teamName: 'Demo',
+    members: [
+      {
+        name: 'Anna',
+        status: 'REST',
+        loadFlag: 'NORMAL',
+        loggedToday: true,
+        daysSinceLog: 0,
+      },
+    ],
+  });
+  assert.match(text, /Station Regeneration/);
+  assert.match(text, /Einheitsblatt/);
+  assert.doesNotMatch(text, /menstru|zyklus|phase/i);
 });

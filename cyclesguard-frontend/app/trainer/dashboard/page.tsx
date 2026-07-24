@@ -13,6 +13,7 @@ import {
   Bell,
   Lock,
   Unlock,
+  ClipboardList,
 } from 'lucide-react';
 import LogoutButton from '@/components/LogoutButton';
 import PilotFeedbackCapture from '@/components/PilotFeedbackCapture';
@@ -26,10 +27,21 @@ import {
 } from '@/lib/trainer-status';
 import {
   buildGroupedAmpelShareText,
+  buildSessionStationsText,
   clearSessionFreeze,
   readSessionFreeze,
   writeSessionFreeze,
 } from '@/lib/kabine-pack';
+import {
+  clearTeamSessionWindow,
+  isWithinPreSessionWindow,
+  minutesUntilSession,
+  parseSessionTime,
+  readTeamSessionWindow,
+  writeTeamSessionWindow,
+  type TeamSessionWindow,
+} from '@/lib/session-window';
+import { berlinDate } from '@/lib/date';
 
 interface TeamMember {
   playerId: string;
@@ -90,6 +102,9 @@ export default function TrainerDashboardPage() {
   const [nudgeMsg, setNudgeMsg] = useState<string | null>(null);
   const [nudgeError, setNudgeError] = useState<string | null>(null);
   const [nudgePlayerId, setNudgePlayerId] = useState<string | null>(null);
+  const [sessionWindow, setSessionWindow] = useState<TeamSessionWindow | null>(null);
+  const [sessionTimeInput, setSessionTimeInput] = useState('18:00');
+  const [nowTick, setNowTick] = useState(() => Date.now());
 
   const loadTeams = async () => {
     const response = await fetch('/api/trainer/teams');
@@ -148,6 +163,7 @@ export default function TrainerDashboardPage() {
       setSessionMode(false);
       setFrozenTeam(null);
       setFrozenTrend(null);
+      setSessionWindow(null);
       return;
     }
     const snap = readSessionFreeze<TeamMember, ReadinessTrend7d>(selectedTeamId);
@@ -160,7 +176,15 @@ export default function TrainerDashboardPage() {
       setFrozenTeam(null);
       setFrozenTrend(null);
     }
+    const win = readTeamSessionWindow(selectedTeamId);
+    setSessionWindow(win);
+    if (win) setSessionTimeInput(win.time);
   }, [selectedTeamId]);
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNowTick(Date.now()), 60_000);
+    return () => window.clearInterval(id);
+  }, []);
 
   useEffect(() => {
     if (selectedTeamId) void loadTeamStatus(selectedTeamId);
@@ -387,6 +411,54 @@ export default function TrainerDashboardPage() {
     }
   };
 
+  const copyEinheitsblatt = async () => {
+    const teamName = teams.find((t) => t.id === selectedTeamId)?.name ?? 'Team';
+    const text = buildSessionStationsText({
+      teamName,
+      members: displayTeam,
+      sessionMode,
+    });
+    setShareMsg(null);
+    try {
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        await navigator.share({ title: `Einheitsblatt · ${teamName}`, text });
+        return;
+      }
+      await navigator.clipboard.writeText(text);
+      setShareMsg('Einheitsblatt (Stationen) kopiert.');
+    } catch {
+      setShareMsg('Kopieren abgebrochen oder nicht verfügbar.');
+    }
+  };
+
+  const saveSessionWindow = () => {
+    if (!selectedTeamId) return;
+    if (!parseSessionTime(sessionTimeInput)) {
+      setShareMsg('Uhrzeit als HH:MM eingeben (z. B. 18:00).');
+      return;
+    }
+    const win: TeamSessionWindow = {
+      time: sessionTimeInput.trim(),
+      date: berlinDate(),
+    };
+    writeTeamSessionWindow(selectedTeamId, win);
+    setSessionWindow(win);
+    setShareMsg(`Einheit heute ${win.time} gesetzt.`);
+  };
+
+  const clearSessionWindowUi = () => {
+    if (!selectedTeamId) return;
+    clearTeamSessionWindow(selectedTeamId);
+    setSessionWindow(null);
+    setShareMsg('Einheit-Fenster entfernt.');
+  };
+
+  const now = new Date(nowTick);
+  const minsToUnit =
+    sessionWindow != null ? minutesUntilSession(sessionWindow, now) : null;
+  const preSessionHot =
+    sessionWindow != null && isWithinPreSessionWindow(sessionWindow, now);
+
   return (
     <div className="min-h-screen py-10 px-4 animate-fadeIn">
       <div className="max-w-5xl mx-auto space-y-8 print:max-w-none">
@@ -430,6 +502,16 @@ export default function TrainerDashboardPage() {
             </button>
             <button
               type="button"
+              onClick={() => void copyEinheitsblatt()}
+              disabled={displayTeam.length === 0}
+              className="flex items-center gap-2 min-h-12 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-sm disabled:opacity-40"
+              title="Stationsplan für die Einheit"
+            >
+              <ClipboardList className="w-4 h-4" />
+              Einheitsblatt
+            </button>
+            <button
+              type="button"
               onClick={toggleSessionMode}
               disabled={team.length === 0 && !sessionMode}
               className={`flex items-center gap-2 min-h-12 px-4 py-2.5 rounded-xl border text-sm disabled:opacity-40 ${
@@ -470,6 +552,64 @@ export default function TrainerDashboardPage() {
 
         {shareMsg && (
           <p className="text-sm text-cream/60 print:hidden">{shareMsg}</p>
+        )}
+
+        {selectedTeamId && (
+          <section
+            className={`glass-card p-4 flex flex-col sm:flex-row sm:items-center gap-3 print:hidden ${
+              preSessionHot ? 'border border-rose-gold/35 bg-rose-gold/5' : 'border border-white/10'
+            }`}
+          >
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium">Einheit-Log-Fenster</p>
+              <p className="text-xs text-cream/45 mt-0.5">
+                {sessionWindow
+                  ? `Heute ${sessionWindow.time}${
+                      minsToUnit != null
+                        ? minsToUnit >= 0
+                          ? ` · in ${minsToUnit} Min`
+                          : ` · seit ${Math.abs(minsToUnit)} Min`
+                        : ''
+                    } · ${missingTodayCount} ohne Log`
+                  : 'Uhrzeit setzen — 90 Min vorher Fehlende erinnern hervorheben.'}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 items-center">
+              <input
+                type="time"
+                value={sessionTimeInput}
+                onChange={(e) => setSessionTimeInput(e.target.value)}
+                className="min-h-11 px-3 rounded-xl bg-white/5 border border-white/10 text-sm"
+                aria-label="Einheit Uhrzeit"
+              />
+              <button
+                type="button"
+                onClick={saveSessionWindow}
+                className="min-h-11 px-3 rounded-xl bg-white/10 text-sm hover:bg-white/15"
+              >
+                Setzen
+              </button>
+              {sessionWindow && (
+                <button
+                  type="button"
+                  onClick={clearSessionWindowUi}
+                  className="min-h-11 px-3 rounded-xl bg-white/5 text-sm text-cream/50"
+                >
+                  Löschen
+                </button>
+              )}
+              {preSessionHot && nudgeableMissingIds.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => void sendNudge(nudgeableMissingIds)}
+                  disabled={nudgeLoading || sessionMode}
+                  className="min-h-11 px-4 rounded-xl bg-rose-gold text-navy text-sm font-medium disabled:opacity-40"
+                >
+                  {nudgeLoading ? 'Sende…' : 'Fehlende erinnern'}
+                </button>
+              )}
+            </div>
+          </section>
         )}
 
         {showOnboardHint && (

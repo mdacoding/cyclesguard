@@ -792,6 +792,11 @@ export default function AdminTeamsPage() {
       ok: trainerCount > 0,
     },
     {
+      id: 'trainer_active',
+      label: 'Trainer Kabine 7d',
+      ok: trainersActive7d >= 1,
+    },
+    {
       id: 'roster',
       label: 'Spielerinnen im Roster',
       ok: totalPlayers > 0,
@@ -1559,6 +1564,27 @@ export default function AdminTeamsPage() {
                   </li>
                 ))}
               </ul>
+              {trainerCount > 0 && trainersActive7d < 1 && (
+                <div className="rounded-xl border border-rose-gold/25 bg-rose-gold/5 p-3 space-y-2">
+                  <p className="text-sm text-cream/80">
+                    Kein Trainer hat die Kabine in 7 Tagen geöffnet — Soft-Pilot KPI blockiert.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <a
+                      href="/trainer/onboarding"
+                      className="inline-flex min-h-10 px-3 items-center rounded-lg bg-rose-gold text-navy text-xs font-medium"
+                    >
+                      Trainer-Onboarding
+                    </a>
+                    <a
+                      href="mailto:?subject=CyclesGuard%20Kabine%20%C3%B6ffnen&body=Bitte%20einmal%20die%20CyclesGuard-Kabine%20%C3%B6ffnen%20(Soft-Pilot%20KPI%3A%20%E2%89%A53%C3%97%2FWoche).%0Ahttps%3A%2F%2Fcyclesguard.vercel.app%2Ftrainer%2Fdashboard"
+                      className="inline-flex min-h-10 px-3 items-center rounded-lg bg-white/10 text-xs text-cream/80"
+                    >
+                      Trainer erinnern (Mail)
+                    </a>
+                  </div>
+                </div>
+              )}
             </section>
 
             {showPlatform && (
