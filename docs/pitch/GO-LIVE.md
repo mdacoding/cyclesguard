@@ -1,6 +1,6 @@
 # CyclesGuard — Go-Live / Trust Close (L2–L3)
 
-**Stand:** 23.07.2026  
+**Stand:** 24.07.2026  
 **Zweck:** Founder + Tech Sign-off bevor Soft-Pilot oder Paid Season „echt“ läuft.  
 **Nordstern:** [`LAUNCH-PLAN.md`](../product/LAUNCH-PLAN.md)
 
@@ -12,11 +12,13 @@ Nicht Code — **Checkliste**. Jede Zeile braucht Owner + Datum.
 
 | # | Check | Owner | Done |
 |---|-------|-------|------|
-| A1 | Sentry DSN in Vercel Production (`SENTRY-LIVE.md`) | Founder | ✅ 23.07. EU DSN in Prod + Redeploy |
+| A1 | Sentry DSN in Vercel Production (`SENTRY-LIVE.md`) | Founder | ✅ 23.07. EU DSN in Prod + Redeploy · `verify:sentry` |
 | A2 | RLS-Pen-Test / `RLS-PENETRATION-CHECKLIST.md` | Tech | ✅ 23.07. `verify:rls-trainer` + `verify:rls-privacy` (Cross-Team/Export/Delete) |
-| A3 | Trainer-JWT sieht keine Art.-9-Rohdaten (live) | Tech | ✅ 23.07. — 0 Rows auf Art.-9-Tabellen; Roster positiv sichtbar |
+| A3 | Trainer-JWT sieht keine Art.-9-Rohdaten (live) | Tech | ✅ 23.07. — 0 Rows · Ampel Zod-Allowlist 24.07. |
 | A4 | AVV-Entwurf an DSB / Club (`AVV-TOM-DRAFT.md`) | Founder | ◐ Versand-Paket fertig · `npm run open:avv-mailto` · wartet Club-/DSB-Adresse (Outreach) |
 | A5 | Support-Pfad kommuniziert (`SUPPORT.md`) | Founder | ✅ Landing CTA `hello@cyclesguard.de` + Support-Doc |
+| A6 | Invite-Flow Surfaces live (`verify:invite-flow`) | Tech | ✅ 24.07. set-password / onboarding / spielerinnen-info |
+| A7 | Durable Invite Rate-Limit (Migration 018) | Tech | ✅ 24.07. `consume_rate_limit` live |
 
 ---
 
@@ -28,7 +30,7 @@ Vollständige Steps: [`PUSH-LIVE.md`](./PUSH-LIVE.md)
 |---|-------|-------|------|
 | B1 | VAPID Keys + `CRON_SECRET` in Vercel Production | Founder | ✅ bereits in Prod gesetzt · Ops-Status `push:ready` |
 | B2 | Cron `/api/cron/daily-reminders` 200 + JSON ok | Tech | ✅ 23.07. `verify:cron` gegen Prod grün (alle 3 Crons + 401-ohne-Auth) |
-| B3 | Gerätetest PWA: Reminder ohne Zyklus-/Menstruationswort | Tech | ✅ 23.07. shared SW payload + `verify:push-live` · optional Homescreen-Glance |
+| B3 | Gerätetest PWA: Reminder ohne Zyklus-/Menstruationswort | Tech | ✅ 23.07. shared SW payload + `verify:push-live` · Homescreen-Glance: [`PUSH-LIVE.md`](./PUSH-LIVE.md) §3a |
 | B4 | Skip-Wochenende Preferenzen getestet (Settings) | Tech | ✅ Unit-Test `shouldSkipWeekendReminder` |
 
 ---

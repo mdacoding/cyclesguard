@@ -73,22 +73,22 @@ npm run verify:go-live -- https://<eure-vercel-domain>
 Manuell:
 
 - [ ] `/login` (Demo-Hinweise nur wenn `DEMO_MODE=true`)
-- [ ] `lisa.weber@eintracht-demo.de` → Dashboard
-- [ ] `trainer@eintracht-demo.de` → Ampel (REST/FIT/MODIFIED/NO_DATA)
+- [ ] Demo-Logins aus [`DEMO-ACCOUNTS.md`](./DEMO-ACCOUNTS.md) (intern — Passwort nicht hier notieren)
 - [ ] Trainer sieht **keine** Phasen/Symptome
 - [ ] Settings: Export / Löschen sichtbar
 - [ ] `/spielerinnen-info` · `/impressum` erreichbar
 
-Accounts: [DEMO-ACCOUNTS.md](./DEMO-ACCOUNTS.md) · Ablauf: [DEMO-SCRIPT.md](./DEMO-SCRIPT.md)
+Ablauf: [DEMO-SCRIPT.md](./DEMO-SCRIPT.md) · Trust: `npm run verify:go-live`
 
 ---
 
 ## 5. Security nach Deploy
 
-- [ ] Demo-Passwort nur intern teilen; nach Pitch rotieren
+- [ ] Demo-Credentials nur intern (`DEMO-ACCOUNTS.md`) — nie an Clubs
 - [ ] Secret Key rotieren, falls er in Chats stand
 - [ ] Repo **private** halten, solange Demo-Secrets in Docs stehen
 - [ ] `NEXT_PUBLIC_DEMO_MODE=false` vor öffentlichem Marketing-Traffic
+- [ ] Migration `018` angewendet (durable Bulk-Invite Limits) — siehe [`SUPABASE-SETUP.md`](./SUPABASE-SETUP.md)
 
 ---
 

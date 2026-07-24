@@ -89,11 +89,13 @@ export default function InstallAppBanner() {
           {showIos && !deferred ? (
             <p className="text-xs text-cream/60 leading-relaxed">
               Tippe auf <Share className="inline w-3.5 h-3.5 text-cream/80" aria-hidden /> Teilen und wähle
-              „Zum Home-Bildschirm“. Dann funktionieren Erinnerungen zuverlässiger.
+              „Zum Home-Bildschirm“. So kommen Erinnerungen zuverlässiger — ohne Zyklus-Details in der
+              Vorschau.
             </p>
           ) : (
             <p className="text-xs text-cream/60 leading-relaxed">
-              Installiere CyclesGuard als App — schneller Log und Push auch ohne offenen Tab.
+              Installiere CyclesGuard als App — schneller Log und Push auch ohne offenen Tab. Reminder
+              bleiben coach-safe (keine Intimdaten).
             </p>
           )}
           <div className="flex flex-wrap gap-2 pt-1">

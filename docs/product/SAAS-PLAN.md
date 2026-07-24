@@ -83,12 +83,12 @@ Pitch-Ready ✅ → Soft-Pilot Tech ✅ → M1 tech-ready → Soft-Pilot (8–12
 
 | Prio | Action |
 |------|--------|
-| **Pilot-Polish (Eng)** | Trainer-Contract · durable Rate-Limits · Invite/Sentry verify · Multi-Club Ops |
+| **Pilot Day-1 (Eng)** | Kabine Empty-State · Admin First-Run Trainer-Check · verify-hardening |
 | **Kritischer Sales-Pfad** | Outreach / Termin (`OUTREACH-TRACKING.md`) |
-| **Legal** | AVV/DSB bei Club-Adresse · Auth-Mail-Templates (`AUTH-EMAIL-TEMPLATES.md`) |
+| **Legal** | AVV/DSB bei Club-Adresse · Auth-Mail-Templates im Dashboard (`AUTH-EMAIL-TEMPLATES.md`) |
 | **Nach Proof (L4)** | Stripe, Self-Serve Multi-Tenant |
 
-**Stand Eng 24.07.:** L1–L3 ✅ · Runtime Ampel-Allowlist · `consume_rate_limit` (018) · `/spielerinnen-info`
+**Stand Eng 24.07.:** L1–L3 ✅ · Ampel-Allowlist ✅ · Rate-Limit 018 ✅ · `/spielerinnen-info` live ✅ · Prod-Build grün
 
 ---
 

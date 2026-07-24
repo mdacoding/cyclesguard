@@ -404,14 +404,19 @@ export default function TrainerDashboardPage() {
         )}
 
         {teams.length > 0 && (
-          <section className="glass-card p-5 space-y-4 print:hidden">
+          <section id="invite-section" className="glass-card p-5 space-y-4 print:hidden">
             <div className="flex items-center gap-2 text-sm font-medium">
               <UserPlus className="w-4 h-4 text-rose-gold" />
               Spielerin einladen
             </div>
             <p className="text-xs text-cream/45 leading-relaxed">
               Neue Konten erhalten eine E-Mail zum Passwort setzen. Noch nicht eingeloggte
-              Einladungen bekommen beim erneuten Invite wieder einen Setup-Link.
+              Einladungen: Status „Einladung offen“ → Button „Einladung erneut“. Vorlage für
+              Spielerinnen:{' '}
+              <a href="/spielerinnen-info" className="text-cream/70 hover:text-rose-gold underline-offset-2 hover:underline">
+                /spielerinnen-info
+              </a>
+              .
             </p>
             <div className="grid md:grid-cols-3 gap-3">
               <input
@@ -542,9 +547,25 @@ export default function TrainerDashboardPage() {
             ) : (
               <>
                 <p className="text-cream/60 mb-2">Keine Spielerinnen im Team.</p>
-                <p className="text-sm text-cream/40">
-                  Nutze „Spielerin einladen“ oben — sie setzt danach ihr Passwort und stimmt zu.
+                <p className="text-sm text-cream/40 mb-4 leading-relaxed max-w-md mx-auto">
+                  Oben einladen → sie setzt Passwort → Consent → erster Log. Info-Vorlage zum Teilen:{' '}
+                  <a
+                    href="/spielerinnen-info"
+                    className="text-rose-gold hover:underline underline-offset-2"
+                  >
+                    /spielerinnen-info
+                  </a>
                 </p>
+                <a
+                  href="#invite"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('invite-section')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="inline-flex min-h-11 px-5 items-center rounded-xl bg-rose-gold text-navy text-sm font-medium"
+                >
+                  Zur Einladung
+                </a>
               </>
             )}
           </div>

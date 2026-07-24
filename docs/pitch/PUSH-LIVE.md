@@ -59,6 +59,18 @@ Erwartung: JSON `{ "ok": true, "sent": N, "failed": …, "pruned": … }`
 
 Skip-Logik: Wer heute schon geloggt hat, bekommt keinen Reminder.
 
+### 3a. Homescreen-Glance (Founder, 2 Min.)
+
+| Schritt | Erwartung | Done |
+|---------|-----------|------|
+| Banner „Auf den Homescreen“ sichtbar (nicht standalone) | Install-/iOS-Hinweis | ☐ |
+| Install / Zum Home-Bildschirm | App öffnet ohne Browser-Chrome | ☐ |
+| Settings → Erinnerungen an | Permission prompt / aktiv | ☐ |
+| `verify:cron` oder manueller Cron | Reminder kommt | ☐ |
+| OS-Vorschau lesen | Kein Zyklus-/Menstruationswort | ☐ |
+
+Payload unit-getestet: `lib/push/payload.test.ts` · Live: `npm run verify:push-live`
+
 ---
 
 ## 4. Troubleshooting
@@ -85,7 +97,7 @@ Retention-Cron entfernt Subscriptions älter als 180 Tage.
 |-------|------|
 | B1 VAPID/CRON_SECRET in Vercel Production | ✅ gesetzt (Ops-Status `push:ready`) |
 | B2 Cron erreichbar + korrekt | ✅ 23.07. `verify:cron` gegen Prod grün |
-| B3 Gerätetest ohne Zyklus-/Menstruationswort | ✅ 23.07. shared SW payload + `verify:push-live` · optional Homescreen-Glance |
+| B3 Gerätetest ohne Zyklus-/Menstruationswort | ✅ 23.07. shared SW payload + `verify:push-live` · Homescreen-Glance §3a |
 | Skip-Wochenende Preferenzen (Settings) | ✅ Unit-Test `shouldSkipWeekendReminder` |
 
 **Verifiziert von:** Tech **Datum:** 23.07.2026  

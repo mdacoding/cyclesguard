@@ -34,13 +34,14 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 | Trust-Checks automatisiert + live verifiziert | ✅ 23.07. — Cron/RLS/Admin-Dry-Run gegen Prod grün |
 | Founder Sign-off (Sentry DSN, Demo-Mode off, AVV) | ◐ Sentry ✅ · Demo-Mode off ✅ · AVV-Versand Founder — [`FOUNDER-SECRETS.md`](../pitch/FOUNDER-SECRETS.md) |
 
-**Als Nächstes (Eng):** Pilot-Polish — Ampel-Contract, durable Invite-Limits, Auth-Mail-Docs, Multi-Club Ops, `verify:invite-flow` / `verify:sentry`.  
-**Als Nächstes (Founder):** Outreach-Tracking · Auth-URLs · Impressum-Straße · AVV bei Club-Adresse.
+**Als Nächstes (Eng):** Day-1 Kabine/Admin polish · Homescreen-Glance · Deploy-Trust-Scrub · verify-hardening.  
+**Als Nächstes (Founder):** Outreach-Tracking · Auth-URLs + Mail-Templates · Impressum-Straße · AVV bei Club-Adresse.
 
 **Daily-Ship-Log (jeden Tag ein Fortschritt):**
 
 | Datum | Was |
 |-------|-----|
+| 24.07. | Prod-Build repariert (Seed/Sentry Types) · `/spielerinnen-info` live |
 | 24.07. | SaaS Pilot-Polish: team-status Zod-Allowlist · Postgres rate-limit 018 · Auth-Mail + Multi-Club Docs · Admin First-Run Links · invite/sentry verify |
 | 22.07. | L1–L3 Feature-Set + Audit-Fixes (Club-Scope Feedback, Heute-KPI) |
 | 23.07. | Trust live + Demo off + CI-Secrets/Lean-CI + Push-Payload-Tests + **Sentry EU DSN Prod** (`sentry:ok`) + AVV-Mail-Entwurf |

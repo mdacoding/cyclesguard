@@ -22,6 +22,7 @@
     "verify:rls-privacy": "node scripts/verify-rls-privacy.mjs",
     "verify:invite-flow": "node scripts/verify-invite-flow.mjs",
     "verify:sentry": "node scripts/verify-sentry.mjs",
+    "verify:rate-limit": "node scripts/verify-rate-limit.mjs",
     "verify:cron": "node scripts/verify-cron.mjs",
     "verify:admin-dryrun": "node scripts/verify-admin-dryrun.mjs",
     "verify:push-live": "node scripts/verify-push-live.mjs",

@@ -36,6 +36,9 @@ Status älter als **48 Stunden** → automatisch „Keine Daten“ (veraltet).
 3. Spielerin erhält E-Mail → **Passwort festlegen** → Consent → erster Log
 4. Bei „Einladung offen“: Button **Einladung erneut** (Setup-Mail nochmal)
 5. Nach erstem Log erscheint sie in der Ampel (vorher: Keine Daten)
+6. Info-Vorlage zum Teilen: https://cyclesguard.vercel.app/spielerinnen-info
+
+Leeres Team: Hinweis + Link zur Einladung / Vorlage — kein Ampel-Rätselraten.
 
 Du kannst **keine** Logs für Spielerinnen erstellen oder einsehen.
 
