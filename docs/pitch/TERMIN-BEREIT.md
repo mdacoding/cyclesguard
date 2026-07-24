@@ -32,7 +32,7 @@ Dashboard → Project `jgtqtuwtrulwehrtcydf` → **Authentication → URL Config
 | | `http://localhost:3000/auth/callback` | ☐ |
 | | `https://cyclesguard.vercel.app/auth/set-password` oder `https://cyclesguard.vercel.app/**` | ☐ Invite → Passwort |
 
-Speichern. Danach einmal Login + Logout auf der Live-URL testen.
+E-Mail-Texte (Invite/Reset): [`AUTH-EMAIL-TEMPLATES.md`](./AUTH-EMAIL-TEMPLATES.md) — einmal in Dashboard einfügen.
 
 ### 2. Kontakt in Docs
 
