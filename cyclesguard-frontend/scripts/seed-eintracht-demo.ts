@@ -559,10 +559,11 @@ async function main(): Promise<void> {
     isolationTeamId = isoTeam.id;
   }
 
-  for (const row of [
-    { team_id: isolationTeamId, user_id: isolationTrainerId, role: 'trainer' as const },
-    { team_id: isolationTeamId, user_id: isolationPlayerId, role: 'player' as const },
-  ]) {
+  const isolationMemberships: { team_id: string; user_id: string; role: 'trainer' | 'player' }[] = [
+    { team_id: isolationTeamId, user_id: isolationTrainerId, role: 'trainer' },
+    { team_id: isolationTeamId, user_id: isolationPlayerId, role: 'player' },
+  ];
+  for (const row of isolationMemberships) {
     const { error } = await admin.from('team_members').upsert(row, {
       onConflict: 'team_id,user_id',
     });
