@@ -19,7 +19,12 @@ import {
   Copy,
 } from 'lucide-react';
 import LogoutButton from '@/components/LogoutButton';
-import { buildWeeklyCallMarkdown } from '@/lib/pilot-scorecard';
+import {
+  buildWeeklyCallMarkdown,
+  evaluateSoftPilotCriteria,
+  pilotWeekProgress,
+} from '@/lib/pilot-scorecard';
+import { buildPlayerSharePack, buildStaffSharePack } from '@/lib/soft-pilot-pack';
 
 type AdminTab = 'roster' | 'season' | 'compliance';
 
@@ -150,6 +155,7 @@ export default function AdminTeamsPage() {
   const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([]);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [scorecardCopyMsg, setScorecardCopyMsg] = useState<string | null>(null);
+  const [packCopyMsg, setPackCopyMsg] = useState<string | null>(null);
 
   const [opsStatus, setOpsStatus] = useState<{
     push: { ready: boolean; vapidPublicConfigured: boolean; vapidPrivateConfigured: boolean };
@@ -712,6 +718,10 @@ export default function AdminTeamsPage() {
         : clubs.length > 1
           ? `${clubs.length} Vereine`
           : 'CyclesGuard Soft-Pilot';
+    const seasonStart =
+      seasons.find((s) => s.status === 'active')?.startsOn ??
+      seasons[0]?.startsOn ??
+      null;
     const md = buildWeeklyCallMarkdown({
       clubOrScopeLabel: scope,
       players: totalPlayers,
@@ -726,6 +736,7 @@ export default function AdminTeamsPage() {
       pushOptIn: pushOptInTotal,
       consented: consentedTotal,
       teamsBelowTarget,
+      pilotStartsOn: seasonStart,
     });
     setScorecardCopyMsg(null);
     try {
@@ -742,6 +753,13 @@ export default function AdminTeamsPage() {
     clubSeasons.find((s) => s.status === 'active') ??
     clubSeasons.find((s) => s.commercialStatus === 'quoted' || s.commercialStatus === 'signed') ??
     clubSeasons[0];
+
+  const softPilotCriteria = evaluateSoftPilotCriteria({
+    adherencePct,
+    trainersActive7d,
+    feedbackAvg,
+  });
+  const pilotProgress = pilotWeekProgress(primarySeason?.startsOn ?? null);
   const closingChecks = [
     {
       id: 'billing',
@@ -1262,6 +1280,39 @@ export default function AdminTeamsPage() {
               <p className="text-xs text-cream/50">
                 Kurz für PILOT-FEEDBACK.md — ohne Gesundheitsrohdaten.
               </p>
+              {pilotProgress && (
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-medium">{pilotProgress.label}</p>
+                    <p className="text-xs text-cream/45">{pilotProgress.pctElapsed}% von 12 Wochen</p>
+                  </div>
+                  <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                    <div
+                      className="h-full bg-rose-gold/80"
+                      style={{ width: `${pilotProgress.pctElapsed}%` }}
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-[11px]">
+                    <span className={softPilotCriteria.adherenceOk ? 'text-sage' : 'text-rose-gold'}>
+                      Adherence {softPilotCriteria.adherenceOk ? 'OK' : 'offen'}
+                    </span>
+                    <span className={softPilotCriteria.trainerOk ? 'text-sage' : 'text-rose-gold'}>
+                      Trainer Kabine {softPilotCriteria.trainerOk ? 'OK' : 'offen'}
+                    </span>
+                    <span className={softPilotCriteria.feedbackOk ? 'text-sage' : 'text-rose-gold'}>
+                      Feedback {softPilotCriteria.feedbackOk ? 'OK' : 'offen'}
+                    </span>
+                    <span className="text-sage">Privacy OK</span>
+                  </div>
+                  {softPilotCriteria.allOk ? (
+                    <p className="text-xs text-sage">
+                      Ready for Paid? → Closing-Checkliste im Saison-Tab prüfen.
+                    </p>
+                  ) : (
+                    <p className="text-xs text-cream/45">Soft-Pilot weiterfahren — Kriterien noch offen.</p>
+                  )}
+                </div>
+              )}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 <div className="rounded-xl bg-white/5 border border-white/10 p-3">
                   <p className="text-[11px] text-cream/45 mb-1">Adherence 7d</p>
@@ -1585,6 +1636,41 @@ export default function AdminTeamsPage() {
                   </div>
                 </div>
               )}
+              <div className="flex flex-wrap gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(
+                        buildStaffSharePack({
+                          clubLabel: clubs.length === 1 ? clubs[0].name : undefined,
+                        })
+                      );
+                      setPackCopyMsg('Stab-Pack kopiert.');
+                    } catch {
+                      setPackCopyMsg('Kopieren fehlgeschlagen.');
+                    }
+                  }}
+                  className="inline-flex min-h-10 px-3 items-center rounded-lg bg-white/10 text-xs"
+                >
+                  Stab-Pack
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(buildPlayerSharePack());
+                      setPackCopyMsg('Spielerinnen-Pack kopiert.');
+                    } catch {
+                      setPackCopyMsg('Kopieren fehlgeschlagen.');
+                    }
+                  }}
+                  className="inline-flex min-h-10 px-3 items-center rounded-lg bg-white/10 text-xs"
+                >
+                  Team-Chat Pack
+                </button>
+              </div>
+              {packCopyMsg && <p className="text-sm text-sage">{packCopyMsg}</p>}
             </section>
 
             {showPlatform && (

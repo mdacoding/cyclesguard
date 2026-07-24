@@ -41,7 +41,12 @@ import {
   writeTeamSessionWindow,
   type TeamSessionWindow,
 } from '@/lib/session-window';
-import { berlinDate } from '@/lib/date';
+import {
+  buildInvitePendingPack,
+  buildPlayerSharePack,
+  buildStaffSharePack,
+} from '@/lib/soft-pilot-pack';
+import { buildKabineDay1Checklist, resolveKabineDay1State } from '@/lib/kabine-day1';
 
 interface TeamMember {
   playerId: string;
@@ -61,7 +66,7 @@ interface TeamOption {
   clubName: string | null;
 }
 
-type FilterMode = 'all' | 'needs_attention' | 'missing_today' | 'logged_today';
+type FilterMode = 'all' | 'needs_attention' | 'missing_today' | 'logged_today' | 'invite_pending';
 
 function logAgeLabel(m: Pick<TeamMember, 'loggedToday' | 'daysSinceLog'>): string {
   if (m.loggedToday) return 'heute geloggt';
@@ -105,6 +110,7 @@ export default function TrainerDashboardPage() {
   const [sessionWindow, setSessionWindow] = useState<TeamSessionWindow | null>(null);
   const [sessionTimeInput, setSessionTimeInput] = useState('18:00');
   const [nowTick, setNowTick] = useState(() => Date.now());
+  const [bulkResendLoading, setBulkResendLoading] = useState(false);
 
   const loadTeams = async () => {
     const response = await fetch('/api/trainer/teams');
@@ -308,6 +314,20 @@ export default function TrainerDashboardPage() {
   const missingWithoutPush = displayTeam.filter(
     (m) => !m.loggedToday && !m.invitePending && !m.hasPush
   ).length;
+  const invitePendingMembers = displayTeam.filter((m) => m.invitePending);
+  const invitePendingCount = invitePendingMembers.length;
+
+  const day1State = resolveKabineDay1State({
+    teamCount: teams.length,
+    rosterCount: displayTeam.length,
+    invitePendingCount,
+    loggedTodayCount,
+  });
+  const day1Checklist = buildKabineDay1Checklist({
+    state: day1State,
+    hasSessionWindow: Boolean(sessionWindow),
+    sessionMode,
+  });
 
   const filtered = useMemo(() => {
     switch (filter) {
@@ -319,6 +339,8 @@ export default function TrainerDashboardPage() {
         return displayTeam.filter((m) => !m.loggedToday);
       case 'logged_today':
         return displayTeam.filter((m) => m.loggedToday);
+      case 'invite_pending':
+        return displayTeam.filter((m) => m.invitePending);
       default:
         return displayTeam;
     }
@@ -451,6 +473,68 @@ export default function TrainerDashboardPage() {
     clearTeamSessionWindow(selectedTeamId);
     setSessionWindow(null);
     setShareMsg('Einheit-Fenster entfernt.');
+  };
+
+  const copyPlayerPack = async () => {
+    setShareMsg(null);
+    try {
+      await navigator.clipboard.writeText(buildPlayerSharePack());
+      setShareMsg('Spielerinnen-Pack in Zwischenablage.');
+    } catch {
+      setShareMsg('Kopieren fehlgeschlagen.');
+    }
+  };
+
+  const copyStaffPack = async () => {
+    setShareMsg(null);
+    try {
+      await navigator.clipboard.writeText(
+        buildStaffSharePack({
+          clubLabel: teams.find((t) => t.id === selectedTeamId)?.clubName ?? undefined,
+        })
+      );
+      setShareMsg('Stab-Pack in Zwischenablage.');
+    } catch {
+      setShareMsg('Kopieren fehlgeschlagen.');
+    }
+  };
+
+  const copyInvitePending = async () => {
+    setShareMsg(null);
+    try {
+      await navigator.clipboard.writeText(
+        buildInvitePendingPack({ names: invitePendingMembers.map((m) => m.name) })
+      );
+      setShareMsg('Offene Einladungen kopiert.');
+    } catch {
+      setShareMsg('Kopieren fehlgeschlagen.');
+    }
+  };
+
+  const bulkResendInvites = async () => {
+    if (!selectedTeamId || invitePendingMembers.length === 0) return;
+    setBulkResendLoading(true);
+    setInviteMsg(null);
+    setInviteError(null);
+    let ok = 0;
+    let fail = 0;
+    for (const m of invitePendingMembers) {
+      try {
+        const response = await fetch('/api/trainer/invite', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ teamId: selectedTeamId, playerId: m.playerId, resend: true }),
+        });
+        if (response.ok) ok += 1;
+        else fail += 1;
+      } catch {
+        fail += 1;
+      }
+    }
+    setBulkResendLoading(false);
+    setInviteMsg(
+      `Einladungen erneut: ${ok} gesendet` + (fail ? ` · ${fail} fehlgeschlagen` : '')
+    );
   };
 
   const now = new Date(nowTick);
@@ -646,12 +730,21 @@ export default function TrainerDashboardPage() {
               Bitte deine Club-Admin um Zuweisung zu einem aktiven Team. Danach kannst du
               Spielerinnen per E-Mail einladen.
             </p>
-            <a
-              href="/trainer/onboarding"
-              className="inline-flex items-center justify-center min-h-11 px-4 rounded-lg bg-white/10 text-sm hover:bg-white/15"
-            >
-              Onboarding lesen
-            </a>
+            <div className="flex flex-wrap justify-center gap-2">
+              <a
+                href="/trainer/onboarding"
+                className="inline-flex items-center justify-center min-h-11 px-4 rounded-lg bg-white/10 text-sm hover:bg-white/15"
+              >
+                Onboarding lesen
+              </a>
+              <button
+                type="button"
+                onClick={() => void copyStaffPack()}
+                className="inline-flex items-center justify-center min-h-11 px-4 rounded-lg bg-white/10 text-sm hover:bg-white/15"
+              >
+                Stab-Pack kopieren
+              </button>
+            </div>
           </div>
         )}
 
@@ -716,6 +809,62 @@ export default function TrainerDashboardPage() {
             </div>
             {inviteMsg && <p className="text-sm text-sage">{inviteMsg}</p>}
             {inviteError && <p className="text-sm text-menstrual">{inviteError}</p>}
+            <div className="flex flex-wrap gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => void copyPlayerPack()}
+                className="min-h-10 px-3 rounded-lg bg-white/10 text-xs text-cream/80 hover:bg-white/15"
+              >
+                Team-Chat Pack
+              </button>
+              <button
+                type="button"
+                onClick={() => void copyStaffPack()}
+                className="min-h-10 px-3 rounded-lg bg-white/10 text-xs text-cream/80 hover:bg-white/15"
+              >
+                Stab-Pack
+              </button>
+            </div>
+          </section>
+        )}
+
+        {teams.length > 0 && day1State !== 'ready' && !isLoading && (
+          <section className="glass-card p-5 border border-rose-gold/25 bg-rose-gold/5 space-y-3 print:hidden">
+            <h2 className="font-semibold text-sm">Day-1 Aktivierung</h2>
+            <p className="text-xs text-cream/55">
+              Soft-Pilot Kabine schrittweise startklar — Checklist für die erste Einheit.
+            </p>
+            <ul className="space-y-2">
+              {day1Checklist.map((item) => (
+                <li
+                  key={item.id}
+                  className="flex items-center justify-between gap-2 text-sm rounded-lg bg-white/5 border border-white/10 px-3 py-2"
+                >
+                  <span className={item.done ? 'text-cream/45 line-through' : 'text-cream/85'}>
+                    {item.label}
+                  </span>
+                  {item.done ? (
+                    <span className="text-sage text-xs">OK</span>
+                  ) : item.href?.startsWith('#') ? (
+                    <button
+                      type="button"
+                      className="text-xs text-rose-gold"
+                      onClick={() =>
+                        document.getElementById(item.href!.slice(1))?.scrollIntoView({
+                          behavior: 'smooth',
+                        })
+                      }
+                    >
+                      Öffnen
+                    </button>
+                  ) : item.href ? (
+                    <a href={item.href} className="text-xs text-rose-gold">
+                      Öffnen
+                    </a>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
           </section>
         )}
 
@@ -807,6 +956,36 @@ export default function TrainerDashboardPage() {
                 </button>
               </div>
             )}
+
+            {invitePendingCount > 0 && (
+              <div className="glass-card p-4 border border-ovulation/30 bg-ovulation/10 flex flex-col sm:flex-row sm:items-center gap-3 print:hidden">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium">
+                    {invitePendingCount} Einladung{invitePendingCount === 1 ? '' : 'en'} offen
+                  </p>
+                  <p className="text-xs text-cream/45 mt-1">
+                    Push erreicht sie nicht — erneut senden oder WhatsApp-Pack teilen.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => void copyInvitePending()}
+                    className="min-h-11 px-3 rounded-xl bg-white/10 text-sm"
+                  >
+                    Chat kopieren
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void bulkResendInvites()}
+                    disabled={bulkResendLoading}
+                    className="min-h-11 px-4 rounded-xl bg-rose-gold text-navy text-sm font-medium disabled:opacity-40"
+                  >
+                    {bulkResendLoading ? 'Sende…' : 'Alle erneut'}
+                  </button>
+                </div>
+              </div>
+            )}
             {nudgeMsg && <p className="text-sm text-sage print:hidden">{nudgeMsg}</p>}
             {nudgeError && <p className="text-sm text-menstrual print:hidden">{nudgeError}</p>}
 
@@ -817,6 +996,7 @@ export default function TrainerDashboardPage() {
                   ['needs_attention', 'Handlungsbedarf'],
                   ['missing_today', 'Heute fehlend'],
                   ['logged_today', 'Heute da'],
+                  ['invite_pending', 'Einladung offen'],
                 ] as const
               ).map(([key, label]) => (
                 <button
