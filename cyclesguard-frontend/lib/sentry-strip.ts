@@ -12,10 +12,10 @@ export function stripHealthFieldsFromRecord(
 }
 
 /** Strip request bodies + breadcrumb health fields before Sentry send. */
-export function stripSentryEventHealth(event: {
+export function stripSentryEventHealth<T extends {
   request?: { data?: unknown };
   breadcrumbs?: Array<{ data?: Record<string, unknown> }>;
-}): typeof event {
+}>(event: T): T {
   if (event.request && 'data' in event.request) {
     delete event.request.data;
   }
@@ -23,7 +23,7 @@ export function stripSentryEventHealth(event: {
     event.breadcrumbs = event.breadcrumbs.map((b) => {
       if (!b.data || typeof b.data !== 'object') return b;
       return { ...b, data: stripHealthFieldsFromRecord(b.data) };
-    });
+    }) as T['breadcrumbs'];
   }
   return event;
 }
