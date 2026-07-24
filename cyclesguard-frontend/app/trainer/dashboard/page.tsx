@@ -10,6 +10,9 @@ import {
   Printer,
   HelpCircle,
   Share2,
+  Bell,
+  Lock,
+  Unlock,
 } from 'lucide-react';
 import LogoutButton from '@/components/LogoutButton';
 import PilotFeedbackCapture from '@/components/PilotFeedbackCapture';
@@ -73,6 +76,13 @@ export default function TrainerDashboardPage() {
   const [filter, setFilter] = useState<FilterMode>('all');
   const [showOnboardHint, setShowOnboardHint] = useState(false);
   const [shareMsg, setShareMsg] = useState<string | null>(null);
+  const [sessionMode, setSessionMode] = useState(false);
+  const [frozenTeam, setFrozenTeam] = useState<TeamMember[] | null>(null);
+  const [frozenTrend, setFrozenTrend] = useState<ReadinessTrend7d | null>(null);
+  const [nudgeLoading, setNudgeLoading] = useState(false);
+  const [nudgeMsg, setNudgeMsg] = useState<string | null>(null);
+  const [nudgeError, setNudgeError] = useState<string | null>(null);
+  const [nudgePlayerId, setNudgePlayerId] = useState<string | null>(null);
 
   const loadTeams = async () => {
     const response = await fetch('/api/trainer/teams');
@@ -218,7 +228,10 @@ export default function TrainerDashboardPage() {
     }
   };
 
-  const statusCounts = team.reduce(
+  const displayTeam = sessionMode && frozenTeam ? frozenTeam : team;
+  const displayTrend = sessionMode && frozenTrend ? frozenTrend : trend7d;
+
+  const statusCounts = displayTeam.reduce(
     (acc, member) => {
       acc[member.status] = (acc[member.status] ?? 0) + 1;
       return acc;
@@ -226,23 +239,73 @@ export default function TrainerDashboardPage() {
     {} as Record<ReadinessStatus, number>
   );
 
-  const loggedTodayCount = team.filter((m) => m.loggedToday).length;
-  const missingTodayCount = team.length - loggedTodayCount;
+  const loggedTodayCount = displayTeam.filter((m) => m.loggedToday).length;
+  const missingTodayCount = displayTeam.length - loggedTodayCount;
+  const nudgeableMissingIds = displayTeam
+    .filter((m) => !m.loggedToday && !m.invitePending)
+    .map((m) => m.playerId);
+
 
   const filtered = useMemo(() => {
     switch (filter) {
       case 'needs_attention':
-        return team.filter(
+        return displayTeam.filter(
           (m) => m.status === 'REST' || m.status === 'MODIFIED_TRAINING' || m.status === 'NO_DATA'
         );
       case 'missing_today':
-        return team.filter((m) => !m.loggedToday);
+        return displayTeam.filter((m) => !m.loggedToday);
       case 'logged_today':
-        return team.filter((m) => m.loggedToday);
+        return displayTeam.filter((m) => m.loggedToday);
       default:
-        return team;
+        return displayTeam;
     }
-  }, [team, filter]);
+  }, [displayTeam, filter]);
+
+  const toggleSessionMode = () => {
+    if (sessionMode) {
+      setSessionMode(false);
+      setFrozenTeam(null);
+      setFrozenTrend(null);
+      return;
+    }
+    setFrozenTeam(team);
+    setFrozenTrend(trend7d);
+    setSessionMode(true);
+  };
+
+  const sendNudge = async (playerIds?: string[]) => {
+    setNudgeLoading(true);
+    setNudgeMsg(null);
+    setNudgeError(null);
+    try {
+      const response = await fetch('/api/trainer/nudge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          teamId: selectedTeamId || undefined,
+          playerIds: playerIds && playerIds.length > 0 ? playerIds : undefined,
+        }),
+      });
+      const body = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setNudgeError(typeof body.error === 'string' ? body.error : 'Erinnerung fehlgeschlagen.');
+        return;
+      }
+      const sent = typeof body.sent === 'number' ? body.sent : 0;
+      const noSub = typeof body.skippedNoSub === 'number' ? body.skippedNoSub : 0;
+      const logged = typeof body.skippedAlreadyLogged === 'number' ? body.skippedAlreadyLogged : 0;
+      setNudgeMsg(
+        `Erinnerung gesendet: ${sent}` +
+          (noSub ? ` · ohne Push: ${noSub}` : '') +
+          (logged ? ` · schon geloggt: ${logged}` : '')
+      );
+    } catch {
+      setNudgeError('Netzwerkfehler — bitte erneut versuchen.');
+    } finally {
+      setNudgeLoading(false);
+      setNudgePlayerId(null);
+    }
+  };
 
   const shareRoster = async () => {
     const teamName = teams.find((t) => t.id === selectedTeamId)?.name ?? 'Team';
@@ -253,9 +316,9 @@ export default function TrainerDashboardPage() {
         } · ${logAgeLabel(m)}`
     );
     const text = [
-      `CyclesGuard · ${teamName}`,
+      `CyclesGuard · ${teamName}${sessionMode ? ' · Session-Freeze' : ''}`,
       `${new Date().toLocaleString('de-DE')}`,
-      `Geloggt heute: ${loggedTodayCount}/${team.length}`,
+      `Geloggt heute: ${loggedTodayCount}/${displayTeam.length}`,
       '',
       ...lines,
       '',
@@ -310,15 +373,29 @@ export default function TrainerDashboardPage() {
             <button
               type="button"
               onClick={() => void shareRoster()}
-              disabled={team.length === 0}
+              disabled={displayTeam.length === 0}
               className="flex items-center gap-2 min-h-12 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-sm disabled:opacity-40"
             >
               <Share2 className="w-4 h-4" />
               Teilen
             </button>
             <button
+              type="button"
+              onClick={toggleSessionMode}
+              disabled={team.length === 0 && !sessionMode}
+              className={`flex items-center gap-2 min-h-12 px-4 py-2.5 rounded-xl border text-sm disabled:opacity-40 ${
+                sessionMode
+                  ? 'bg-sage/15 border-sage/40 text-sage'
+                  : 'bg-white/5 border-white/10 hover:bg-white/10'
+              }`}
+              title="Ampel für die Einheit einfrieren"
+            >
+              {sessionMode ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+              {sessionMode ? 'Session an' : 'Session'}
+            </button>
+            <button
               onClick={() => loadTeamStatus(selectedTeamId || undefined)}
-              disabled={isLoading}
+              disabled={isLoading || sessionMode}
               className="flex items-center gap-2 min-h-12 px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-sm disabled:opacity-50"
             >
               {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
@@ -446,13 +523,18 @@ export default function TrainerDashboardPage() {
           </section>
         )}
 
-        {!isLoading && team.length > 0 && (
+        {!isLoading && displayTeam.length > 0 && (
           <>
+            {sessionMode && (
+              <p className="text-xs text-sage print:hidden">
+                Session-Modus: Ampel eingefroren für die Einheit — Aktualisieren deaktiviert.
+              </p>
+            )}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               <div className="glass-card p-4 border border-white/10">
                 <p className="text-xs text-cream/50 mb-1">Heute geloggt</p>
                 <p className="text-2xl font-semibold">
-                  {loggedTodayCount}/{team.length}
+                  {loggedTodayCount}/{displayTeam.length}
                 </p>
               </div>
               <div className="glass-card p-4 border border-white/10">
@@ -479,7 +561,7 @@ export default function TrainerDashboardPage() {
               })}
             </div>
 
-            {trend7d.playerDays > 0 && (
+            {displayTrend.playerDays > 0 && (
               <div className="glass-card p-4 border border-white/10 space-y-2">
                 <p className="text-xs text-cream/50">
                   Ampel 7 Tage · Spielerinnen-Tage (ohne Gesundheitsrohdaten)
@@ -489,16 +571,40 @@ export default function TrainerDashboardPage() {
                     (status) => (
                       <div key={status} className="flex justify-between gap-2 rounded-lg bg-white/5 px-3 py-2">
                         <span className="text-cream/55 truncate">{getStatusLabel(status)}</span>
-                        <span className="font-medium tabular-nums">{trend7d[status]}</span>
+                        <span className="font-medium tabular-nums">{displayTrend[status]}</span>
                       </div>
                     )
                   )}
                 </div>
                 <p className="text-[11px] text-cream/35">
-                  {trend7d.NO_DATA} von {trend7d.playerDays} Tage ohne Log
+                  {displayTrend.NO_DATA} von {displayTrend.playerDays} Tage ohne Log
                 </p>
               </div>
             )}
+
+            {nudgeableMissingIds.length > 0 && (
+              <div className="glass-card p-4 border border-white/10 flex flex-col sm:flex-row sm:items-center gap-3 print:hidden">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium flex items-center gap-2">
+                    <Bell className="w-4 h-4 text-rose-gold" />
+                    Fehlende Logs erinnern
+                  </p>
+                  <p className="text-xs text-cream/45 mt-1">
+                    Push nur „bitte heute loggen“ — keine Ampel-/Gesundheitsdaten in der Vorschau.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => void sendNudge(nudgeableMissingIds)}
+                  disabled={nudgeLoading || sessionMode}
+                  className="min-h-11 px-4 rounded-xl bg-rose-gold text-navy text-sm font-medium disabled:opacity-40 shrink-0"
+                >
+                  {nudgeLoading ? 'Sende…' : `${nudgeableMissingIds.length} erinnern`}
+                </button>
+              </div>
+            )}
+            {nudgeMsg && <p className="text-sm text-sage print:hidden">{nudgeMsg}</p>}
+            {nudgeError && <p className="text-sm text-menstrual print:hidden">{nudgeError}</p>}
 
             <div className="flex flex-wrap gap-2 print:hidden">
               {(
@@ -536,7 +642,7 @@ export default function TrainerDashboardPage() {
           <div className="flex justify-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-rose-gold" />
           </div>
-        ) : team.length === 0 ? (
+        ) : displayTeam.length === 0 ? (
           <div className="glass-card p-12 text-center print:hidden">
             <Users className="w-10 h-10 text-cream/30 mx-auto mb-4" />
             {teams.length === 0 ? (
@@ -604,6 +710,21 @@ export default function TrainerDashboardPage() {
                       {member.recommendation}
                     </p>
                     <div className="flex flex-wrap gap-2 print:hidden shrink-0">
+                      {!member.loggedToday && !member.invitePending && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setNudgePlayerId(member.playerId);
+                            void sendNudge([member.playerId]);
+                          }}
+                          disabled={nudgeLoading || sessionMode}
+                          className="min-h-11 px-3 rounded-lg bg-white/10 text-xs sm:text-sm text-cream/80 hover:bg-white/15 disabled:opacity-50"
+                        >
+                          {nudgePlayerId === member.playerId && nudgeLoading
+                            ? 'Sende…'
+                            : 'Erinnern'}
+                        </button>
+                      )}
                       {member.invitePending && (
                         <button
                           type="button"
@@ -640,7 +761,7 @@ export default function TrainerDashboardPage() {
 
         <PilotFeedbackCapture
           context="trainer_dashboard"
-          enabled={!isLoading && team.length > 0}
+          enabled={!isLoading && displayTeam.length > 0}
         />
 
         <p className="text-center text-xs text-cream/30 pt-4 print:hidden">

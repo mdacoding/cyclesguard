@@ -7,8 +7,9 @@ import SessionSummaryCard from './components/SessionSummaryCard';
 import { mapDbCycleLog } from '@/lib/cycle-log-mapper';
 import { isSameBerlinDay } from '@/lib/date';
 import { computeLoggingStreak } from '@/lib/player-insights';
+import { streakGoalProgress, STREAK_GOAL_DAYS } from '@/lib/adherence';
 import { redirect } from 'next/navigation';
-import { CalendarDays, Settings, Sparkles, Flame, CheckCircle2 } from 'lucide-react';
+import { CalendarDays, Settings, Sparkles, Flame, CheckCircle2, Target } from 'lucide-react';
 import Link from 'next/link';
 import LogoutButton from '@/components/LogoutButton';
 import PilotFeedbackCapture from '@/components/PilotFeedbackCapture';
@@ -41,6 +42,7 @@ export default async function DashboardPage() {
   const isFirstRun = logs.length === 0;
   const bannerLog = todayLog ?? lastLog;
   const streak = computeLoggingStreak(logs);
+  const goal = streakGoalProgress(streak, STREAK_GOAL_DAYS);
 
   const { data: sessionRow } = await supabase
     .from('session_summaries')
@@ -78,6 +80,12 @@ export default async function DashboardPage() {
                     Streak {streak} {streak === 1 ? 'Tag' : 'Tage'}
                   </span>
                 )}
+                <span className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-cream/70">
+                  <Target className="w-3.5 h-3.5 text-sage" aria-hidden />
+                  {goal.met
+                    ? `Ziel ${goal.goal}d erreicht`
+                    : `Ziel ${goal.streak}/${goal.goal} Tage`}
+                </span>
               </div>
             )}
           </div>
@@ -111,6 +119,29 @@ export default async function DashboardPage() {
                   Deine Daten bleiben privat — Trainer sehen nur aggregierte Readiness.
                 </p>
               </div>
+            </div>
+          </section>
+        )}
+
+        {!isFirstRun && !todayLog && (
+          <section className="glass-card p-5 border border-rose-gold/25 bg-rose-gold/5 animate-slideUp">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="flex-1 min-w-0">
+                <h2 className="font-semibold text-base mb-1">Heute noch offen — Streak retten</h2>
+                <p className="text-sm text-cream/65">
+                  {goal.met
+                    ? `Dein ${goal.goal}-Tage-Ziel steht. Ein kurzer Eintrag hält den Streak.`
+                    : streak > 0
+                      ? `Noch ${goal.remaining} ${goal.remaining === 1 ? 'Tag' : 'Tage'} bis zum ${goal.goal}-Tage-Ziel.`
+                      : `Starte neu — Ziel: ${goal.goal} Tage hintereinander loggen.`}
+                </p>
+              </div>
+              <a
+                href="#log"
+                className="inline-flex items-center justify-center min-h-11 px-4 rounded-xl bg-rose-gold text-navy text-sm font-medium shrink-0"
+              >
+                Jetzt loggen
+              </a>
             </div>
           </section>
         )}

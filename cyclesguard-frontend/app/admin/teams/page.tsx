@@ -31,6 +31,7 @@ interface TeamRow {
   loggedToday?: number;
   trainerCount?: number;
   trainersActive7d?: number;
+  adherenceSeries7d?: { day: string; logged: number; pct: number }[];
 }
 
 interface MemberRow {
@@ -1613,6 +1614,24 @@ export default function AdminTeamsPage() {
                       </strong>
                       {team.playerCount > 0 ? (
                         <span className="text-cream/40"> · Ziel ≥70%</span>
+                      ) : null}
+                      {team.adherenceSeries7d && team.adherenceSeries7d.length > 0 ? (
+                        <div
+                          className="mt-2 flex items-end gap-0.5 h-8"
+                          title="Adherence % pro Tag (7 Tage)"
+                          aria-label="Adherence 7-Tage-Serie"
+                        >
+                          {team.adherenceSeries7d.map((p) => (
+                            <div
+                              key={p.day}
+                              className={`flex-1 min-w-[4px] rounded-sm ${
+                                p.pct >= 70 ? 'bg-sage/70' : p.pct > 0 ? 'bg-rose-gold/55' : 'bg-white/15'
+                              }`}
+                              style={{ height: `${Math.max(8, p.pct)}%` }}
+                              title={`${p.day}: ${p.pct}% (${p.logged})`}
+                            />
+                          ))}
+                        </div>
                       ) : null}
                     </div>
                   </button>

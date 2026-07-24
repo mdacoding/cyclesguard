@@ -4,6 +4,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createAdminClient, isClubAdmin } from '@/lib/supabase/admin';
 import { assertClubScope } from '@/lib/admin-scope';
 import { startOfBerlinDayUtc } from '@/lib/date';
+import { buildAdherenceSeries } from '@/lib/adherence';
 
 const CreateTeamSchema = z.object({
   name: z.string().min(1).max(120),
@@ -96,6 +97,7 @@ export async function GET(request: Request) {
   );
   const loggedUsers = new Set<string>();
   const loggedTodayUsers = new Set<string>();
+  let recentLogs: { user_id: string; logged_at: string }[] = [];
   if (allPlayerIds.length > 0) {
     const todayStart = startOfBerlinDayUtc().toISOString();
     const { data: logs } = await admin
@@ -103,7 +105,11 @@ export async function GET(request: Request) {
       .select('user_id, logged_at')
       .in('user_id', allPlayerIds)
       .gte('logged_at', sevenDaysAgo.toISOString());
-    for (const l of logs ?? []) {
+    recentLogs = (logs ?? []).map((l) => ({
+      user_id: l.user_id as string,
+      logged_at: l.logged_at as string,
+    }));
+    for (const l of recentLogs) {
       loggedUsers.add(l.user_id);
       if (l.logged_at && l.logged_at >= todayStart) {
         loggedTodayUsers.add(l.user_id);
@@ -121,6 +127,7 @@ export async function GET(request: Request) {
       const seen = trainerLastSeen.get(id);
       return seen != null && seen >= sevenDaysAgo.toISOString();
     }).length;
+    const adherenceSeries7d = buildAdherenceSeries(playerIds, recentLogs, 7);
 
     result.push({
       id: team.id,
@@ -132,6 +139,7 @@ export async function GET(request: Request) {
       loggedToday,
       trainerCount: trainerIds.length,
       trainersActive7d,
+      adherenceSeries7d,
     });
   }
 
