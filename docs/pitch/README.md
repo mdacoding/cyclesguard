@@ -15,6 +15,8 @@ Produkt ist club-agnostisch launch-ready — Outreach parallel zu mehreren Verei
 | **[DATENSCHUTZ-DOSB-1-PAGER.md](./DATENSCHUTZ-DOSB-1-PAGER.md)** | 1-Pager (parallel zu `/privacy`) |
 | **[SPIELERINNEN-INFO.md](./SPIELERINNEN-INFO.md)** | Info + Einwilligungs-Vorlage |
 | Live: `/spielerinnen-info` | Druckbare Vorlage (Ctrl/Cmd+P → PDF) |
+| [AUTH-EMAIL-TEMPLATES.md](./AUTH-EMAIL-TEMPLATES.md) | Supabase Invite/Reset Copy (DE) |
+| [MULTI-CLUB-OPS.md](./MULTI-CLUB-OPS.md) | Zweiten Verein ohne SQL |
 | [DEMO-ACCOUNTS.md](./DEMO-ACCOUNTS.md) | Pitch-Logins (intern) |
 | [TRAINER-ONBOARDING.md](./TRAINER-ONBOARDING.md) | Athletik 1-Seite |
 | [PILOT-FEEDBACK.md](./PILOT-FEEDBACK.md) | Wochen-Call |

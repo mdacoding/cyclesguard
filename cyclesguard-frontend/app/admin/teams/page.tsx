@@ -1437,13 +1437,21 @@ export default function AdminTeamsPage() {
                 </span>
               </div>
               <p className="text-xs text-cream/50">
-                Verein → Team → Saison → Invites. Öffentliche Pitch-Seiten:{' '}
+                Verein → Team → Saison → Invites. Soft-Pilot-Pack:{' '}
                 <a href="/privacy" className="text-cream/70 hover:text-rose-gold">
                   /privacy
                 </a>
                 {' · '}
                 <a href="/pilot" className="text-cream/70 hover:text-rose-gold">
                   /pilot
+                </a>
+                {' · '}
+                <a href="/spielerinnen-info" className="text-cream/70 hover:text-rose-gold">
+                  /spielerinnen-info
+                </a>
+                {' · '}
+                <a href="/trainer/onboarding" className="text-cream/70 hover:text-rose-gold">
+                  Trainer-Onboarding
                 </a>
               </p>
               <ul className="grid sm:grid-cols-2 gap-2 text-sm">

@@ -14,9 +14,11 @@
 | `supabase login` + `link --project-ref jgtqtuwtrulwehrtcydf` | ✅ |
 | `db push` Migrationen (inkl. RLS-Fixes) | ✅ |
 | UUID-Fix (`gen_random_uuid` statt `uuid-ossp`) | ✅ |
-| `npm run seed:eintracht` | ✅ Ampel-Demo-Daten |
+| `npm run seed:demo` | ✅ Ampel-Demo-Daten |
 | Vercel Production Deploy | ✅ live |
 | Auth Redirect URLs (callback + set-password) | ✅ siehe unten |
+| Auth E-Mail Templates (DE Soft-Pilot) | ☐ Founder — [`AUTH-EMAIL-TEMPLATES.md`](./AUTH-EMAIL-TEMPLATES.md) |
+| Migration `018_api_rate_limits` | ✅ Soft-Pilot durable limits |
 
 Docker-Warnung nach `db push` („failed to cache migrations catalog“) ist **harmlos** — betrifft nur lokales Docker-Image-Caching, nicht die Cloud-DB.
 

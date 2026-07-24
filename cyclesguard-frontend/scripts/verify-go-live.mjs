@@ -34,6 +34,8 @@ const steps = [
   ['unit', ['npm', ['test']]],
   ['rls-trainer', ['npm', ['run', 'verify:rls-trainer']]],
   ['rls-privacy', ['npm', ['run', 'verify:rls-privacy', '--', baseUrl]]],
+  ['invite-flow', ['npm', ['run', 'verify:invite-flow', '--', baseUrl]]],
+  ['sentry', ['npm', ['run', 'verify:sentry']]],
   ['cron', ['npm', ['run', 'verify:cron', '--', baseUrl]]],
   ['admin-dryrun', ['npm', ['run', 'verify:admin-dryrun', '--', baseUrl]]],
   ['push-live', ['npm', ['run', 'verify:push-live', '--', baseUrl]]],

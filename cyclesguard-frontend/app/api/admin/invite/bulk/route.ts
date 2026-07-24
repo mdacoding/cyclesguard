@@ -8,7 +8,7 @@ import {
   BULK_INVITE_MAX_ROWS,
   parseInviteCsv,
 } from '@/lib/admin-invite';
-import { checkRateLimit, sleep } from '@/lib/rate-limit';
+import { checkRateLimitDurable, sleep } from '@/lib/rate-limit';
 
 const BulkJsonSchema = z.object({
   teamId: z.string().uuid(),
@@ -33,7 +33,8 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   if (!isClubAdmin(user)) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
-  const limit = checkRateLimit(`bulk-invite:${user.id}`, 3, 10 * 60 * 1000);
+  const admin = createAdminClient();
+  const limit = await checkRateLimitDurable(admin, `bulk-invite:${user.id}`, 3, 10 * 60 * 1000);
   if (!limit.ok) {
     return NextResponse.json(
       { error: 'Zu viele Bulk-Imports. Bitte später erneut versuchen.' },
@@ -87,7 +88,6 @@ export async function POST(request: Request) {
     );
   }
 
-  const admin = createAdminClient();
   const scoped = await assertClubScope(
     admin,
     user.id,

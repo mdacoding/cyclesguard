@@ -12,6 +12,7 @@ import {
 } from '@/lib/trainer-status';
 import { CyclePhase } from '@/lib/types';
 import { berlinCalendarDaysBetween, isSameBerlinDay } from '@/lib/date';
+import { assertCoachSafeTeamStatus } from '@/lib/trainer-status-contract';
 
 export interface TeamStatusEntry {
   playerId: string;
@@ -187,5 +188,6 @@ export async function GET(request: Request) {
 
   const trend7d = computeReadinessTrend7d(playerIds, logs ?? []);
 
-  return NextResponse.json({ players: result, trend7d } satisfies TeamStatusResponse);
+  const payload = assertCoachSafeTeamStatus({ players: result, trend7d });
+  return NextResponse.json(payload);
 }

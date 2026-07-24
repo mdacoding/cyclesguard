@@ -1,6 +1,6 @@
 # CyclesGuard — Implementation Plan
 
-**Stand:** 23.07.2026  
+**Stand:** 24.07.2026  
 **Nordstern:** [`LAUNCH-PLAN.md`](../product/LAUNCH-PLAN.md) — bestmögliches Feature-Set für maximalen Launch-Erfolg  
 **Zeitachsen:** [`FINISH-PLAN.md`](../product/FINISH-PLAN.md)  
 **Live:** https://cyclesguard.vercel.app  
@@ -34,12 +34,14 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 | Trust-Checks automatisiert + live verifiziert | ✅ 23.07. — Cron/RLS/Admin-Dry-Run gegen Prod grün |
 | Founder Sign-off (Sentry DSN, Demo-Mode off, AVV) | ◐ Sentry ✅ · Demo-Mode off ✅ · AVV-Versand Founder — [`FOUNDER-SECRETS.md`](../pitch/FOUNDER-SECRETS.md) |
 
-**Als Nächstes:** Outreach-Tracking abarbeiten ([`OUTREACH-TRACKING.md`](../pitch/OUTREACH-TRACKING.md)) · `seed:demo` · Trainer-last_seen KPI ✅ · AVV bei Club-Adresse.
+**Als Nächstes (Eng):** Pilot-Polish — Ampel-Contract, durable Invite-Limits, Auth-Mail-Docs, Multi-Club Ops, `verify:invite-flow` / `verify:sentry`.  
+**Als Nächstes (Founder):** Outreach-Tracking · Auth-URLs · Impressum-Straße · AVV bei Club-Adresse.
 
 **Daily-Ship-Log (jeden Tag ein Fortschritt):**
 
 | Datum | Was |
 |-------|-----|
+| 24.07. | SaaS Pilot-Polish: team-status Zod-Allowlist · Postgres rate-limit 018 · Auth-Mail + Multi-Club Docs · Admin First-Run Links · invite/sentry verify |
 | 22.07. | L1–L3 Feature-Set + Audit-Fixes (Club-Scope Feedback, Heute-KPI) |
 | 23.07. | Trust live + Demo off + CI-Secrets/Lean-CI + Push-Payload-Tests + **Sentry EU DSN Prod** (`sentry:ok`) + AVV-Mail-Entwurf |
 | 23.07. | Soft-Pilot UX: Passwort setzen nach Invite, Forgot-Password, Invite-only Login (Demo off), PWA-Install-Banner, Landing Soft-Pilot-CTA first |

@@ -47,7 +47,8 @@ npm run pitch:env-checklist
 
 - [x] DSN in Production gesetzt (GO-LIVE A1, 23.07.2026)
 - [x] Strip-Logic unit-getestet (`sentry-strip.test.ts`)
-- [ ] Ein Test-Event sichtbar (Founder: einmal Smoke in Sentry UI)
+- [x] Lokal prüfbar: `npm run verify:sentry` · optional `VERIFY_SENTRY_SEND=1` für ein Test-Event
+- [ ] Ein Test-Event in Sentry UI sichtbar (Founder einmal Smoke)
 - [x] Keine Zyklus-Rohdaten in Event-Payloads (Code + Unit)
 
 Roadmap: empfohlen vor Soft-Pilot mit echten Spielerinnen.

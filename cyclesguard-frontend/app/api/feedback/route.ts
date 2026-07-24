@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createAdminClient, isClubAdmin, isTrainer } from '@/lib/supabase/admin';
 import { getAdminClubIds } from '@/lib/admin-scope';
-import { checkRateLimit } from '@/lib/rate-limit';
+import { checkRateLimitDurable } from '@/lib/rate-limit';
 
 const FeedbackSchema = z.object({
   score: z.number().int().min(1).max(5),
@@ -57,7 +57,8 @@ export async function POST(request: Request) {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const limit = checkRateLimit(`feedback:${user.id}`, 5, 60 * 60 * 1000);
+  const admin = createAdminClient();
+  const limit = await checkRateLimitDurable(admin, `feedback:${user.id}`, 5, 60 * 60 * 1000);
   if (!limit.ok) {
     return NextResponse.json(
       { error: 'Zu viele Feedbacks. Bitte später erneut versuchen.' },
@@ -70,7 +71,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
   }
 
-  const admin = createAdminClient();
   const role = resolveRole(user);
   const clubId = await resolveUserClubId(admin, user.id);
 

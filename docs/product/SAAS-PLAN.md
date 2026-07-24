@@ -1,6 +1,6 @@
 # CyclesGuard — SaaS Product Plan (CTO)
 
-**Stand:** 22.07.2026  
+**Stand:** 24.07.2026  
 **Repo:** https://github.com/mdacoding/cyclesguard  
 **Live:** https://cyclesguard.vercel.app  
 **North star:** Privacy-first readiness platform for women’s football clubs in DACH → later EU.
@@ -83,10 +83,12 @@ Pitch-Ready ✅ → Soft-Pilot Tech ✅ → M1 tech-ready → Soft-Pilot (8–12
 
 | Prio | Action |
 |------|--------|
-| **Launch Engineering** | [`LAUNCH-PLAN.md`](./LAUNCH-PLAN.md) L1→L3 — Kabine, KPIs, Onboarding, Trust |
-| **Kritischer Sales-Pfad** | Outreach / Termin (`OUTREACH.md`) |
-| **Legal** | AVV/DSB früh |
+| **Pilot-Polish (Eng)** | Trainer-Contract · durable Rate-Limits · Invite/Sentry verify · Multi-Club Ops |
+| **Kritischer Sales-Pfad** | Outreach / Termin (`OUTREACH-TRACKING.md`) |
+| **Legal** | AVV/DSB bei Club-Adresse · Auth-Mail-Templates (`AUTH-EMAIL-TEMPLATES.md`) |
 | **Nach Proof (L4)** | Stripe, Self-Serve Multi-Tenant |
+
+**Stand Eng 24.07.:** L1–L3 ✅ · Runtime Ampel-Allowlist · `consume_rate_limit` (018) · `/spielerinnen-info`
 
 ---
 

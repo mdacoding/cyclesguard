@@ -1,6 +1,11 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { buildTrainerInsight, getRecommendation, getStatusLabel } from './trainer-status';
+import {
+  assertCoachSafeTeamStatus,
+  TEAM_STATUS_ENTRY_KEYS,
+  TeamStatusEntrySchema,
+} from './trainer-status-contract';
 
 const FORBIDDEN = /menstru|zyklus|eisprung|ovulation|symptom|krämpfe|periode/i;
 
@@ -19,32 +24,60 @@ describe('trainer-facing copy never leaks medical terms', () => {
   });
 });
 
-describe('team-status response contract (shape)', () => {
+describe('team-status response contract (runtime allowlist)', () => {
   it('documents allowed keys for trainer clients', () => {
-    const allowed = new Set([
-      'playerId',
-      'name',
-      'status',
-      'loadFlag',
-      'recommendation',
-      'loggedToday',
-      'daysSinceLog',
-      'invitePending',
-    ]);
     const sample = {
       playerId: 'x',
       name: 'Anna',
-      status: 'FIT',
-      loadFlag: 'UNKNOWN',
+      status: 'FIT' as const,
+      loadFlag: 'UNKNOWN' as const,
       recommendation: 'Volle Belastung möglich',
       loggedToday: true,
       daysSinceLog: 0,
       invitePending: false,
     };
-    for (const key of Object.keys(sample)) {
-      assert.ok(allowed.has(key), `unexpected key ${key}`);
-    }
-    assert.equal('phase' in sample, false);
-    assert.equal('symptoms' in sample, false);
+    const parsed = TeamStatusEntrySchema.parse(sample);
+    assert.deepEqual(Object.keys(parsed).sort(), [...TEAM_STATUS_ENTRY_KEYS].sort());
+  });
+
+  it('rejects Art.-9 keys via .strict()', () => {
+    assert.throws(() =>
+      TeamStatusEntrySchema.parse({
+        playerId: 'x',
+        name: 'Anna',
+        status: 'FIT',
+        loadFlag: 'NORMAL',
+        recommendation: 'ok',
+        loggedToday: false,
+        daysSinceLog: null,
+        invitePending: false,
+        phase: 'menstrual',
+      })
+    );
+  });
+
+  it('assertCoachSafeTeamStatus accepts valid payload', () => {
+    const safe = assertCoachSafeTeamStatus({
+      players: [
+        {
+          playerId: 'p1',
+          name: 'Anna',
+          status: 'FIT',
+          loadFlag: 'NORMAL',
+          recommendation: 'Volle Belastung möglich',
+          loggedToday: true,
+          daysSinceLog: 0,
+          invitePending: false,
+        },
+      ],
+      trend7d: {
+        FIT: 1,
+        MODIFIED_TRAINING: 0,
+        REST: 0,
+        NO_DATA: 0,
+        playerDays: 1,
+      },
+    });
+    assert.equal(safe.players.length, 1);
   });
 });

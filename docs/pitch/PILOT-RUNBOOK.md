@@ -3,6 +3,8 @@
 **Ziel:** Nach Zusage echte Freiwillige onboarden, ohne die Pitch-Demo zu zerstören.  
 **Live:** https://cyclesguard.vercel.app
 
+**Vorlagen:** [`AUTH-EMAIL-TEMPLATES.md`](./AUTH-EMAIL-TEMPLATES.md) · Multi-Club: [`MULTI-CLUB-OPS.md`](./MULTI-CLUB-OPS.md)
+
 ---
 
 ## 0. Vorbedingungen (einmalig)
@@ -24,8 +26,8 @@
 
 **Empfehlung:**
 
-1. Pitch-Demo-Accounts behalten (Seed-Team „Eintracht Frankfurt Frauen“).
-2. Für den Pilot ein **neues Team** anlegen (Admin UI `/admin/teams` oder Trainer-Invite auf bestehendem Club-Team).
+1. Pitch-Demo-Accounts behalten (Seed-Team „CyclesGuard Demo Frauen“).
+2. Für den Pilot ein **neues Team** anlegen — siehe [`MULTI-CLUB-OPS.md`](./MULTI-CLUB-OPS.md).
 3. Echte Spielerinnen **nur** per Trainer-Invite / Roster-Add — nie Passwort der Demo teilen.
 
 Demo-Passwort (`CyclesGuard2026!`) bleibt **intern**.
