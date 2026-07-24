@@ -20,6 +20,8 @@ export const TeamStatusEntrySchema = z
     loggedToday: z.boolean(),
     daysSinceLog: z.number().int().nullable(),
     invitePending: z.boolean(),
+    /** Coach-safe: at least one Web Push subscription. */
+    hasPush: z.boolean(),
   })
   .strict();
 
@@ -71,4 +73,5 @@ export const TEAM_STATUS_ENTRY_KEYS = [
   'loggedToday',
   'daysSinceLog',
   'invitePending',
+  'hasPush',
 ] as const;

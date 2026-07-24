@@ -16,8 +16,10 @@ import {
   Pencil,
   ClipboardList,
   MessageSquareHeart,
+  Copy,
 } from 'lucide-react';
 import LogoutButton from '@/components/LogoutButton';
+import { buildWeeklyCallMarkdown } from '@/lib/pilot-scorecard';
 
 type AdminTab = 'roster' | 'season' | 'compliance';
 
@@ -31,6 +33,8 @@ interface TeamRow {
   loggedToday?: number;
   trainerCount?: number;
   trainersActive7d?: number;
+  pushOptIn?: number;
+  consentedCount?: number;
   adherenceSeries7d?: { day: string; logged: number; pct: number }[];
 }
 
@@ -145,6 +149,7 @@ export default function AdminTeamsPage() {
   const [feedbackAvgByRole, setFeedbackAvgByRole] = useState<Record<string, number>>({});
   const [feedbackItems, setFeedbackItems] = useState<FeedbackItem[]>([]);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [scorecardCopyMsg, setScorecardCopyMsg] = useState<string | null>(null);
 
   const [opsStatus, setOpsStatus] = useState<{
     push: { ready: boolean; vapidPublicConfigured: boolean; vapidPrivateConfigured: boolean };
@@ -697,6 +702,39 @@ export default function AdminTeamsPage() {
   ).length;
   const trainerCount = teams.reduce((sum, t) => sum + (t.trainerCount ?? 0), 0);
   const trainersActive7d = teams.reduce((sum, t) => sum + (t.trainersActive7d ?? 0), 0);
+  const pushOptInTotal = teams.reduce((sum, t) => sum + (t.pushOptIn ?? 0), 0);
+  const consentedTotal = teams.reduce((sum, t) => sum + (t.consentedCount ?? 0), 0);
+
+  const copyWeeklyScorecard = async () => {
+    const scope =
+      clubs.length === 1
+        ? clubs[0].name
+        : clubs.length > 1
+          ? `${clubs.length} Vereine`
+          : 'CyclesGuard Soft-Pilot';
+    const md = buildWeeklyCallMarkdown({
+      clubOrScopeLabel: scope,
+      players: totalPlayers,
+      loggedToday: loggedTodayPlayers,
+      logged7d: loggedPlayers,
+      adherencePct,
+      trainers: trainerCount,
+      trainersActive7d,
+      feedbackAvg,
+      feedbackTrainerAvg: feedbackAvgByRole.trainer ?? null,
+      feedbackPlayerAvg: feedbackAvgByRole.player ?? null,
+      pushOptIn: pushOptInTotal,
+      consented: consentedTotal,
+      teamsBelowTarget,
+    });
+    setScorecardCopyMsg(null);
+    try {
+      await navigator.clipboard.writeText(md);
+      setScorecardCopyMsg('Scorecard in Zwischenablage — bereit für Wochen-Call.');
+    } catch {
+      setScorecardCopyMsg('Kopieren fehlgeschlagen — bitte CSV nutzen.');
+    }
+  };
 
   const selectedClub = clubs.find((c) => c.id === seasonClubId);
   const clubSeasons = seasons.filter((s) => s.clubId === seasonClubId);
@@ -1219,7 +1257,7 @@ export default function AdminTeamsPage() {
               <p className="text-xs text-cream/50">
                 Kurz für PILOT-FEEDBACK.md — ohne Gesundheitsrohdaten.
               </p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 <div className="rounded-xl bg-white/5 border border-white/10 p-3">
                   <p className="text-[11px] text-cream/45 mb-1">Adherence 7d</p>
                   <p
@@ -1256,6 +1294,28 @@ export default function AdminTeamsPage() {
                   <p className="text-[11px] text-cream/35">Ziel ≥3×/Woche · Kabine</p>
                 </div>
                 <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                  <p className="text-[11px] text-cream/45 mb-1">Push Opt-in</p>
+                  <p className="text-xl font-semibold">
+                    {totalPlayers === 0
+                      ? '—'
+                      : `${Math.round((pushOptInTotal / totalPlayers) * 100)}%`}
+                  </p>
+                  <p className="text-[11px] text-cream/35">
+                    {pushOptInTotal}/{totalPlayers || 0}
+                  </p>
+                </div>
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3">
+                  <p className="text-[11px] text-cream/45 mb-1">Consent</p>
+                  <p className="text-xl font-semibold">
+                    {totalPlayers === 0
+                      ? '—'
+                      : `${Math.round((consentedTotal / totalPlayers) * 100)}%`}
+                  </p>
+                  <p className="text-[11px] text-cream/35">
+                    {consentedTotal}/{totalPlayers || 0} · Funnel
+                  </p>
+                </div>
+                <div className="rounded-xl bg-white/5 border border-white/10 p-3">
                   <p className="text-[11px] text-cream/45 mb-1">Feedback Ø</p>
                   <p
                     className={`text-xl font-semibold ${
@@ -1273,13 +1333,30 @@ export default function AdminTeamsPage() {
                   </p>
                 </div>
               </div>
-              <a
-                href="/api/admin/teams?format=csv"
-                className="inline-flex items-center gap-2 text-xs text-cream/50 hover:text-rose-gold w-fit"
-              >
-                <Download className="w-3.5 h-3.5" />
-                Adherence CSV für Wochen-Call
-              </a>
+              <p className="text-xs text-cream/40">
+                Funnel: eingeladen {totalPlayers} → Consent {consentedTotal} → Log 7d{' '}
+                {loggedPlayers} → Push {pushOptInTotal}
+              </p>
+              <div className="flex flex-wrap gap-3 items-center">
+                <button
+                  type="button"
+                  onClick={() => void copyWeeklyScorecard()}
+                  className="inline-flex items-center gap-2 min-h-11 px-4 rounded-xl bg-rose-gold text-navy text-sm font-medium"
+                >
+                  <Copy className="w-4 h-4" />
+                  Wochen-Call kopieren
+                </button>
+                <a
+                  href="/api/admin/teams?format=csv"
+                  className="inline-flex items-center gap-2 text-xs text-cream/50 hover:text-rose-gold w-fit"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Adherence CSV
+                </a>
+              </div>
+              {scorecardCopyMsg && (
+                <p className="text-sm text-sage">{scorecardCopyMsg}</p>
+              )}
             </section>
 
             <section className="glass-card p-5 space-y-3">

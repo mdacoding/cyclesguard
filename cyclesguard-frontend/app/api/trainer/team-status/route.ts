@@ -26,6 +26,8 @@ export interface TeamStatusEntry {
   daysSinceLog: number | null;
   /** Coach-safe: never completed first login — invite/setup mail may be resent. */
   invitePending: boolean;
+  /** Coach-safe: device has Web Push — nudge can land. */
+  hasPush: boolean;
 }
 
 export interface TeamStatusResponse {
@@ -129,6 +131,15 @@ export async function GET(request: Request) {
       ? loads.sort((a, b) => a - b)[Math.floor(loads.length * 0.75)] ?? 0
       : 0;
 
+  const pushUsers = new Set<string>();
+  const { data: pushRows } = await admin
+    .from('push_subscriptions')
+    .select('user_id')
+    .in('user_id', playerIds);
+  for (const row of pushRows ?? []) {
+    pushUsers.add(row.user_id as string);
+  }
+
   const result: TeamStatusEntry[] = [];
 
   for (const playerId of playerIds) {
@@ -168,6 +179,7 @@ export async function GET(request: Request) {
       loggedToday: log ? isSameBerlinDay(log.logged_at) : false,
       daysSinceLog: log ? berlinCalendarDaysBetween(log.logged_at) : null,
       invitePending: !player.last_sign_in_at,
+      hasPush: pushUsers.has(playerId),
     });
   }
 

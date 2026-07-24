@@ -43,7 +43,7 @@ export async function GET(request: Request) {
     if (clubIds.length === 0) {
       if (new URL(request.url).searchParams.get('format') === 'csv') {
         return new NextResponse(
-          'team,club,status,players,logged_today,logged_7d,still_7d,adherence_pct,trainers,trainers_active_7d\n',
+          'team,club,status,players,logged_today,logged_7d,still_7d,adherence_pct,push_opt_in,consented,trainers,trainers_active_7d\n',
           {
             headers: {
               'Content-Type': 'text/csv; charset=utf-8',
@@ -97,14 +97,20 @@ export async function GET(request: Request) {
   );
   const loggedUsers = new Set<string>();
   const loggedTodayUsers = new Set<string>();
+  const pushUsers = new Set<string>();
+  const consentedUsers = new Set<string>();
   let recentLogs: { user_id: string; logged_at: string }[] = [];
   if (allPlayerIds.length > 0) {
     const todayStart = startOfBerlinDayUtc().toISOString();
-    const { data: logs } = await admin
-      .from('cycle_logs')
-      .select('user_id, logged_at')
-      .in('user_id', allPlayerIds)
-      .gte('logged_at', sevenDaysAgo.toISOString());
+    const [{ data: logs }, { data: pushRows }, { data: consentRows }] = await Promise.all([
+      admin
+        .from('cycle_logs')
+        .select('user_id, logged_at')
+        .in('user_id', allPlayerIds)
+        .gte('logged_at', sevenDaysAgo.toISOString()),
+      admin.from('push_subscriptions').select('user_id').in('user_id', allPlayerIds),
+      admin.from('player_consents').select('user_id').in('user_id', allPlayerIds),
+    ]);
     recentLogs = (logs ?? []).map((l) => ({
       user_id: l.user_id as string,
       logged_at: l.logged_at as string,
@@ -115,6 +121,12 @@ export async function GET(request: Request) {
         loggedTodayUsers.add(l.user_id);
       }
     }
+    for (const row of pushRows ?? []) {
+      pushUsers.add(row.user_id as string);
+    }
+    for (const row of consentRows ?? []) {
+      consentedUsers.add(row.user_id as string);
+    }
   }
 
   const result = [];
@@ -123,6 +135,8 @@ export async function GET(request: Request) {
     const trainerIds = trainersByTeam.get(team.id) ?? [];
     const loggedLast7Days = playerIds.filter((id) => loggedUsers.has(id)).length;
     const loggedToday = playerIds.filter((id) => loggedTodayUsers.has(id)).length;
+    const pushOptIn = playerIds.filter((id) => pushUsers.has(id)).length;
+    const consentedCount = playerIds.filter((id) => consentedUsers.has(id)).length;
     const trainersActive7d = trainerIds.filter((id) => {
       const seen = trainerLastSeen.get(id);
       return seen != null && seen >= sevenDaysAgo.toISOString();
@@ -139,6 +153,8 @@ export async function GET(request: Request) {
       loggedToday,
       trainerCount: trainerIds.length,
       trainersActive7d,
+      pushOptIn,
+      consentedCount,
       adherenceSeries7d,
     });
   }
@@ -146,7 +162,7 @@ export async function GET(request: Request) {
   if (new URL(request.url).searchParams.get('format') === 'csv') {
     const esc = (v: string) => `"${String(v).replaceAll('"', '""')}"`;
     const header =
-      'team,club,status,players,logged_today,logged_7d,still_7d,adherence_pct,trainers,trainers_active_7d\n';
+      'team,club,status,players,logged_today,logged_7d,still_7d,adherence_pct,push_opt_in,consented,trainers,trainers_active_7d\n';
     const body = result
       .map((t) => {
         const adherence =
@@ -160,6 +176,8 @@ export async function GET(request: Request) {
           String(t.loggedLast7Days),
           String(Math.max(0, t.playerCount - t.loggedLast7Days)),
           adherence,
+          String(t.pushOptIn),
+          String(t.consentedCount),
           String(t.trainerCount),
           String(t.trainersActive7d),
         ]

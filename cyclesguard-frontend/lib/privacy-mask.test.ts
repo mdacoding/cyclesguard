@@ -35,6 +35,7 @@ describe('team-status response contract (runtime allowlist)', () => {
       loggedToday: true,
       daysSinceLog: 0,
       invitePending: false,
+      hasPush: true,
     };
     const parsed = TeamStatusEntrySchema.parse(sample);
     assert.deepEqual(Object.keys(parsed).sort(), [...TEAM_STATUS_ENTRY_KEYS].sort());
@@ -51,6 +52,7 @@ describe('team-status response contract (runtime allowlist)', () => {
         loggedToday: false,
         daysSinceLog: null,
         invitePending: false,
+        hasPush: false,
         phase: 'menstrual',
       })
     );
@@ -68,6 +70,7 @@ describe('team-status response contract (runtime allowlist)', () => {
           loggedToday: true,
           daysSinceLog: 0,
           invitePending: false,
+          hasPush: true,
         },
       ],
       trend7d: {

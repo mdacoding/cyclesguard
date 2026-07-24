@@ -24,6 +24,12 @@ import {
   LoadFlag,
   ReadinessTrend7d,
 } from '@/lib/trainer-status';
+import {
+  buildGroupedAmpelShareText,
+  clearSessionFreeze,
+  readSessionFreeze,
+  writeSessionFreeze,
+} from '@/lib/kabine-pack';
 
 interface TeamMember {
   playerId: string;
@@ -34,6 +40,7 @@ interface TeamMember {
   loggedToday: boolean;
   daysSinceLog: number | null;
   invitePending: boolean;
+  hasPush: boolean;
 }
 
 interface TeamOption {
@@ -103,11 +110,21 @@ export default function TrainerDashboardPage() {
       if (!response.ok) throw new Error('Failed to load team status');
       const body = await response.json();
       if (Array.isArray(body)) {
-        setTeam(body as TeamMember[]);
+        setTeam(
+          (body as TeamMember[]).map((m) => ({
+            ...m,
+            hasPush: Boolean(m.hasPush),
+          }))
+        );
         setTrend7d(EMPTY_TREND);
       } else {
         const data = body as { players?: TeamMember[]; trend7d?: ReadinessTrend7d };
-        setTeam(data.players ?? []);
+        setTeam(
+          (data.players ?? []).map((m) => ({
+            ...m,
+            hasPush: Boolean(m.hasPush),
+          }))
+        );
         setTrend7d(data.trend7d ?? EMPTY_TREND);
       }
     } catch {
@@ -125,6 +142,25 @@ export default function TrainerDashboardPage() {
       setShowOnboardHint(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (!selectedTeamId) {
+      setSessionMode(false);
+      setFrozenTeam(null);
+      setFrozenTrend(null);
+      return;
+    }
+    const snap = readSessionFreeze<TeamMember, ReadinessTrend7d>(selectedTeamId);
+    if (snap) {
+      setFrozenTeam(snap.team);
+      setFrozenTrend(snap.trend7d);
+      setSessionMode(true);
+    } else {
+      setSessionMode(false);
+      setFrozenTeam(null);
+      setFrozenTrend(null);
+    }
+  }, [selectedTeamId]);
 
   useEffect(() => {
     if (selectedTeamId) void loadTeamStatus(selectedTeamId);
@@ -244,7 +280,10 @@ export default function TrainerDashboardPage() {
   const nudgeableMissingIds = displayTeam
     .filter((m) => !m.loggedToday && !m.invitePending)
     .map((m) => m.playerId);
-
+  const pushCoverageCount = displayTeam.filter((m) => m.hasPush).length;
+  const missingWithoutPush = displayTeam.filter(
+    (m) => !m.loggedToday && !m.invitePending && !m.hasPush
+  ).length;
 
   const filtered = useMemo(() => {
     switch (filter) {
@@ -261,16 +300,35 @@ export default function TrainerDashboardPage() {
     }
   }, [displayTeam, filter]);
 
+  const printGroups = useMemo(() => {
+    const order: ReadinessStatus[] = ['REST', 'MODIFIED_TRAINING', 'NO_DATA', 'FIT'];
+    return order
+      .map((status) => ({
+        status,
+        members: filtered.filter((m) => m.status === status),
+      }))
+      .filter((g) => g.members.length > 0);
+  }, [filtered]);
+
   const toggleSessionMode = () => {
     if (sessionMode) {
       setSessionMode(false);
       setFrozenTeam(null);
       setFrozenTrend(null);
+      clearSessionFreeze();
       return;
     }
     setFrozenTeam(team);
     setFrozenTrend(trend7d);
     setSessionMode(true);
+    if (selectedTeamId) {
+      writeSessionFreeze({
+        teamId: selectedTeamId,
+        frozenAt: new Date().toISOString(),
+        team,
+        trend7d,
+      });
+    }
   };
 
   const sendNudge = async (playerIds?: string[]) => {
@@ -309,21 +367,12 @@ export default function TrainerDashboardPage() {
 
   const shareRoster = async () => {
     const teamName = teams.find((t) => t.id === selectedTeamId)?.name ?? 'Team';
-    const lines = filtered.map(
-      (m) =>
-        `${m.name}: ${getStatusLabel(m.status)}${
-          m.loadFlag !== 'UNKNOWN' ? ` · ${getLoadLabel(m.loadFlag)}` : ''
-        } · ${logAgeLabel(m)}`
-    );
-    const text = [
-      `CyclesGuard · ${teamName}${sessionMode ? ' · Session-Freeze' : ''}`,
-      `${new Date().toLocaleString('de-DE')}`,
-      `Geloggt heute: ${loggedTodayCount}/${displayTeam.length}`,
-      '',
-      ...lines,
-      '',
-      'Nur Ampel-Signale — keine Gesundheitsrohdaten.',
-    ].join('\n');
+    const text = buildGroupedAmpelShareText({
+      teamName,
+      members: filtered,
+      loggedTodayCount: filtered.filter((m) => m.loggedToday).length,
+      sessionMode,
+    });
 
     setShareMsg(null);
     try {
@@ -332,7 +381,7 @@ export default function TrainerDashboardPage() {
         return;
       }
       await navigator.clipboard.writeText(text);
-      setShareMsg('Roster in Zwischenablage kopiert.');
+      setShareMsg('Ampel-Gruppen in Zwischenablage kopiert.');
     } catch {
       setShareMsg('Teilen abgebrochen oder nicht verfügbar.');
     }
@@ -408,7 +457,14 @@ export default function TrainerDashboardPage() {
         <div className="hidden print:block mb-6">
           <h1 className="font-display text-2xl font-semibold">CyclesGuard · Team Readiness</h1>
           <p className="text-sm opacity-70">
-            {new Date().toLocaleString('de-DE')} · Nur Ampel-Signale, keine Gesundheitsrohdaten
+            {new Date().toLocaleString('de-DE')}
+            {sessionMode ? ' · Session-Freeze' : ''} · Nur Ampel-Signale, keine Gesundheitsrohdaten
+          </p>
+          <p className="text-sm mt-1">
+            Geloggt heute: {loggedTodayCount}/{displayTeam.length}
+            {displayTeam.length > 0
+              ? ` · Push: ${pushCoverageCount}/${displayTeam.length}`
+              : ''}
           </p>
         </div>
 
@@ -548,6 +604,14 @@ export default function TrainerDashboardPage() {
                 </p>
               </div>
             </div>
+            {displayTeam.length > 0 && (
+              <p className="text-xs text-cream/45 print:hidden">
+                Push-Opt-in: {pushCoverageCount}/{displayTeam.length}
+                {missingWithoutPush > 0
+                  ? ` · ${missingWithoutPush} ohne Log und ohne Push (Erinnerung landet nicht)`
+                  : ''}
+              </p>
+            )}
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {(['FIT', 'MODIFIED_TRAINING', 'REST', 'NO_DATA'] as ReadinessStatus[]).map((status) => {
@@ -680,8 +744,13 @@ export default function TrainerDashboardPage() {
             Keine Einträge für diesen Filter.
           </div>
         ) : (
-          <div className="space-y-3">
-            {filtered.map((member) => {
+          <div className="space-y-6">
+            {printGroups.map((group) => (
+              <div key={group.status} className="space-y-3">
+                <h2 className="text-sm font-medium text-cream/55 print:text-black print:mt-4">
+                  {getStatusLabel(group.status)} ({group.members.length})
+                </h2>
+                {group.members.map((member) => {
               const colors = getStatusColor(member.status);
               return (
                 <article
@@ -702,6 +771,7 @@ export default function TrainerDashboardPage() {
                           : ''}
                         {` · ${logAgeLabel(member)}`}
                         {member.invitePending ? ' · Einladung offen' : ''}
+                        {!member.hasPush && !member.invitePending ? ' · ohne Push' : ''}
                       </p>
                     </div>
                   </div>
@@ -719,10 +789,13 @@ export default function TrainerDashboardPage() {
                           }}
                           disabled={nudgeLoading || sessionMode}
                           className="min-h-11 px-3 rounded-lg bg-white/10 text-xs sm:text-sm text-cream/80 hover:bg-white/15 disabled:opacity-50"
+                          title={member.hasPush ? undefined : 'Kein Push — Erinnerung landet nicht'}
                         >
                           {nudgePlayerId === member.playerId && nudgeLoading
                             ? 'Sende…'
-                            : 'Erinnern'}
+                            : member.hasPush
+                              ? 'Erinnern'
+                              : 'Erinnern (kein Push)'}
                         </button>
                       )}
                       {member.invitePending && (
@@ -756,6 +829,8 @@ export default function TrainerDashboardPage() {
                 </article>
               );
             })}
+              </div>
+            ))}
           </div>
         )}
 

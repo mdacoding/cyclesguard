@@ -34,13 +34,14 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 | Trust-Checks automatisiert + live verifiziert | ✅ 23.07. — Cron/RLS/Admin-Dry-Run gegen Prod grün |
 | Founder Sign-off (Sentry DSN, Demo-Mode off, AVV) | ◐ Sentry ✅ · Demo-Mode off ✅ · AVV-Versand Founder — [`FOUNDER-SECRETS.md`](../pitch/FOUNDER-SECRETS.md) |
 
-**Als Nächstes (Eng):** Trainer Nudge / Session-Freeze · Player Streak-Ziel · Admin 7d-Serie — ship & harden.  
+**Als Nächstes (Eng):** Push-Coverage · Kabine Ampel-Gruppen · Wochen-Call Clipboard · Quick-Log — ship.  
 **Als Nächstes (Founder):** Outreach-Tracking · Auth-URLs + Mail-Templates · Impressum-Straße · AVV bei Club-Adresse.
 
 **Daily-Ship-Log (jeden Tag ein Fortschritt):**
 
 | Datum | Was |
 |-------|-----|
+| 24.07. | Soft-Pilot Hebel: Kabine Ampel-Gruppen + Session-Freeze persist · Push-Coverage Roster/Scorecard · Wochen-Call Clipboard + Funnel · Player Quick-Log „wie zuletzt“ |
 | 24.07. | Soft-Pilot Features (ohne Club-Rückruf): Trainer coach-safe Nudge + Kabine Session-Freeze · Player Streak-Ziel/Miss-Recovery · Admin Adherence-Sparkline 7d |
 | 24.07. | Prod-Build repariert (Seed/Sentry Types) · `/spielerinnen-info` live |
 | 24.07. | SaaS Pilot-Polish: team-status Zod-Allowlist · Postgres rate-limit 018 · Auth-Mail + Multi-Club Docs · Admin First-Run Links · invite/sentry verify |

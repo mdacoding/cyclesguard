@@ -161,7 +161,7 @@ export default async function DashboardPage() {
               <h2 className="font-display text-2xl font-semibold mb-6">
                 {todayLog ? 'Heutigen Eintrag anpassen' : 'Wie fühlst du dich heute?'}
               </h2>
-              <CycleLogForm todayLog={todayLog} />
+              <CycleLogForm todayLog={todayLog} lastLog={lastLog} />
             </section>
           </div>
 

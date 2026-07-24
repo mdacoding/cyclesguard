@@ -11,11 +11,14 @@ import { enqueueLog, flushOutbox, isOffline, listPending } from '@/lib/offline/o
 
 interface CycleLogFormProps {
   todayLog?: CycleLog | null;
+  /** Previous entry for one-tap „wie zuletzt“ (phase + energy). */
+  lastLog?: CycleLog | null;
 }
 
-export default function CycleLogForm({ todayLog = null }: CycleLogFormProps) {
+export default function CycleLogForm({ todayLog = null, lastLog = null }: CycleLogFormProps) {
   const router = useRouter();
   const isUpdate = !!todayLog;
+  const quickSource = todayLog ?? lastLog;
 
   const [selectedPhase, setSelectedPhase] = useState<CyclePhase | null>(todayLog?.phase ?? null);
   const [energyLevel, setEnergyLevel] = useState<number>(todayLog?.energyLevel ?? 3);
@@ -88,20 +91,22 @@ export default function CycleLogForm({ todayLog = null }: CycleLogFormProps) {
     );
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedPhase) return;
-
+  const saveEntry = async (opts: {
+    phase: CyclePhase;
+    energy: number;
+    symptoms: string[];
+    notes: string;
+  }) => {
     setIsSubmitting(true);
     setError(null);
     setOfflineSaved(false);
 
     try {
       const entry = await enqueueLog({
-        phase: selectedPhase,
-        energyLevel,
-        symptoms,
-        notes: notes.trim() || undefined,
+        phase: opts.phase,
+        energyLevel: opts.energy,
+        symptoms: opts.symptoms,
+        notes: opts.notes.trim() || undefined,
       });
 
       if (isOffline()) {
@@ -116,10 +121,10 @@ export default function CycleLogForm({ todayLog = null }: CycleLogFormProps) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               clientLogId: entry.clientLogId,
-              phase: selectedPhase,
-              energyLevel,
-              symptoms,
-              notes: notes.trim() || undefined,
+              phase: opts.phase,
+              energyLevel: opts.energy,
+              symptoms: opts.symptoms,
+              notes: opts.notes.trim() || undefined,
             }),
           });
           if (!response.ok) throw new Error('Failed to save log');
@@ -140,12 +145,53 @@ export default function CycleLogForm({ todayLog = null }: CycleLogFormProps) {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedPhase) return;
+    await saveEntry({
+      phase: selectedPhase,
+      energy: energyLevel,
+      symptoms,
+      notes,
+    });
+  };
+
+  const handleQuickLog = async () => {
+    if (!quickSource) return;
+    setSelectedPhase(quickSource.phase);
+    setEnergyLevel(quickSource.energyLevel ?? 3);
+    setSymptoms([]);
+    setNotes('');
+    await saveEntry({
+      phase: quickSource.phase,
+      energy: quickSource.energyLevel ?? 3,
+      symptoms: [],
+      notes: '',
+    });
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8" aria-label="Zyklus-Phase loggen">
       {isUpdate && (
         <p className="text-sm text-center text-cream/60 bg-white/5 rounded-lg p-3">
           Du hast heute bereits eingetragen — Änderungen überschreiben den heutigen Eintrag.
         </p>
+      )}
+
+      {!isUpdate && quickSource && (
+        <div className="rounded-xl border border-rose-gold/25 bg-rose-gold/5 p-4 space-y-3">
+          <p className="text-sm text-cream/75 text-center">
+            Schnell: Phase und Energie wie zuletzt — ohne Symptome/Notiz.
+          </p>
+          <button
+            type="button"
+            onClick={() => void handleQuickLog()}
+            disabled={isSubmitting || success}
+            className="w-full min-h-12 rounded-xl bg-rose-gold text-navy font-medium text-sm disabled:opacity-40"
+          >
+            {isSubmitting ? 'Speichere…' : 'Wie zuletzt speichern'}
+          </button>
+        </div>
       )}
 
       {(offline || pendingCount > 0) && (
