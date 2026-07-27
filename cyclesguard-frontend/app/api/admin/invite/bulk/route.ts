@@ -18,6 +18,8 @@ const BulkJsonSchema = z.object({
         email: z.string().email(),
         fullName: z.string().min(1).max(100).optional(),
         role: z.enum(['player', 'trainer']).default('player'),
+        jerseyNumber: z.number().int().min(0).max(199).nullable().optional(),
+        position: z.string().max(40).nullable().optional(),
       })
     )
     .min(1)
@@ -44,7 +46,13 @@ export async function POST(request: Request) {
 
   const contentType = request.headers.get('content-type') ?? '';
   let teamId: string;
-  let rows: { email: string; fullName?: string; role: 'player' | 'trainer' }[];
+  let rows: {
+    email: string;
+    fullName?: string;
+    role: 'player' | 'trainer';
+    jerseyNumber?: number | null;
+    position?: string | null;
+  }[];
   let parseErrors: string[] = [];
 
   if (contentType.includes('multipart/form-data') || contentType.includes('text/csv')) {
@@ -106,6 +114,8 @@ export async function POST(request: Request) {
       fullName: row.fullName,
       role: row.role,
       actorId: user.id,
+      jerseyNumber: row.jerseyNumber,
+      position: row.position,
     });
     if (result.ok) okCount += 1;
     results.push(result);

@@ -26,7 +26,8 @@ senden wir Ihnen unseren Arbeitsentwurf zu Auftragsverarbeitung und TOM.
 
 Anlage / Link:
 - AVV/TOM-Entwurf (Arbeitsstand): siehe Repo-Dokument AVV-TOM-DRAFT.md
-  bzw. Anhang PDF, sobald finalisiert
+  bzw. Anhang PDF (docs/legal/CyclesGuard-AVV.pdf, `npm run gen:avv-pdf`),
+  sobald Vereinsdaten + Founder-Anschrift final eingetragen sind
 
 Kernpunkte kurz:
 1. Verantwortlicher: Verein / Rechtsträger (Platzhalter im Entwurf)
@@ -46,7 +47,7 @@ Demo-/Seed-Accounts sind kein Ersatz für einen unterschriebenen AVV.
 
 Mit freundlichen Grüßen
 M. Daud Abdulle
-CyclesGuard · hello@cyclesguard.de · m.daud-abdulle@web.de
+CyclesGuard · cyclesguard@proton.me · m.daud-abdulle@web.de
 ```
 
 ---

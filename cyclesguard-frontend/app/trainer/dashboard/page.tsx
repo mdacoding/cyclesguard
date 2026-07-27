@@ -47,6 +47,7 @@ import {
   buildStaffSharePack,
 } from '@/lib/soft-pilot-pack';
 import { buildKabineDay1Checklist, resolveKabineDay1State } from '@/lib/kabine-day1';
+import { berlinDate } from '@/lib/date';
 
 interface TeamMember {
   playerId: string;
@@ -1163,7 +1164,7 @@ export default function TrainerDashboardPage() {
           Dieses Dashboard zeigt ausschließlich aggregierte Readiness-Signale.
           Medizinische Rohdaten sind nicht einsehbar (DOSB-konform).{' '}
           <a
-            href="mailto:hello@cyclesguard.de?subject=CyclesGuard%20Trainer%20Support"
+            href="mailto:cyclesguard@proton.me?subject=CyclesGuard%20Trainer%20Support"
             className="text-cream/45 hover:text-rose-gold underline-offset-2 hover:underline"
           >
             Support

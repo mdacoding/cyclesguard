@@ -58,8 +58,8 @@ export default function ImpressumPage() {
               <>
                 <br />
                 Postanschrift auf Anfrage unter{' '}
-                <a href="mailto:hello@cyclesguard.de" className="text-rose-gold hover:underline">
-                  hello@cyclesguard.de
+                <a href="mailto:cyclesguard@proton.me" className="text-rose-gold hover:underline">
+                  cyclesguard@proton.me
                 </a>
                 <br />
                 {OPERATOR_CITY}
@@ -72,8 +72,8 @@ export default function ImpressumPage() {
           <h2 className="font-semibold text-cream text-base">Kontakt</h2>
           <p>
             E-Mail:{' '}
-            <a href="mailto:hello@cyclesguard.de" className="text-rose-gold hover:underline">
-              hello@cyclesguard.de
+            <a href="mailto:cyclesguard@proton.me" className="text-rose-gold hover:underline">
+              cyclesguard@proton.me
             </a>
             <br />
             Web:{' '}

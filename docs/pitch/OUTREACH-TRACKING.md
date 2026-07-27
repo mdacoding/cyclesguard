@@ -1,12 +1,34 @@
 # Outreach-Tracking — CyclesGuard Soft-Pilot
 
-**Ziel diese Woche:** ≥6 Erstkontakte (Eintracht 2 + 2 weitere Clubs × Athletik/Medizin).  
+**Ziel diese Woche:** ≥10 Erstkontakte (Tier 1 + gesamtes Tier 2 parallel).  
 **Links immer mitschicken:**  
 Demo https://cyclesguard.vercel.app · Datenschutz `/datenschutz` · Angebot `/pilot`
 
 Texte: [`OUTREACH.md`](./OUTREACH.md) · Demo: [`DEMO-SCRIPT.md`](./DEMO-SCRIPT.md)
 
 **Absender:** M. Daud Abdulle · m.daud-abdulle@web.de · Texte in [`OUTREACH.md`](./OUTREACH.md)
+
+---
+
+## Wettbewerbs-Kontext (Stand 25.07.2026)
+
+- **PULSE Sport** hat Juli 2026 Mehrjahresverträge mit FC Como Women (IT) und Legia Ladies (PL) inkl. Zyklus-Monitoring geschlossen — Trainer/Performance-Staff sieht dort Phase + KI-Empfehlungen.
+- **Orreco/FitrWoman** seit 2020 bei Chelsea FC Women + England-Nationalteam.
+- **Kein deutscher Bundesliga-Verein bekannt als Kunde dieser Anbieter** — Markt in DACH aktuell offen.
+- **Differenzierung aktiv nennen:** CyclesGuard zeigt Trainer **nie** Phase/Symptome (nur Ampel) — strenger als PULSE/FitrWoman. Vor Erstkontakt kurz gegenchecken (LinkedIn/News), ob ein Verein bereits gebunden ist.
+
+**DFB-Pflicht ab Saison 2025/26:** Alle 14 Google-Pixel-Frauen-Bundesliga-Vereine müssen hauptamtlichen Athletiktrainer, Co-Trainer und Torhüterinnentrainer beschäftigen — Buyer-Persona existiert jetzt bei jedem der 14 Vereine.
+
+---
+
+## Tier-Priorisierung (14 Bundesliga-Vereine 2025/26)
+
+| Tier | Vereine | Begründung |
+|------|---------|------------|
+| **1 — Priorität** | Eintracht Frankfurt | Lokal, Kontakte identifiziert, kein Reiseaufwand |
+| **2 — parallel jetzt** | SGS Essen · SC Freiburg · FC Carl Zeiss Jena · 1. FC Köln | Reiner Frauenfußball-Fokus / schlanke Struktur → schnellere Entscheidung |
+| **3 — zweiter Batch** | 1. FC Union Berlin · Hamburger SV · 1. FC Nürnberg | Aufsteiger, Professionalisierungsdruck, Kapazität unsicher |
+| **4 — hoher Wert, langsamer** | FC Bayern München · VfL Wolfsburg · RB Leipzig · Werder Bremen · Bayer Leverkusen · TSG Hoffenheim | Großer Männer-Mutterverein → mehr Entscheidungsebenen, aber starke Referenz |
 
 ---
 
@@ -62,13 +84,37 @@ Quellen: Club-News / Soccerdonna Staff · Athletik u. a. Hamid Masoum Beygi, Mor
 
 ---
 
-## Optional — schnellere Einstiege (2. Liga / Regionalliga)
+## Tier 2 — SGS Essen, SC Freiburg, FC Carl Zeiss Jena, 1. FC Köln (parallel jetzt)
+
+| # | Club | Wen suchen (LinkedIn) | Kanal | Gesendet | Follow-up | Antwort |
+|---|------|----------------------|-------|----------|-----------|---------|
+| T1 | SGS Essen | Athletiktrainer:in / Sportmedizin Frauen | LinkedIn | | +7d | |
+| T2 | SC Freiburg | Athletiktrainer:in Frauen | LinkedIn | | +7d | |
+| T3 | FC Carl Zeiss Jena | Athletiktrainer:in Frauen | LinkedIn | | +7d | |
+| T4 | 1. FC Köln | Athletiktrainer:in / Physio Frauen | LinkedIn | | +7d | |
+
+**Vor Versand:** Namen via LinkedIn-Suche `"Athletiktrainer" [Verein] Frauen` verifizieren; kurz gegenchecken, ob Verein bereits PULSE/FitrWoman/ähnliches nutzt.
+
+---
+
+## Tier 3 — Aufsteiger (zweiter Batch)
 
 | # | Club | Wen suchen (LinkedIn) | Gesendet | Antwort |
 |---|------|----------------------|----------|---------|
-| O1 | 1. FC Köln Frauen | Athletiktrainerin / Physio Frauen | | |
-| O2 | SGS Essen | Athletik / Sportmedizin | | |
-| O3 | Regionalliga Südwest (lokal) | Athletik + 1 Medizin | | |
+| A1 | 1. FC Union Berlin | Athletik / Physio Frauen | | |
+| A2 | Hamburger SV | Athletik / Physio Frauen | | |
+| A3 | 1. FC Nürnberg | Athletik / Physio Frauen | | |
+
+---
+
+## Tier 4 — Große Vereine (höherer Wert, langsamerer Zyklus)
+
+| # | Club | Wen suchen (LinkedIn) | Gesendet | Antwort |
+|---|------|----------------------|----------|---------|
+| G1 | RB Leipzig | Athletik Frauen | | |
+| G2 | Werder Bremen | Athletik Frauen | | |
+| G3 | Bayer Leverkusen | Athletik Frauen | | |
+| G4 | TSG Hoffenheim | Athletik Frauen | | |
 
 ---
 

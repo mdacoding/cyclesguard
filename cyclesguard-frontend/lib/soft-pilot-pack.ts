@@ -33,7 +33,7 @@ export function buildStaffSharePack(opts?: { origin?: string; clubLabel?: string
     `Privacy / Trust: ${origin}/privacy`,
     `Spielerinnen-Info zum Teilen: ${origin}/spielerinnen-info`,
     '',
-    'Support: hello@cyclesguard.de',
+    'Support: cyclesguard@proton.me',
   ].join('\n');
 }
 

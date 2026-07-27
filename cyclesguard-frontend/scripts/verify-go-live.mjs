@@ -32,6 +32,7 @@ process.env.DEMO_ALLOW = process.env.DEMO_ALLOW || '1';
 
 const steps = [
   ['unit', ['npm', ['test']]],
+  ['readiness', ['npm', ['run', 'verify:prod']]],
   ['rls-trainer', ['npm', ['run', 'verify:rls-trainer']]],
   ['rls-privacy', ['npm', ['run', 'verify:rls-privacy', '--', baseUrl]]],
   ['invite-flow', ['npm', ['run', 'verify:invite-flow', '--', baseUrl]]],

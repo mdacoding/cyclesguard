@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Shield, Activity, Lock } from 'lucide-react';
 
 const PILOT_MAIL =
-  'mailto:hello@cyclesguard.de' +
+  'mailto:cyclesguard@proton.me' +
   '?subject=' +
   encodeURIComponent('CyclesGuard Soft-Pilot anfragen') +
   '&body=' +
@@ -169,8 +169,8 @@ export default function Home() {
         <a href="/impressum" className="hover:text-cream/60">
           Impressum
         </a>
-        <a href="mailto:hello@cyclesguard.de" className="hover:text-cream/60">
-          hello@cyclesguard.de
+        <a href="mailto:cyclesguard@proton.me" className="hover:text-cream/60">
+          cyclesguard@proton.me
         </a>
       </footer>
     </div>

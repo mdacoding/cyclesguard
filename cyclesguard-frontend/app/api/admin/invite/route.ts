@@ -12,6 +12,8 @@ const InviteSchema = z.union([
     teamId: z.string().uuid(),
     fullName: z.string().min(1).max(100).optional(),
     role: z.enum(['player', 'trainer']).default('player'),
+    jerseyNumber: z.number().int().min(0).max(199).nullable().optional(),
+    position: z.string().max(40).nullable().optional(),
   }),
   z.object({
     teamId: z.string().uuid(),
@@ -88,6 +90,8 @@ export async function POST(request: Request) {
     fullName: parsed.data.fullName,
     role: parsed.data.role,
     actorId: user.id,
+    jerseyNumber: parsed.data.jerseyNumber,
+    position: parsed.data.position,
   });
 
   if (!result.ok) {

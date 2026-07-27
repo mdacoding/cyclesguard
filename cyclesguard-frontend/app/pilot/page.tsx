@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 const PILOT_MAIL =
-  'mailto:hello@cyclesguard.de' +
+  'mailto:cyclesguard@proton.me' +
   '?subject=' +
   encodeURIComponent('CyclesGuard Soft-Pilot anfragen') +
   '&body=' +
@@ -144,7 +144,7 @@ export default function PilotOfferPage() {
             Datenschutz lesen
           </a>
         </div>
-        <p className="text-xs text-cream/40">Antwort = nächster Schritt · hello@cyclesguard.de</p>
+        <p className="text-xs text-cream/40">Antwort = nächster Schritt · cyclesguard@proton.me</p>
       </article>
     </div>
   );

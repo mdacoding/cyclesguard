@@ -1,7 +1,7 @@
 # Pilotangebot — CyclesGuard Soft-Pilot (club-agnostisch)
 
 **An:** Athletik / Sportmedizin / Performance — [VEREINSNAME]  
-**Von:** CyclesGuard · https://cyclesguard.vercel.app · hello@cyclesguard.de  
+**Von:** CyclesGuard · https://cyclesguard.vercel.app · cyclesguard@proton.me  
 **Live-Angebot:** https://cyclesguard.vercel.app/pilot  
 **Laufzeit:** 8–12 Wochen · **kostenlos**
 
@@ -64,6 +64,6 @@ Kein automatisches Abo.
 
 1. Demo: https://cyclesguard.vercel.app  
 2. Datenschutz: https://cyclesguard.vercel.app/privacy  
-3. Termin / Soft-Pilot anfragen: hello@cyclesguard.de  
+3. Termin / Soft-Pilot anfragen: cyclesguard@proton.me  
 
 *Vorlage · Club-Namen in Outreach ersetzen · siehe OUTREACH.md*

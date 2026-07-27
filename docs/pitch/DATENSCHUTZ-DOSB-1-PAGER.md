@@ -1,7 +1,7 @@
 # CyclesGuard — Datenschutz & DOSB (1-Pager)
 
 **Stand:** Soft-Pilot / Club-Pitch  
-**Live:** https://cyclesguard.vercel.app/privacy · hello@cyclesguard.de  
+**Live:** https://cyclesguard.vercel.app/privacy · cyclesguard@proton.me  
 **Repo:** github.com/mdacoding/cyclesguard
 
 ---

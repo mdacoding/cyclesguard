@@ -35,7 +35,7 @@ Passwort festlegen:
 
 Danach: kurze Einwilligung → fertig.
 
-Fragen? hello@cyclesguard.de
+Fragen? cyclesguard@proton.me
 
 CyclesGuard
 ```
@@ -56,7 +56,7 @@ Link (gültig für kurze Zeit):
 
 Falls du das nicht warst: E-Mail ignorieren.
 
-CyclesGuard · hello@cyclesguard.de
+CyclesGuard · cyclesguard@proton.me
 ```
 
 ---
@@ -71,7 +71,7 @@ Hallo,
 bitte bestätige deine E-Mail für CyclesGuard:
 {{ .ConfirmationURL }}
 
-CyclesGuard · hello@cyclesguard.de
+CyclesGuard · cyclesguard@proton.me
 ```
 
 ---

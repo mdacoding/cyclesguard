@@ -13,7 +13,7 @@ Spielerinnen loggen ihr Wohlbefinden & ihren Zyklus in unter 30 Sekunden — Tra
 ![DSGVO Art. 9](https://img.shields.io/badge/DSGVO-Art.%209%20by%20design-1a1a2e)
 ![Status](https://img.shields.io/badge/status-Soft--Pilot%20ready-7B9E87)
 
-[Live-Demo](https://cyclesguard.vercel.app) · [Soft-Pilot anfragen](mailto:hello@cyclesguard.de?subject=CyclesGuard%20Soft-Pilot%20anfragen) · [Datenschutz](https://cyclesguard.vercel.app/privacy) · [Roadmap](docs/sprints/00-ROADMAP.md)
+[Live-Demo](https://cyclesguard.vercel.app) · [Soft-Pilot anfragen](mailto:cyclesguard@proton.me?subject=CyclesGuard%20Soft-Pilot%20anfragen) · [Datenschutz](https://cyclesguard.vercel.app/privacy) · [Roadmap](docs/sprints/00-ROADMAP.md)
 
 ![CyclesGuard Landing Page](docs/assets/screenshot-landing.png)
 
@@ -124,7 +124,7 @@ GitHub Actions ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)): Fronten
 
 ## Soft-Pilot anfragen
 
-CyclesGuard sucht ambitionierte Vereine für einen **kostenlosen 8–12-Wochen-Soft-Pilot** (5–10 freiwillige Spielerinnen, kein Stripe, kein GPS-Zwang). Interesse? [hello@cyclesguard.de](mailto:hello@cyclesguard.de) oder direkt über die [Live-Demo](https://cyclesguard.vercel.app/pilot).
+CyclesGuard sucht ambitionierte Vereine für einen **kostenlosen 8–12-Wochen-Soft-Pilot** (5–10 freiwillige Spielerinnen, kein Stripe, kein GPS-Zwang). Interesse? [cyclesguard@proton.me](mailto:cyclesguard@proton.me) oder direkt über die [Live-Demo](https://cyclesguard.vercel.app/pilot).
 
 ---
 

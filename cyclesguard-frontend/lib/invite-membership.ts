@@ -1,23 +1,33 @@
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 import { getAppRole } from '@/lib/roles';
 
+export interface RosterMeta {
+  jerseyNumber?: number | null;
+  position?: string | null;
+}
+
 /**
  * Ensures an invited player is on the team roster.
  * Idempotent — safe to call from invite API and auth callback.
+ * Roster metadata (jersey/position) is optional and never health data.
  */
 export async function ensurePlayerTeamMembership(
   admin: SupabaseClient,
   userId: string,
-  teamId: string
+  teamId: string,
+  meta?: RosterMeta
 ): Promise<{ ok: boolean; error?: string }> {
-  const { error } = await admin.from('team_members').upsert(
-    {
-      team_id: teamId,
-      user_id: userId,
-      role: 'player',
-    },
-    { onConflict: 'team_id,user_id' }
-  );
+  const row: Record<string, unknown> = {
+    team_id: teamId,
+    user_id: userId,
+    role: 'player',
+  };
+  if (meta?.jerseyNumber !== undefined) row.jersey_number = meta.jerseyNumber;
+  if (meta?.position !== undefined) row.position = meta.position;
+
+  const { error } = await admin.from('team_members').upsert(row, {
+    onConflict: 'team_id,user_id',
+  });
 
   if (error) {
     return { ok: false, error: error.message };

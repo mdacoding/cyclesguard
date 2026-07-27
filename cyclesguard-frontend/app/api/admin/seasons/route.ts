@@ -22,6 +22,7 @@ const CreateSeasonSchema = z.object({
   commercialStatus: CommercialStatus.optional(),
   feeCents: z.number().int().nonnegative().nullable().optional(),
   contractRef: z.string().max(200).nullable().optional(),
+  pilotEndDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
 });
 
 const PatchSeasonSchema = z.object({
@@ -35,6 +36,8 @@ const PatchSeasonSchema = z.object({
   currency: z.string().length(3).optional(),
   contractRef: z.string().max(200).nullable().optional(),
   signedByEmail: z.string().email().nullable().optional(),
+  signedByName: z.string().max(120).nullable().optional(),
+  pilotEndDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
   internalNotes: z.string().max(2000).nullable().optional(),
 });
 
@@ -52,6 +55,8 @@ function mapSeason(s: Record<string, unknown>) {
     contractRef: s.contract_ref ?? null,
     signedAt: s.signed_at ?? null,
     signedByEmail: s.signed_by_email ?? null,
+    signedByName: s.signed_by_name ?? null,
+    pilotEndDate: s.pilot_end_date ?? null,
     internalNotes: s.internal_notes ?? null,
     createdAt: s.created_at,
   };
@@ -71,7 +76,7 @@ export async function GET() {
   let query = admin
     .from('seasons')
     .select(
-      'id, club_id, name, starts_on, ends_on, status, commercial_status, fee_cents, currency, contract_ref, signed_at, signed_by_email, internal_notes, created_at'
+      'id, club_id, name, starts_on, ends_on, status, commercial_status, fee_cents, currency, contract_ref, signed_at, signed_by_email, signed_by_name, pilot_end_date, internal_notes, created_at'
     )
     .order('starts_on', { ascending: false });
 
@@ -131,6 +136,7 @@ export async function POST(request: Request) {
       commercial_status: parsed.data.commercialStatus ?? 'pilot_free',
       fee_cents: parsed.data.feeCents ?? null,
       contract_ref: parsed.data.contractRef ?? null,
+      pilot_end_date: parsed.data.pilotEndDate ?? null,
     })
     .select('id')
     .single();
@@ -195,6 +201,8 @@ export async function PATCH(request: Request) {
   if (parsed.data.currency) patch.currency = parsed.data.currency;
   if (parsed.data.contractRef !== undefined) patch.contract_ref = parsed.data.contractRef;
   if (parsed.data.signedByEmail !== undefined) patch.signed_by_email = parsed.data.signedByEmail;
+  if (parsed.data.signedByName !== undefined) patch.signed_by_name = parsed.data.signedByName;
+  if (parsed.data.pilotEndDate !== undefined) patch.pilot_end_date = parsed.data.pilotEndDate;
   if (parsed.data.internalNotes !== undefined) patch.internal_notes = parsed.data.internalNotes;
 
   if (parsed.data.commercialStatus) {

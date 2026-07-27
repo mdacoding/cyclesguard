@@ -176,7 +176,7 @@ export default function SettingsPage() {
             Fragen zu Zugang, Privacy oder Soft-Pilot? Schreib uns — wir antworten werktags.
           </p>
           <a
-            href="mailto:hello@cyclesguard.de?subject=CyclesGuard%20Support"
+            href="mailto:cyclesguard@proton.me?subject=CyclesGuard%20Support"
             className="inline-flex items-center justify-center min-h-11 px-4 rounded-lg bg-sage/20 text-sage text-sm font-medium hover:bg-sage/30"
           >
             Support mailen

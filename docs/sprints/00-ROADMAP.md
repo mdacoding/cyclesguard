@@ -41,6 +41,7 @@ Wir bauen **Launch-Qualität**: Kabinen-Trainer-Flow, Pilot-Proof-KPIs, Onboardi
 
 | Datum | Was |
 |-------|-----|
+| 24.07. | Admin Ops Polish: Season Closing (Signed-by-Name, Pilot-Ende-Nudge, Status-Badges, Audit-Indikator Pilot→Aktiv bezahlt) · CSV Roster-Importer mit Vorschau (Trikot/Position, Live-Progress) · `npm run verify:prod` (Env/RLS/Zero-Knowledge-Check, live gegen Prod-DB grün) |
 | 24.07. | Conversion-Hebel: Soft-Pilot Share-Packs · Invite-Pending Kit (Bulk+Chat) · Kabine Day-1 Checklist · Pilot Woche N + Kriterien → Paid |
 | 24.07. | Markt-Hebel Soft-Pilot: Kabine Einheitsblatt/Stationen · Player Trust Preview · Einheit-Log-Fenster · Admin Trainer-Kabine-7d Gate |
 | 24.07. | Soft-Pilot Hebel: Kabine Ampel-Gruppen + Session-Freeze persist · Push-Coverage Roster/Scorecard · Wochen-Call Clipboard + Funnel · Player Quick-Log „wie zuletzt“ |

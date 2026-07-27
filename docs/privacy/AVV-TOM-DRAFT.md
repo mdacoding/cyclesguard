@@ -4,7 +4,8 @@
 **Kein Ersatz** für einen unterschriebenen Auftragsverarbeitungsvertrag.  
 **Stand:** 23.07.2026
 
-Versand-Paket: [`../pitch/AVV-EMAIL-DRAFT.md`](../pitch/AVV-EMAIL-DRAFT.md) · `npm run open:avv-mailto`
+Versand-Paket: [`../pitch/AVV-EMAIL-DRAFT.md`](../pitch/AVV-EMAIL-DRAFT.md) · `npm run open:avv-mailto`  
+Formeller Vertragstext (Art. 28) als PDF: [`../legal/CyclesGuard-AVV.pdf`](../legal/CyclesGuard-AVV.pdf) · Generator: `npm run gen:avv-pdf` (lokal, kostenlos via `pdfkit`) — **vor Versand:** Vereinsname/-anschrift + Founder-Straße im Script (`cyclesguard-frontend/scripts/generate-avv-pdf.mjs`) ergänzen und neu erzeugen.
 
 ---
 
@@ -13,7 +14,7 @@ Versand-Paket: [`../pitch/AVV-EMAIL-DRAFT.md`](../pitch/AVV-EMAIL-DRAFT.md) · `
 | Rolle | Partei |
 |-------|--------|
 | **Verantwortlicher** | [Verein — Rechtsträger / e.V. einsetzen] |
-| **Auftragsverarbeiter** | **M. Daud Abdulle** (handelnd als CyclesGuard), E-Mail: hello@cyclesguard.de · Anschrift: siehe `/impressum` bzw. [Anschrift Founder ergänzen] |
+| **Auftragsverarbeiter** | **M. Daud Abdulle** (handelnd als CyclesGuard), E-Mail: cyclesguard@proton.me · Anschrift: siehe `/impressum` bzw. [Anschrift Founder ergänzen] |
 | **Subprozessoren** | Supabase Inc. (EU-Region Frankfurt) · Vercel Inc. (Region `fra1` / EU-Edge) |
 
 CyclesGuard ist Early-Access / Soft-Pilot; formeller Gesellschafts-Rechtsträger kann später nachgezogen werden — DSB vor Echtdaten informieren.
@@ -77,7 +78,7 @@ Der formelle AVV soll mindestens regeln:
 4. **Vertraulichkeit** — Personen mit Zugang sind zur Vertraulichkeit verpflichtet  
 5. **TOM** — wie §4; Verein kann Auskunft verlangen  
 6. **Subprozessoren** — Supabase, Vercel; Wechsel nur mit Information + Widerspruchsrecht in angemessener Frist  
-7. **Unterstützung bei Betroffenenrechten** — Export/Löschung in der App; Support hello@cyclesguard.de  
+7. **Unterstützung bei Betroffenenrechten** — Export/Löschung in der App; Support cyclesguard@proton.me  
 8. **Unterstützung bei DSFA / Behörden** — nach zumutbarem Aufwand  
 9. **Löschung / Rückgabe** nach Ende — Konten löschen, Backups nach Retention  
 10. **Nachweise** — Audit-Logs ohne Health-Rohdaten; RLS-Verify-Scripts  
@@ -90,12 +91,12 @@ Der formelle AVV soll mindestens regeln:
 
 | Stufe | Frist | Aktion |
 |-------|-------|--------|
-| **Intern entdeckt** | **sofort / ≤ 24 h** | Founder + hello@cyclesguard.de; Sentry/Logs prüfen; betroffene Systeme isolieren |
+| **Intern entdeckt** | **sofort / ≤ 24 h** | Founder + cyclesguard@proton.me; Sentry/Logs prüfen; betroffene Systeme isolieren |
 | **Meldung an Verantwortlichen (Verein)** | **unverzüglich, spätestens 24 h** nach Kenntnis | Kurzbeschreibung, Kategorien, grobe Anzahl Betroffener, Maßnahmen |
 | **Behörde (durch Verantwortlichen)** | **≤ 72 h** nach Kenntnis (Art. 33), soweit meldepflichtig | Verein/DSB entscheidet; CyclesGuard liefert TOM-/Zeitlinie |
 | **Betroffene** | nach Art. 34, wenn hohes Risiko | Verein führt Kommunikation; CyclesGuard unterstützt inhaltlich |
 
-Kontakt CyclesGuard-Vorfälle: **hello@cyclesguard.de** (Betreff: `DS-Vorfall Soft-Pilot`).
+Kontakt CyclesGuard-Vorfälle: **cyclesguard@proton.me** (Betreff: `DS-Vorfall Soft-Pilot`).
 
 ---
 

@@ -15,6 +15,9 @@ export interface AdminInviteInput {
   fullName?: string;
   role: InviteRole;
   actorId: string;
+  /** Player-only roster metadata from CSV import — never health data. */
+  jerseyNumber?: number | null;
+  position?: string | null;
 }
 
 export interface AdminInviteResult {
@@ -77,7 +80,8 @@ export async function adminInviteOrRosterAdd(
   input: AdminInviteInput
 ): Promise<AdminInviteResult> {
   const email = input.email.trim().toLowerCase();
-  const { teamId, fullName, role, actorId } = input;
+  const { teamId, fullName, role, actorId, jerseyNumber, position } = input;
+  const rosterMeta = { jerseyNumber, position };
 
   const existing = await findAuthUserByEmail(admin, email);
 
@@ -97,7 +101,7 @@ export async function adminInviteOrRosterAdd(
 
     if (role === 'player') {
       await ensurePlayerAppRole(admin, existing);
-      const membership = await ensurePlayerTeamMembership(admin, existing.id, teamId);
+      const membership = await ensurePlayerTeamMembership(admin, existing.id, teamId, rosterMeta);
       if (!membership.ok) {
         return { ok: false, email, status: 500, error: 'Failed to add roster membership' };
       }
@@ -172,7 +176,7 @@ export async function adminInviteOrRosterAdd(
 
   if (role === 'player') {
     await ensurePlayerAppRole(admin, invited.user as User);
-    const membership = await ensurePlayerTeamMembership(admin, invited.user.id, teamId);
+    const membership = await ensurePlayerTeamMembership(admin, invited.user.id, teamId, rosterMeta);
     if (!membership.ok) {
       return { ok: false, email, status: 500, error: 'Failed to add roster membership' };
     }

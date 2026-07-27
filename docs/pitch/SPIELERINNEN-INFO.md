@@ -21,13 +21,13 @@ CyclesGuard hilft Athletik, Belastung besser zu steuern. Du loggst freiwillig, w
 | **Dauer** | 8–12 Wochen, kostenlos |
 | **Freiwillig** | Jederzeit widerrufbar (Konto löschen in den Einstellungen) |
 | **Hosting** | EU (Supabase Frankfurt, Vercel EU) |
-| **Support** | hello@cyclesguard.de |
+| **Support** | cyclesguard@proton.me |
 
 **Was gespeichert wird (Auszug):** E-Mail, Name, Einwilligungszeitpunkt, Readiness-Logs (Phase, Energie, Symptome — nur für dich), optional Push-Gerät.  
 **Was Trainer:innen sehen:** Ampel + Empfehlungstext ohne Intimdaten.  
 **Rechte:** Auskunft / Export (Einstellungen) · Löschung · Widerruf.
 
-Fragen → Ansprechperson Athletik/Medizin im Verein oder hello@cyclesguard.de.
+Fragen → Ansprechperson Athletik/Medizin im Verein oder cyclesguard@proton.me.
 
 ---
 

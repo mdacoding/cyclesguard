@@ -48,8 +48,8 @@ export default function PrivacyPage() {
               cyclesguard.vercel.app
             </a>
             {' · '}
-            <a href="mailto:hello@cyclesguard.de" className="text-cream/80 underline-offset-2 hover:underline">
-              hello@cyclesguard.de
+            <a href="mailto:cyclesguard@proton.me" className="text-cream/80 underline-offset-2 hover:underline">
+              cyclesguard@proton.me
             </a>
           </p>
         </header>
@@ -160,7 +160,7 @@ export default function PrivacyPage() {
             Spielerinnen-Vorlage
           </a>
           <a
-            href="mailto:hello@cyclesguard.de?subject=CyclesGuard%20Datenschutz%20/%20DSB"
+            href="mailto:cyclesguard@proton.me?subject=CyclesGuard%20Datenschutz%20/%20DSB"
             className="inline-flex items-center justify-center min-h-12 px-6 rounded-full border border-cream/20 text-cream/90"
           >
             DSB kontaktieren

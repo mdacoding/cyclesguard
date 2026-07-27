@@ -19,6 +19,7 @@ import {
   Copy,
 } from 'lucide-react';
 import LogoutButton from '@/components/LogoutButton';
+import RosterCsvImporter from '@/components/admin/RosterCsvImporter';
 import {
   buildWeeklyCallMarkdown,
   evaluateSoftPilotCriteria,
@@ -74,7 +75,17 @@ interface SeasonRow {
   contractRef?: string | null;
   signedAt?: string | null;
   signedByEmail?: string | null;
+  signedByName?: string | null;
+  pilotEndDate?: string | null;
   internalNotes?: string | null;
+}
+
+interface AuditEntry {
+  id: string;
+  actorId: string | null;
+  action: string;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
 }
 
 interface FeedbackItem {
@@ -138,12 +149,15 @@ export default function AdminTeamsPage() {
   const [editFeeEuro, setEditFeeEuro] = useState('');
   const [editContractRef, setEditContractRef] = useState('');
   const [editSignedBy, setEditSignedBy] = useState('');
+  const [editSignedByName, setEditSignedByName] = useState('');
+  const [editPilotEndDate, setEditPilotEndDate] = useState('');
   const [editNotes, setEditNotes] = useState('');
   const [contractBusy, setContractBusy] = useState(false);
   const [pendingCommercial, setPendingCommercial] = useState<{
     id: string;
     status: 'churned' | 'ended';
   } | null>(null);
+  const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
 
   const [clubLegalName, setClubLegalName] = useState('');
   const [clubBillingEmail, setClubBillingEmail] = useState('');
@@ -267,10 +281,23 @@ export default function AdminTeamsPage() {
     }
   }, [selectedTeamId, teams]);
 
+  const loadAuditLog = async () => {
+    try {
+      const res = await fetch('/api/admin/audit?limit=300');
+      if (!res.ok) return;
+      setAuditLog((await res.json()) as AuditEntry[]);
+    } catch {
+      setAuditLog([]);
+    }
+  };
+
   useEffect(() => {
     if (tab === 'compliance') {
       void loadFeedback();
       void loadOpsStatus();
+    }
+    if (tab === 'season') {
+      void loadAuditLog();
     }
   }, [tab]);
 
@@ -567,6 +594,8 @@ export default function AdminTeamsPage() {
     setEditFeeEuro(s.feeCents != null ? String(s.feeCents / 100) : '');
     setEditContractRef(s.contractRef ?? '');
     setEditSignedBy(s.signedByEmail ?? '');
+    setEditSignedByName(s.signedByName ?? '');
+    setEditPilotEndDate(s.pilotEndDate ?? '');
     setEditNotes(s.internalNotes ?? '');
   };
 
@@ -603,6 +632,8 @@ export default function AdminTeamsPage() {
           feeCents,
           contractRef,
           signedByEmail: editSignedBy.trim() || null,
+          signedByName: editSignedByName.trim() || null,
+          pilotEndDate: editPilotEndDate || null,
           internalNotes: editNotes.trim() || null,
         }),
       });
@@ -697,6 +728,36 @@ export default function AdminTeamsPage() {
 
   const statusLabel = (s: SeasonRow['status']) =>
     s === 'active' ? 'Aktiv' : s === 'completed' ? 'Abgeschlossen' : 'Geplant';
+
+  const COMMERCIAL_BADGES: Record<string, { label: string; className: string }> = {
+    pilot_free: { label: 'Pilot gratis', className: 'bg-white/10 text-cream/70' },
+    quoted: { label: 'Angebot', className: 'bg-amber-400/15 text-amber-300' },
+    signed: { label: 'Unterschrieben', className: 'bg-sky-400/15 text-sky-300' },
+    active_paid: { label: 'Aktiv bezahlt', className: 'bg-sage/20 text-sage' },
+    ended: { label: 'Beendet', className: 'bg-white/10 text-cream/50' },
+    churned: { label: 'Churned', className: 'bg-menstrual/20 text-menstrual' },
+  };
+  const commercialBadge = (status?: string) =>
+    COMMERCIAL_BADGES[status ?? 'pilot_free'] ?? COMMERCIAL_BADGES.pilot_free;
+
+  /** Audit indicator: most recent update_season entry that flipped this season to active_paid. */
+  const activePaidAudit = (seasonId: string) =>
+    auditLog.find(
+      (a) =>
+        a.action === 'update_season' &&
+        a.metadata?.season_id === seasonId &&
+        a.metadata?.commercial_status === 'active_paid'
+    );
+
+  const pilotEndNudge = (s: SeasonRow) => {
+    if (!s.pilotEndDate) return null;
+    const days = Math.ceil(
+      (new Date(s.pilotEndDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+    );
+    if (days < 0) return { label: `Pilot-Ende überschritten (${Math.abs(days)}d)`, urgent: true };
+    if (days <= 14) return { label: `Pilot endet in ${days}d`, urgent: days <= 7 };
+    return { label: `Pilot endet ${new Date(s.pilotEndDate).toLocaleDateString('de-DE')}`, urgent: false };
+  };
 
   const totalPlayers = teams.reduce((sum, t) => sum + t.playerCount, 0);
   const loggedPlayers = teams.reduce((sum, t) => sum + t.loggedLast7Days, 0);
@@ -824,7 +885,7 @@ export default function AdminTeamsPage() {
 
   const buildOfferMailto = (s: SeasonRow) => {
     const club = clubs.find((c) => c.id === s.clubId);
-    const to = encodeURIComponent(club?.billingEmail || 'hello@cyclesguard.de');
+    const to = encodeURIComponent(club?.billingEmail || 'cyclesguard@proton.me');
     const fee =
       s.feeCents != null
         ? `${(s.feeCents / 100).toLocaleString('de-DE')} ${s.currency ?? 'EUR'}`
@@ -839,7 +900,7 @@ export default function AdminTeamsPage() {
         `Contract-Ref: ${s.contractRef || '—'}`,
         '',
         'Manueller Season-Vertrag (ohne Stripe).',
-        'Support: hello@cyclesguard.de',
+        'Support: cyclesguard@proton.me',
       ].join('\n')
     );
     return `mailto:${to}?subject=${subject}&body=${body}`;
@@ -887,10 +948,10 @@ export default function AdminTeamsPage() {
         <p className="text-xs text-cream/35 -mt-2">
           Support:{' '}
           <a
-            href="mailto:hello@cyclesguard.de?subject=CyclesGuard%20Admin%20Support"
+            href="mailto:cyclesguard@proton.me?subject=CyclesGuard%20Admin%20Support"
             className="text-cream/50 hover:text-rose-gold underline-offset-2 hover:underline"
           >
-            hello@cyclesguard.de
+            cyclesguard@proton.me
           </a>
         </p>
 
@@ -1110,7 +1171,14 @@ export default function AdminTeamsPage() {
                     >
                       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                         <div>
-                          <p className="font-medium">{s.name}</p>
+                          <p className="font-medium inline-flex items-center gap-2 flex-wrap">
+                            {s.name}
+                            <span
+                              className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${commercialBadge(s.commercialStatus).className}`}
+                            >
+                              {commercialBadge(s.commercialStatus).label}
+                            </span>
+                          </p>
                           <p className="text-xs text-cream/50">
                             {s.startsOn} → {s.endsOn} · {statusLabel(s.status)}
                           </p>
@@ -1119,11 +1187,29 @@ export default function AdminTeamsPage() {
                               ? `${(s.feeCents / 100).toLocaleString('de-DE')} ${s.currency ?? 'EUR'}`
                               : 'Kein Fee'}
                             {s.contractRef ? ` · Ref ${s.contractRef}` : ''}
-                            {s.signedByEmail ? ` · ${s.signedByEmail}` : ''}
+                            {s.signedByName ? ` · ${s.signedByName}` : ''}
+                            {s.signedByEmail ? ` (${s.signedByEmail})` : ''}
                             {s.signedAt
                               ? ` · signiert ${new Date(s.signedAt).toLocaleDateString('de-DE')}`
                               : ''}
                           </p>
+                          {s.commercialStatus === 'active_paid' && (
+                            <p className="text-[11px] text-sage mt-1 inline-flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3" />
+                              {activePaidAudit(s.id)
+                                ? `Pilot → Aktiv bezahlt am ${new Date(
+                                    activePaidAudit(s.id)!.createdAt
+                                  ).toLocaleString('de-DE')} (Audit-Log)`
+                                : 'Aktiv bezahlt — Audit-Eintrag folgt beim nächsten Statuswechsel'}
+                            </p>
+                          )}
+                          {pilotEndNudge(s) && (
+                            <p
+                              className={`text-[11px] mt-1 ${pilotEndNudge(s)!.urgent ? 'text-rose-gold' : 'text-cream/40'}`}
+                            >
+                              {pilotEndNudge(s)!.label}
+                            </p>
+                          )}
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {s.status !== 'active' && (
@@ -1194,12 +1280,29 @@ export default function AdminTeamsPage() {
                             className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
                           />
                           <input
+                            value={editSignedByName}
+                            onChange={(e) => setEditSignedByName(e.target.value)}
+                            placeholder="Unterzeichner Name (Ansprechpartner)"
+                            className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+                          />
+                          <input
                             type="email"
                             value={editSignedBy}
                             onChange={(e) => setEditSignedBy(e.target.value)}
                             placeholder="Unterzeichner E-Mail"
                             className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
                           />
+                          <div>
+                            <label className="text-[11px] text-cream/40 block mb-1">
+                              Pilot-Ende (geplant)
+                            </label>
+                            <input
+                              type="date"
+                              value={editPilotEndDate}
+                              onChange={(e) => setEditPilotEndDate(e.target.value)}
+                              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 min-h-12"
+                            />
+                          </div>
                           <input
                             value={editNotes}
                             onChange={(e) => setEditNotes(e.target.value)}
@@ -2023,6 +2126,20 @@ export default function AdminTeamsPage() {
                     Header optional. Beispiel: <code>anna@verein.de,Anna Müller,player</code>
                   </p>
                 </div>
+
+                <details className="border-t border-white/10 pt-4 space-y-3">
+                  <summary className="text-sm font-medium text-cream/70 cursor-pointer hover:text-cream/90 inline-flex items-center gap-2">
+                    <Upload className="w-4 h-4 text-rose-gold" />
+                    Erweiterter Roster-Import (Vorschau + Trikot/Position)
+                  </summary>
+                  <RosterCsvImporter
+                    teamId={selectedTeamId}
+                    onImported={async () => {
+                      await loadMembers(selectedTeamId);
+                      await load();
+                    }}
+                  />
+                </details>
 
                 <details className="border-t border-white/10 pt-4 space-y-4">
                   <summary className="text-sm font-medium text-cream/70 cursor-pointer hover:text-cream/90">

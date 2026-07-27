@@ -58,7 +58,7 @@ export default function SpielerinnenInfoPage() {
             <li>Dauer: 8–12 Wochen, kostenlos</li>
             <li>Freiwillig — Widerruf jederzeit (Konto löschen in den Einstellungen)</li>
             <li>Hosting: EU (Supabase Frankfurt, Vercel EU)</li>
-            <li>Support: hello@cyclesguard.de</li>
+            <li>Support: cyclesguard@proton.me</li>
           </ul>
         </section>
 

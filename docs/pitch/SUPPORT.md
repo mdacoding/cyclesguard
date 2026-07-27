@@ -1,6 +1,6 @@
 # CyclesGuard Support — Soft-Pilot & Paid Season
 
-**Support-Kontakt:** `hello@cyclesguard.de` (oder Founder-Direktkanal aus Outreach)  
+**Support-Kontakt:** `cyclesguard@proton.me` (oder Founder-Direktkanal aus Outreach)  
 **SLA Soft-Pilot:** Best-effort, Antwortziel &lt; 1 Werktag  
 **SLA Paid Season (Hypothese):** &lt; 1 Werktag kritische Auth/Roster-Themen  
 

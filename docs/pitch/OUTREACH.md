@@ -4,7 +4,7 @@
 **Datenschutz:** https://cyclesguard.vercel.app/privacy  
 **Angebot:** https://cyclesguard.vercel.app/pilot  
 
-**Absender (fertig):** M. Daud Abdulle · m.daud-abdulle@web.de · hello@cyclesguard.de  
+**Absender (fertig):** M. Daud Abdulle · m.daud-abdulle@web.de · cyclesguard@proton.me  
 Vor dem Absenden ersetzen: `[VEREINSNAME]` / `[Nachname]` · optional Telefon ergänzen.
 
 ---
@@ -86,7 +86,7 @@ Dürfte ich einen kurzen Termin (20–30 Min.) vorschlagen?
 Mit freundlichen Grüßen
 M. Daud Abdulle
 m.daud-abdulle@web.de
-hello@cyclesguard.de
+cyclesguard@proton.me
 ```
 
 ### Follow-up (7–10 Tage)
