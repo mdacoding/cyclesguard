@@ -16,7 +16,7 @@ function ensureVapid() {
   if (!publicKey || !privateKey) {
     throw new Error('VAPID keys are not configured');
   }
-  webpush.setVapidDetails('mailto:privacy@cyclesguard.de', publicKey, privateKey);
+  webpush.setVapidDetails('mailto:cyclesguard@proton.me', publicKey, privateKey);
   configured = true;
 }
 
